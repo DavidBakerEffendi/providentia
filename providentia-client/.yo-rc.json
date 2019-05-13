@@ -1,0 +1,25 @@
+{
+  "generator-jhipster": {
+    "jhipsterVersion": "6.0.1",
+    "applicationType": "monolith",
+    "baseName": "providentia",
+    "clientFramework": "angularX",
+    "clientTheme": "darkly",
+    "clientThemeVariant": "primary",
+    "useSass": true,
+    "clientPackageManager": "npm",
+    "authenticationType": "jwt",
+    "cacheProvider": "no",
+    "databaseType": "none",
+    "devDatabaseType": "none",
+    "prodDatabaseType": "none",
+    "testFrameworks": [],
+    "jhiPrefix": "prv",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": false,
+    "skipServer": true,
+    "skipUserManagement": true
+  }
+}
