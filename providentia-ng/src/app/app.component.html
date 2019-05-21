@@ -1,0 +1,15 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<header class="fixed-header">
+    <router-outlet name="navbar"></router-outlet>
+</header>
+
+<mat-sidenav-container class="sidenav">
+    <mat-sidenav [fixedInViewport]="true" class="drawer" mode="side" opened>
+        <prv-sidenav></prv-sidenav>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="side-content">
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+</mat-sidenav-container>
+<!-- <prv-footer></prv-footer> -->
