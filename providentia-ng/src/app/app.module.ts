@@ -3,6 +3,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { ProvidentiaHomeModule } from './home';
@@ -19,7 +20,6 @@ import { GraphComponent } from './visuals/graph/graph.component';
 import { SHARED_VISUALS } from './visuals/shared';
 
 import { NavbarComponent, FooterComponent, ErrorComponent, SidenavbarComponent } from './layouts';
-import { HttpClient } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -38,6 +38,7 @@ import { HttpClient } from '@angular/common/http';
     BrowserAnimationsModule,
     FormsModule,
     HttpModule,
+    HttpClientModule,
     ProvidentiaHomeModule,
     ProvidentiaNewJobModule,
     ProvidentiaAboutModule,
@@ -46,10 +47,7 @@ import { HttpClient } from '@angular/common/http';
     MDBBootstrapModule.forRoot()
   ],
   providers: [
-    D3Service,
-    {
-      provide: HttpClient
-    }
+    D3Service
   ],
   bootstrap: [AppComponent]
 })

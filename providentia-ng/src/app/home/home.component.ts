@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import APP_CONFIG from '../app.config';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -14,5 +14,8 @@ export class HomeComponent implements OnInit {
     ) { }
 
     ngOnInit() {
+        this.http.get(APP_CONFIG.FLASK_API + 'home')
+            .subscribe(res => console.debug(res['message']),
+            err => console.debug(err));
     }
 }
