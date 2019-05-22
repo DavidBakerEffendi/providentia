@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { ProvidentiaHomeModule } from './home';
 import { ProvidentiaNewJobModule } from './job';
 import { ProvidentiaAboutModule } from './about';
+import { ProvidentiaHistoryModule } from './history';
 import { AngularMaterialModule } from './material.module';
 import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { ProvidentiaAppRoutingModule } from './app-routing.module';
@@ -40,6 +41,7 @@ import { HttpClient } from '@angular/common/http';
     ProvidentiaHomeModule,
     ProvidentiaNewJobModule,
     ProvidentiaAboutModule,
+    ProvidentiaHistoryModule,
     ProvidentiaAppRoutingModule,
     MDBBootstrapModule.forRoot()
   ],

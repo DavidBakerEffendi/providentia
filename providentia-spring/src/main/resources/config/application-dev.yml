@@ -38,7 +38,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:postgresql://localhost:5432/providentia
     username: providentia
-    password:
+    password: dev
     hikari:
       poolName: Hikari
       auto-commit: false
