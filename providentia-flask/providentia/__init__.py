@@ -1,10 +1,9 @@
 import os
-
+from flask_cors import CORS
 from flask import Flask
 
 
 def create_app(test_config=None):
-    global app
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
@@ -36,8 +35,10 @@ def create_app(test_config=None):
 
     db.init_app(app)
 
-    # apply the blueprints to the providentia
+    # apply the blueprints to Providentia
     from providentia import home
+    # register CORS
+    CORS(app, resources=r'/api/*')
 
     app.register_blueprint(home.bp, url_prefix='/api/home')
 

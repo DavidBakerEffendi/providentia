@@ -1,11 +1,13 @@
 from flask import Blueprint
-import json
+from flask_cors import cross_origin
 from providentia.db import get_db
+import json
 
 bp = Blueprint('urls', __name__,)
 
 
 @bp.route("/")
+@cross_origin()
 def index():
     """Show all the posts, most recent first."""
     db = get_db()
@@ -15,5 +17,7 @@ def index():
     #     " ORDER BY created DESC"
     # ).fetchall()
 
-    return "Connection to Flask backend successful!", 200, {"Content-Type": "application/json"}
+    data = {"message": "Connection to Flask backend successful!"}
+
+    return json.dumps(data), 200, {"Content-Type": "application/json"}
 
