@@ -12,7 +12,7 @@ const CONFIG = {
       // "rgb(0,82,154)"
       // "rgb(0,60,113)"
     ],
-    FLASK_API: 'http://127.0.0.1:5000/api/'
+    FLASK_API: 'http://127.0.0.1:5000/'
   }
   
   export default CONFIG;

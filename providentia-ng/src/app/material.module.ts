@@ -7,11 +7,14 @@ import {
     MatListModule,
     MatCardModule,
     MatGridListModule,
+    MatProgressBarModule,
+    MatIconModule,
 } from '@angular/material';
 import {
     NavbarModule,
     WavesModule,
-    ButtonsModule
+    ButtonsModule,
+    ChartsModule,
 } from 'angular-bootstrap-md';
 import { NgModule } from '@angular/core';
 
@@ -28,6 +31,9 @@ import { NgModule } from '@angular/core';
         MatSidenavModule,
         MatListModule,
         MatGridListModule,
+        MatProgressBarModule,
+        ChartsModule,
+        MatIconModule,
     ],
     exports: [
         MatButtonModule,
@@ -41,6 +47,9 @@ import { NgModule } from '@angular/core';
         MatSidenavModule,
         MatListModule,
         MatGridListModule,
+        MatProgressBarModule,
+        ChartsModule,
+        MatIconModule,
     ],
 })
 export class AngularMaterialModule { }

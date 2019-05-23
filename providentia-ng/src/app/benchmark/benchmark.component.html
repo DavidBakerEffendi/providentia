@@ -1,0 +1,44 @@
+<mat-card *ngIf="result">
+    <h1 class="display-4">{{ result.title }}</h1>
+    <p class="lead">{{ result.description }}</p>
+
+    <!-- <mat-divider></mat-divider> -->
+
+    <mat-content class="row">
+        <div class="col-6" style="display: block">
+            <mat-tab-group>
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <mat-icon class="tab-icon">storage</mat-icon>
+                        Backend Storage
+                    </ng-template>
+                    <p>{{ result.database }}</p>
+                </mat-tab>
+
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <mat-icon class="tab-icon">bubble_chart</mat-icon>
+                        Dataset
+                    </ng-template>
+                    Yelp
+                </mat-tab>
+
+                <mat-tab>
+                    <ng-template mat-tab-label>
+                        <mat-icon class="tab-icon">pie_chart</mat-icon>
+                        Time Split
+                    </ng-template>
+                    <canvas mdbChart [chartType]="'pie'"
+                        [datasets]="[{ data: [result.query_time, result.analysis_time], label: 'Time' }]"
+                        [labels]="['Querying', 'Analysis']" [colors]="chartColors" [legend]="true"
+                        [options]="{ responsive: true }">
+                    </canvas>
+                </mat-tab>
+            </mat-tab-group>
+        </div>
+
+        <div class="col-6" style="display: block">
+
+        </div>
+    </mat-content>
+</mat-card>

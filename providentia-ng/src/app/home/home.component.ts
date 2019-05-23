@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import APP_CONFIG from '../app.config';
-import { HttpClient } from '@angular/common/http';
+import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { IResult, ResultService } from '../shared';
 
 @Component({
     selector: 'prv-home',
@@ -9,13 +9,35 @@ import { HttpClient } from '@angular/common/http';
 })
 export class HomeComponent implements OnInit {
 
+    recentResults: IResult[];
+    flaskUpdate: number;
+    springUpdate: number;
+
     constructor(
-        private http: HttpClient
+        private resultService: ResultService
     ) { }
 
     ngOnInit() {
-        this.http.get(APP_CONFIG.FLASK_API + 'home')
-            .subscribe(res => console.debug(res['message']),
-            err => console.debug(err));
+        this.getRecentResults();
+        this.getFlaskMetrics();
+        this.getSpringMetrics();
+    }
+
+    getRecentResults() {
+        this.resultService.query()
+            .subscribe((res: HttpResponse<IResult[]>) => {
+                this.recentResults = res.body;
+            },
+            (res: HttpErrorResponse) => console.error(res.message));
+    }
+
+    getFlaskMetrics() {
+        // TODO
+        this.flaskUpdate = Date.now();
+    }
+
+    getSpringMetrics() {
+        // TODO
+        this.springUpdate = Date.now();
     }
 }
