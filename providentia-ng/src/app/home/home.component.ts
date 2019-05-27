@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
-import { IResult, ResultService } from '../shared';
+import { IResult, ResultService, Result } from '../shared';
 
 @Component({
     selector: 'prv-home',

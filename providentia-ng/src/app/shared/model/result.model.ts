@@ -1,7 +1,10 @@
+import { IDataset } from 'src/app/shared/model//dataset.model';
+import { IDatabase } from 'src/app/shared/model//database.model';
+
 export interface IResult {
     id?: String;
-    database?: String;
-    dataset?: String;
+    database?: IDatabase;
+    dataset?: IDataset;
     date_executed?: Date;
     title?: String;
     description?: String;
@@ -9,12 +12,12 @@ export interface IResult {
     analysis_time?: Number;
 }
 
-export class Result {
+export class Result implements IResult {
 
     constructor(
         public id?: String,
-        public database?: String,
-        public dataset?: String,
+        public database?: IDatabase,
+        public dataset?: IDataset,
         public date_executed?: Date,
         public title?: String,
         public description?: String,

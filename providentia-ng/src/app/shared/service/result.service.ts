@@ -24,7 +24,7 @@ export class ResultService {
     }
 
     find(id: string): Observable<EntityResponseType> {
-        return this.http.get<IResult>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+        return this.http.get<IResult>(`${this.resourceUrl}${id}`, { observe: 'response' });
     }
 
     query(req?: any): Observable<EntityArrayResponseType> {
@@ -33,6 +33,6 @@ export class ResultService {
     }
 
     delete(id: number): Observable<HttpResponse<any>> {
-        return this.http.delete<any>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+        return this.http.delete<any>(`${this.resourceUrl}${id}`, { observe: 'response' });
     }
 }
