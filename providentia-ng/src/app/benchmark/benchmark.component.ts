@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { DomSanitizer } from '@angular/platform-browser';
 import { IResult, ResultService } from '../shared';
 import { ActivatedRoute, Router } from "@angular/router";
 import { MAT_STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
@@ -26,7 +27,8 @@ export class BenchmarkComponent implements OnInit {
     constructor(
         private route: Router,
         private router: ActivatedRoute,
-        private resultService: ResultService
+        private resultService: ResultService,
+        private _sanitizer: DomSanitizer
     ) {
         this.router.params.subscribe(params => this.id = params['id']);
     }
@@ -39,6 +41,8 @@ export class BenchmarkComponent implements OnInit {
         this.resultService.find(id)
             .subscribe((res: HttpResponse<IResult>) => {
                 this.result = res.body;
+                this._sanitizer.bypassSecurityTrustResourceUrl('data:image/png;base64,' + this.result.database.icon);
+                this._sanitizer.bypassSecurityTrustResourceUrl('data:image/png;base64,' + this.result.dataset.icon);
             },
                 (res: HttpErrorResponse) => {
                     console.error(res.message)

@@ -1,8 +1,33 @@
 import logging
+import json
+from flask import Blueprint, Response
+from flask_cors import cross_origin
 from config import default_config
+from providentia.repository.datasets_repository import *
 
+bp = Blueprint('dataset', __name__, )
 config = default_config()
 logging.basicConfig(level=config.LOGGING_LEVEL)
+
+
+@bp.route("/", methods=['GET'])
+@cross_origin()
+def result_get():
+    """Show all the posts, most recent first."""
+    try:
+        results = query_results()
+    except Exception as e:
+        logging.error(str(e))
+        return Response({"message": "Unexpected error while querying database!"}, status=500)
+
+    if results is None:
+        return Response({"message": "Database empty."}, status=200)
+
+    # Serialize objects
+    for i in range(len(results)):
+        results[i] = results[i].to_json()
+
+    return Response(json.dumps(results, default=str), status=200, mimetype='application/json')
 
 
 def deserialize(obj):
@@ -14,7 +39,7 @@ def deserialize(obj):
         dataset.icon = obj['icon']
         return dataset
     elif type(obj) is str:
-        pass
+        raise NotImplementedError("Not implemented for JSON string yet.")
     else:
         raise NotImplementedError("Cannot deserialize data that is not dict or JSON format.")
 

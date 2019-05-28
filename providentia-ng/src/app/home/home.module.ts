@@ -7,7 +7,11 @@ import { HOME_ROUTE } from './home.route';
 import { AngularMaterialModule } from '../material.module';
 
 @NgModule({
-  imports: [RouterModule.forChild([HOME_ROUTE]), AngularMaterialModule, BrowserModule],
+  imports: [
+    RouterModule.forChild([HOME_ROUTE]),
+    AngularMaterialModule,
+    BrowserModule
+  ],
   declarations: [HomeComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

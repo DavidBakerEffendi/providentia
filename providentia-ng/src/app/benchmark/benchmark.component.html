@@ -4,23 +4,44 @@
 
     <!-- <mat-divider></mat-divider> -->
 
-    <mat-content class="row">
-        <div class="col-6" style="display: block">
+    <mat-content>
+        <div style="display: block">
             <mat-tab-group>
-                <mat-tab>
+                <mat-tab *ngIf="result.database">
                     <ng-template mat-tab-label>
                         <mat-icon class="tab-icon">storage</mat-icon>
                         Backend Storage
                     </ng-template>
-                    <p>{{ result.database }}</p>
+                    <div class="tab-box row">
+                        <div class="col-2">
+                            <img alt="{{ result.database.name }}"
+                                src="data:image/png;base64,{{ result.database.icon }}" />
+                        </div>
+
+                        <div class="col-10">
+                            <h4 class="mat-header">{{ result.database.name }}</h4>
+                            <p class="mat-content">{{ result.database.description }}</p>
+                        </div>
+
+                    </div>
                 </mat-tab>
 
-                <mat-tab>
+                <mat-tab *ngIf="result.dataset">
                     <ng-template mat-tab-label>
                         <mat-icon class="tab-icon">bubble_chart</mat-icon>
                         Dataset
                     </ng-template>
-                    Yelp
+                    <div class="tab-box row">
+                        <div class="col-2">
+                            <img alt="{{ result.dataset.name }}"
+                                src="data:image/png;base64,{{ result.dataset.icon }}" />
+                        </div>
+
+                        <div class="col-10">
+                            <h4 class="mat-header">{{ result.dataset.name }}</h4>
+                            <p class="mat-content">{{ result.dataset.description }}</p>
+                        </div>
+                    </div>
                 </mat-tab>
 
                 <mat-tab>
@@ -35,10 +56,6 @@
                     </canvas>
                 </mat-tab>
             </mat-tab-group>
-        </div>
-
-        <div class="col-6" style="display: block">
-
         </div>
     </mat-content>
 </mat-card>

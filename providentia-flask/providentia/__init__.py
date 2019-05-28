@@ -6,6 +6,7 @@ from config import default_config
 log = Flask.logger
 config = default_config()
 
+
 def create_app():
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__)
@@ -24,12 +25,14 @@ def create_app():
 
     # apply the blueprints to Providentia
     from providentia.controllers import home
-    from providentia.entities import result
+    from providentia.entities import result, dataset, database
 
     app.register_blueprint(result.bp, url_prefix='/api/result')
+    app.register_blueprint(dataset.bp, url_prefix='/api/dataset')
+    app.register_blueprint(database.bp, url_prefix='/api/database')
     app.register_blueprint(home.bp, url_prefix='/api/home')
 
     # register CORS
-    CORS(app, resources={r"/api/*": config.CORS_ORIGINS})
+    CORS(app, resources={r"/api/*": {"origins": config.CORS_ORIGINS}})
 
     return app

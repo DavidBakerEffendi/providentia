@@ -3,11 +3,11 @@ import logging
 from flask import Blueprint, Response
 from config import default_config
 from flask_cors import cross_origin
-
 from providentia.repository.results_repository import *
 
 bp = Blueprint('result', __name__, )
 config = default_config()
+logging.basicConfig(level=config.LOGGING_LEVEL)
 
 
 @bp.route("/", methods=['GET'])
@@ -34,27 +34,19 @@ def result_get():
 @cross_origin()
 def result_find(result_id):
     """Show all the posts, most recent first."""
-    db = get_db()
-    cur = db.cursor()
-    # TODO, move this code to repository
-
     try:
-        cur.execute("SELECT id, database, date_executed, title, description, query_time, analysis_time "
-                    "FROM results WHERE id = %s", [result_id])
-    except Exception:
+        result = find(result_id)
+    except Exception as e:
+        logging.error(str(e))
         return Response({"message": "Unexpected error while querying database!"}, status=500)
 
-    columns = ("id", "database", "date_executed", "title", "description", "query_time", "analysis_time")
-    if cur.rowcount > 0:
-        result = dict(zip(columns, cur.fetchone()))
-    else:
+    if result is None:
         return Response({"message": "Benchmark not found!"}, status=404)
 
-    return Response(str(json.dumps(result, default=str)), status=200, mimetype='application/json')
+    return Response(json.dumps(result.to_json(), default=str), status=200, mimetype='application/json')
 
 
 def deserialize(obj):
-
     import providentia.repository.databases_repository as db_table
     import providentia.repository.datasets_repository as ds_table
 

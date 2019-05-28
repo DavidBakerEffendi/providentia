@@ -15,7 +15,7 @@ def query_results(n=None):
                 "FROM results ORDER BY date_executed DESC"
 
         if n is None:
-            logging.debug("Executing query: {}", query)
+            logging.debug("Executing query: %s", query)
             cur.execute(query)
         else:
             logging.debug("Executing query: %s LIMIT %d", query, n)
@@ -36,3 +36,27 @@ def query_results(n=None):
             deserialized.append(providentia.entities.result.deserialize(row))
 
         return deserialized
+
+
+def find(row_id):
+    with current_app.app_context():
+        cur = providentia.db.get_db().cursor()
+        query = "SELECT id, database_id, dataset_id, date_executed, title, description, query_time, analysis_time " \
+                "FROM results WHERE id = %s"
+
+        logging.debug("Executing query: %s", query, row_id)
+        cur.execute(query, (row_id,))
+
+        columns = ("id", "database_id", "dataset_id", "date_executed", "title", "description", "query_time",
+                   "analysis_time")
+
+        if cur.rowcount > 0:
+            result = dict(zip(columns, cur.fetchone()))
+        else:
+            return None
+
+        logging.debug(str(result))
+        deserialized = providentia.entities.result.deserialize(result)
+
+        return deserialized
+

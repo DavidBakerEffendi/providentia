@@ -9,6 +9,10 @@ import {
     MatGridListModule,
     MatProgressBarModule,
     MatIconModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatInputModule,
+    MatStepperModule,
 } from '@angular/material';
 import {
     NavbarModule,
@@ -34,6 +38,10 @@ import { NgModule } from '@angular/core';
         MatProgressBarModule,
         ChartsModule,
         MatIconModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatInputModule,
+        MatStepperModule,
     ],
     exports: [
         MatButtonModule,
@@ -50,6 +58,10 @@ import { NgModule } from '@angular/core';
         MatProgressBarModule,
         ChartsModule,
         MatIconModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatInputModule,
+        MatStepperModule,
     ],
 })
 export class AngularMaterialModule { }

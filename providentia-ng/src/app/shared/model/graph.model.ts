@@ -4,12 +4,12 @@ export interface IGraph {
     graphson?: String;
 }
 
-export class Graph {
+export class Graph implements IGraph {
 
     constructor(
         public id?: String,
         public result_id?: String,
-        public graphson?: Date,
+        public graphson?: String,
     ) {}
 
 }

@@ -1,3 +1,3 @@
-export * from './new/new-job.component';
-export * from './new/new-job.module';
-export * from './new/new-job.route';
+export * from './new-job.component';
+export * from './new-job.module';
+export * from './new-job.route';

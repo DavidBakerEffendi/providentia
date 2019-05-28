@@ -39,6 +39,7 @@ def init_db():
     click.echo("Initializing database...")
     with current_app.open_resource("../db/schema.sql") as f:
         db.cursor().execute(f.read().decode("utf8"))
+    db.commit()
 
 
 def load_example_data():
@@ -47,6 +48,7 @@ def load_example_data():
     click.echo("Loading example data...")
     with current_app.open_resource("../db/example-data.sql") as f:
         db.cursor().execute(f.read().decode("utf8"))
+    db.commit()
 
 
 @click.command("init-db")

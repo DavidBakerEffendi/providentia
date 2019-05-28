@@ -1,0 +1,66 @@
+<mat-card>
+    <h1 class="display-4">New Job</h1>
+    <p class="lead">Add a new benchmark job to the pipeline</p>
+    
+    <mat-content>
+        <mat-vertical-stepper [linear]="true" #stepper>
+            <mat-step [stepControl]="dataOptions">
+                <form [formGroup]="dataOptions" *ngIf="databases && datasets">
+                    <ng-template matStepLabel>Select a data solution</ng-template>
+                    <p class="mat-content">Choose a backend storage solution and dataset:</p>
+                    <!-- Database -->
+                    <mat-form-field
+                        [hideRequiredMarker]="dataOptions.value.hideRequired"
+                        [floatLabel]="dataOptions.value.floatLabel"
+                        style="margin-right: 2pt">
+                        <mat-select formControlName="firstCtrl" required>
+                            <mat-option *ngFor="let database of databases" value="database.name">{{ database.name }}</mat-option>
+                        </mat-select>
+                        <mat-label><mat-icon class="tab-icon">storage</mat-icon> Database</mat-label>
+                    </mat-form-field>
+                    <!-- Dataset -->
+                    <mat-form-field
+                        [hideRequiredMarker]="dataOptions.value.hideRequired"
+                        [floatLabel]="dataOptions.value.floatLabel">
+                        <mat-select formControlName="firstCtrl" required>
+                            <mat-option *ngFor="let dataset of datasets" value="dataset.name">{{ dataset.name }}</mat-option>
+                        </mat-select>
+                        <mat-label><mat-icon class="tab-icon">bubble_chart</mat-icon> Dataset</mat-label>
+                    </mat-form-field>
+                    
+                    <div>
+                        <button mat-button matStepperPrevious>Back</button>
+                        <button mat-button matStepperNext>Next</button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step [stepControl]="analysisOptions">
+                <form [formGroup]="analysisOptions">
+                <ng-template matStepLabel>Select an analysis</ng-template>
+                <p class="mat-content">Choose an analysis to perform on the data:</p>
+                <!-- Analysis: TODO -->
+                <mat-form-field
+                    [hideRequiredMarker]="analysisOptions.value.hideRequired"
+                    [floatLabel]="analysisOptions.value.floatLabel">
+                    <mat-select formControlName="secondCtrl" required>
+                        <mat-option  value="sa">Sentiment analysis</mat-option>
+                    </mat-select>
+                    <mat-label><mat-icon class="tab-icon">bubble_chart</mat-icon> Analysis</mat-label>
+                </mat-form-field>
+                <div>
+                    <button mat-button matStepperPrevious>Back</button>
+                    <button mat-button matStepperNext>Next</button>
+                </div>
+                </form>
+            </mat-step>
+            <mat-step>
+                <ng-template matStepLabel>Done</ng-template>
+                You are now done.
+                <div>
+                <button mat-button matStepperPrevious>Back</button>
+                <button mat-button (click)="stepper.reset()">Reset</button>
+                </div>
+            </mat-step>
+        </mat-vertical-stepper>
+    </mat-content>
+</mat-card>

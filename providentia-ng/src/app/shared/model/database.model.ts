@@ -5,7 +5,7 @@ export interface IDatabase {
     icon?: String;
 }
 
-export class Dataset implements IDatabase {
+export class Database implements IDatabase {
 
     constructor(
         public id?: String,
