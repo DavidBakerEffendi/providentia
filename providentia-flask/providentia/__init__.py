@@ -24,13 +24,15 @@ def create_app():
     db.init_app(app)
 
     # apply the blueprints to Providentia
-    from providentia.controllers import home
-    from providentia.entities import result, dataset, database
+    from providentia.controllers import home, new_job
+    from providentia.entities import benchmark, dataset, database, analysis
 
-    app.register_blueprint(result.bp, url_prefix='/api/result')
+    app.register_blueprint(benchmark.bp, url_prefix='/api/benchmark')
     app.register_blueprint(dataset.bp, url_prefix='/api/dataset')
     app.register_blueprint(database.bp, url_prefix='/api/database')
+    app.register_blueprint(analysis.bp, url_prefix='/api/analysis')
     app.register_blueprint(home.bp, url_prefix='/api/home')
+    app.register_blueprint(new_job.bp, url_prefix='/api/new-job')
 
     # register CORS
     CORS(app, resources={r"/api/*": {"origins": config.CORS_ORIGINS}})

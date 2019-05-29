@@ -15,12 +15,12 @@ export class DatabaseService {
 
     constructor(private http: HttpClient) {}
 
-    create(contact: IDatabase): Observable<EntityResponseType> {
-        return this.http.post<IDatabase>(this.resourceUrl, contact, { observe: 'response' });
+    create(database: IDatabase): Observable<EntityResponseType> {
+        return this.http.post<IDatabase>(this.resourceUrl, database, { observe: 'response' });
     }
 
-    update(contact: IDatabase): Observable<EntityResponseType> {
-        return this.http.put<IDatabase>(this.resourceUrl, contact, { observe: 'response' });
+    update(database: IDatabase): Observable<EntityResponseType> {
+        return this.http.put<IDatabase>(this.resourceUrl, database, { observe: 'response' });
     }
 
     find(id: string): Observable<EntityResponseType> {

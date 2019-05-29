@@ -1,13 +1,17 @@
 import json
 import logging
-from flask import Blueprint, Response
+from flask import Blueprint, Response, jsonify
 from config import default_config
 from flask_cors import cross_origin
-from providentia.repository.results_repository import *
+from providentia.repository.benchmark_repository import *
 
 bp = Blueprint('result', __name__, )
 config = default_config()
 logging.basicConfig(level=config.LOGGING_LEVEL)
+
+#######################################################################################################################
+# REST Controllers
+#######################################################################################################################
 
 
 @bp.route("/", methods=['GET'])
@@ -18,14 +22,14 @@ def result_get():
         results = query_results(10)
     except Exception as e:
         logging.error(str(e))
-        return Response({"message": "Unexpected error while querying database!"}, status=500)
+        return jsonify(error="Unexpected error while querying database! The database is most likely down."), 500
 
     if results is None:
-        return Response({"message": "Database empty."}, status=200)
+        return jsonify(error="No results in database, you can add more by navigating to 'New Job' in the sidebar."), 503
 
     # Serialize objects
     for i in range(len(results)):
-        results[i] = results[i].to_json()
+        results[i] = results[i].json
 
     return Response(json.dumps(results, default=str), status=200, mimetype='application/json')
 
@@ -43,18 +47,24 @@ def result_find(result_id):
     if result is None:
         return Response({"message": "Benchmark not found!"}, status=404)
 
-    return Response(json.dumps(result.to_json(), default=str), status=200, mimetype='application/json')
+    return Response(json.dumps(result.json, default=str), status=200, mimetype='application/json')
+
+#######################################################################################################################
+# Object Functionality
+#######################################################################################################################
 
 
 def deserialize(obj):
     import providentia.repository.databases_repository as db_table
     import providentia.repository.datasets_repository as ds_table
+    import providentia.repository.analysis_repository as an_table
 
     if type(obj) is dict:
         result = Result()
         result.result_id = obj['id']
         result.database = db_table.find(obj['database_id'])
         result.dataset = ds_table.find(obj['dataset_id'])
+        result.analysis = an_table.find(obj['analysis_id'])
         result.date_executed = obj['date_executed']
         result.title = obj['title']
         result.description = obj['description']
@@ -73,6 +83,7 @@ class Result(object):
         self.__result_id = None
         self.__database = None
         self.__dataset = None
+        self.__analysis = None
         self.__date_executed = None
         self.__title = None
         self.__description = None
@@ -102,6 +113,14 @@ class Result(object):
     @dataset.setter
     def dataset(self, __dataset):
         self.__dataset = __dataset
+
+    @property
+    def analysis(self):
+        return self.__analysis
+
+    @analysis.setter
+    def analysis(self, __analysis):
+        self.__analysis = __analysis
 
     @property
     def date_executed(self):
@@ -143,11 +162,13 @@ class Result(object):
     def analysis_time(self, __analysis_time):
         self.__analysis_time = __analysis_time
 
-    def to_json(self):
+    @property
+    def json(self):
         out = dict()
         out['id'] = self.__result_id
-        out['database'] = self.__database.to_json()
-        out['dataset'] = self.__dataset.to_json()
+        out['database'] = self.__database.json
+        out['dataset'] = self.__dataset.json
+        out['analysis'] = self.__analysis.json
         out['date_executed'] = self.__date_executed
         out['title'] = self.__title
         out['description'] = self.__description
@@ -157,4 +178,4 @@ class Result(object):
         return out
 
     def __str__(self):
-        return json.dumps(self.to_json(), default=str)
+        return json.dumps(self.json, default=str)

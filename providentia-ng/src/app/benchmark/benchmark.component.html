@@ -29,17 +29,21 @@
                 <mat-tab *ngIf="result.dataset">
                     <ng-template mat-tab-label>
                         <mat-icon class="tab-icon">bubble_chart</mat-icon>
-                        Dataset
+                        Dataset & Analysis
                     </ng-template>
-                    <div class="tab-box row">
-                        <div class="col-2">
-                            <img alt="{{ result.dataset.name }}"
-                                src="data:image/png;base64,{{ result.dataset.icon }}" />
-                        </div>
+                    <div class="tab-box">
+                        <div class="row">
+                            <div class="col-2">
+                                <img alt="{{ result.dataset.name }}"
+                                    src="data:image/png;base64,{{ result.dataset.icon }}" />
+                            </div>
 
-                        <div class="col-10">
-                            <h4 class="mat-header">{{ result.dataset.name }}</h4>
-                            <p class="mat-content">{{ result.dataset.description }}</p>
+                            <div class="col-10">
+                                <h4 class="mat-header">{{ result.dataset.name }}</h4>
+                                <p class="mat-content">{{ result.dataset.description }}</p>
+                                <h4 class="mat-header">{{ result.analysis.name }}</h4>
+                                <p class="mat-content">{{ result.analysis.description }}</p>
+                            </div>
                         </div>
                     </div>
                 </mat-tab>
@@ -47,7 +51,7 @@
                 <mat-tab>
                     <ng-template mat-tab-label>
                         <mat-icon class="tab-icon">pie_chart</mat-icon>
-                        Time Split
+                        Results
                     </ng-template>
                     <canvas mdbChart [chartType]="'pie'"
                         [datasets]="[{ data: [result.query_time, result.analysis_time], label: 'Time' }]"

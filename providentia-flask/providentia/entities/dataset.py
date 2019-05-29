@@ -9,6 +9,10 @@ bp = Blueprint('dataset', __name__, )
 config = default_config()
 logging.basicConfig(level=config.LOGGING_LEVEL)
 
+#######################################################################################################################
+# REST Controllers
+#######################################################################################################################
+
 
 @bp.route("/", methods=['GET'])
 @cross_origin()
@@ -25,9 +29,13 @@ def result_get():
 
     # Serialize objects
     for i in range(len(results)):
-        results[i] = results[i].to_json()
+        results[i] = results[i].json
 
     return Response(json.dumps(results, default=str), status=200, mimetype='application/json')
+
+#######################################################################################################################
+# Object Functionality
+#######################################################################################################################
 
 
 def deserialize(obj):
@@ -84,16 +92,17 @@ class Dataset(object):
     def icon(self, __icon):
         self.__icon = __icon
 
-    def to_json(self):
-        json = dict()
-        json['id'] = self.__dataset_id
-        json['name'] = self.__name
-        json['description'] = self.__description
-        json['icon'] = self.__icon
+    @property
+    def json(self):
+        out = dict()
+        out['id'] = self.__dataset_id
+        out['name'] = self.__name
+        out['description'] = self.__description
+        out['icon'] = self.__icon
 
-        return json
+        return out
 
     def __str__(self):
         import json
 
-        return json.dumps(self.to_json(), default=str)
+        return json.dumps(self.json, default=str)

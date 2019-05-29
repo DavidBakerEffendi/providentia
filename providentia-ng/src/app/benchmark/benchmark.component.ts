@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
-import { IResult, ResultService } from '../shared';
+import { IBenchmark, BenchmarkService } from '../shared';
 import { ActivatedRoute, Router } from "@angular/router";
 import { MAT_STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
@@ -15,7 +15,7 @@ import { MAT_STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 })
 export class BenchmarkComponent implements OnInit {
 
-    result: IResult;
+    benchmark: IBenchmark;
     id: string;
 
     public chartColors: Array<any> = [{
@@ -27,7 +27,7 @@ export class BenchmarkComponent implements OnInit {
     constructor(
         private route: Router,
         private router: ActivatedRoute,
-        private resultService: ResultService,
+        private benchmarkService: BenchmarkService,
         private _sanitizer: DomSanitizer
     ) {
         this.router.params.subscribe(params => this.id = params['id']);
@@ -38,18 +38,19 @@ export class BenchmarkComponent implements OnInit {
     }
 
     getResult(id: string) {
-        this.resultService.find(id)
-            .subscribe((res: HttpResponse<IResult>) => {
-                this.result = res.body;
-                this._sanitizer.bypassSecurityTrustResourceUrl('data:image/png;base64,' + this.result.database.icon);
-                this._sanitizer.bypassSecurityTrustResourceUrl('data:image/png;base64,' + this.result.dataset.icon);
+        this.benchmarkService.find(id)
+            .subscribe((res: HttpResponse<IBenchmark>) => {
+                this.benchmark = res.body;
+                this._sanitizer.bypassSecurityTrustResourceUrl('data:image/png;base64,' + this.benchmark.database.icon);
+                this._sanitizer.bypassSecurityTrustResourceUrl('data:image/png;base64,' + this.benchmark.dataset.icon);
             },
-                (res: HttpErrorResponse) => {
-                    console.error(res.message)
-                    if (res.status == 404) {
-                        this.route.navigate(['/404']);
-                    }
-                });
+            (res: HttpErrorResponse) => {
+                console.error(res.message)
+                if (res.status == 404) {
+                    this.route.navigate(['/404']);
+                }
+            }
+        );
     }
 
 }

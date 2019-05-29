@@ -1,5 +1,5 @@
 import providentia.db
-import providentia.entities.result
+import providentia.entities.analysis
 import logging
 from flask import current_app
 from config import default_config
@@ -7,22 +7,23 @@ from config import default_config
 config = default_config()
 logging.basicConfig(level=config.LOGGING_LEVEL)
 
+TABLE = 'analysis'
+
 
 def query_results(n=None):
     with current_app.app_context():
         cur = providentia.db.get_db().cursor()
-        query = "SELECT id, database_id, dataset_id, date_executed, title, description, query_time, analysis_time " \
-                "FROM results ORDER BY date_executed DESC"
+        query = "SELECT id, dataset_id, name, description " \
+                "FROM {} ORDER BY name DESC".format(TABLE)
 
         if n is None:
             logging.debug("Executing query: %s", query)
             cur.execute(query)
         else:
             logging.debug("Executing query: %s LIMIT %d", query, n)
-            cur.execute(query + " LIMIT %s", (str(n), ))
+            cur.execute(query + " LIMIT %s", (str(n),))
 
-        columns = ("id", "database_id", "dataset_id", "date_executed", "title", "description", "query_time",
-                   "analysis_time")
+        columns = ("id", "dataset_id", "name", "description")
         rows = []
         if cur.rowcount > 0:
             for row in cur.fetchall():
@@ -33,7 +34,7 @@ def query_results(n=None):
         deserialized = []
 
         for row in rows:
-            deserialized.append(providentia.entities.result.deserialize(row))
+            deserialized.append(providentia.entities.analysis.deserialize(row))
 
         return deserialized
 
@@ -41,22 +42,19 @@ def query_results(n=None):
 def find(row_id):
     with current_app.app_context():
         cur = providentia.db.get_db().cursor()
-        query = "SELECT id, database_id, dataset_id, date_executed, title, description, query_time, analysis_time " \
-                "FROM results WHERE id = %s"
+        query = "SELECT id, dataset_id, name, description " \
+                "FROM {} WHERE id = %s".format(TABLE)
 
-        logging.debug("Executing query: %s", query, row_id)
+        logging.debug("Executing query: SELECT id, dataset_id, name, description FROM %s WHERE id = %s", TABLE, row_id)
         cur.execute(query, (row_id,))
 
-        columns = ("id", "database_id", "dataset_id", "date_executed", "title", "description", "query_time",
-                   "analysis_time")
+        columns = ("id", "dataset_id", "name", "description")
 
         if cur.rowcount > 0:
             result = dict(zip(columns, cur.fetchone()))
         else:
             return None
 
-        logging.debug(str(result))
-        deserialized = providentia.entities.result.deserialize(result)
+        deserialized = providentia.entities.analysis.deserialize(result)
 
         return deserialized
-

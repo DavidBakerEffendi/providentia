@@ -7,12 +7,14 @@ from config import default_config
 config = default_config()
 logging.basicConfig(level=config.LOGGING_LEVEL)
 
+TABLE = 'databases'
+
 
 def query_results(n=None):
     with current_app.app_context():
         cur = providentia.db.get_db().cursor()
         query = "SELECT id, name, description, icon " \
-                "FROM databases ORDER BY name DESC"
+                "FROM {} ORDER BY name DESC".format(TABLE)
 
         if n is None:
             logging.debug("Executing query: %s", query)
@@ -43,7 +45,7 @@ def find(row_id):
         query = "SELECT id, name, description, icon " \
                 "FROM databases WHERE id = %s"
 
-        logging.debug("Executing query: SELECT id, name, description, icon FROM datasets WHERE id = %s", row_id)
+        logging.debug("Executing query: SELECT id, name, description, icon FROM %s WHERE id = %s", TABLE, row_id)
         cur.execute(query, (row_id, ))
 
         columns = ("id", "name", "description", "icon")

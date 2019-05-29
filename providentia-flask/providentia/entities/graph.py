@@ -1,7 +1,7 @@
 
 class Graph(object):
 
-    from providentia.entities.result import Result
+    from providentia.entities.benchmark import Result
 
     def __init__(self):
         self.__graph_id = None

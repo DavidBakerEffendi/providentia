@@ -15,12 +15,12 @@ export class DatasetService {
 
     constructor(private http: HttpClient) {}
 
-    create(contact: IDataset): Observable<EntityResponseType> {
-        return this.http.post<IDataset>(this.resourceUrl, contact, { observe: 'response' });
+    create(dataset: IDataset): Observable<EntityResponseType> {
+        return this.http.post<IDataset>(this.resourceUrl, dataset, { observe: 'response' });
     }
 
-    update(contact: IDataset): Observable<EntityResponseType> {
-        return this.http.put<IDataset>(this.resourceUrl, contact, { observe: 'response' });
+    update(dataset: IDataset): Observable<EntityResponseType> {
+        return this.http.put<IDataset>(this.resourceUrl, dataset, { observe: 'response' });
     }
 
     find(id: string): Observable<EntityResponseType> {

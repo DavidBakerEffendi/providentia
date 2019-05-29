@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
-import { IResult, ResultService, Result } from '../shared';
+import { IBenchmark, BenchmarkService, Benchmark } from '../shared';
 
 @Component({
     selector: 'prv-home',
@@ -9,26 +9,41 @@ import { IResult, ResultService, Result } from '../shared';
 })
 export class HomeComponent implements OnInit {
 
-    recentResults: IResult[];
+    recentBenchmarks: IBenchmark[];
     flaskUpdate: number;
     springUpdate: number;
 
+    errorMsgBenchmarks: string;
+    infoMsgBenchmarks: string;
+
     constructor(
-        private resultService: ResultService
+        private benchmarkService: BenchmarkService
     ) { }
 
     ngOnInit() {
-        this.getRecentResults();
+        this.getRecentBenchmarks();
         this.getFlaskMetrics();
         this.getSpringMetrics();
     }
 
-    getRecentResults() {
-        this.resultService.query()
-            .subscribe((res: HttpResponse<IResult[]>) => {
-                this.recentResults = res.body;
+    getRecentBenchmarks() {
+        this.benchmarkService.query()
+            .subscribe((res: HttpResponse<IBenchmark[]>) => {
+                this.recentBenchmarks = res.body;
             },
-            (res: HttpErrorResponse) => console.error(res.message));
+            (res: HttpErrorResponse) => {
+                console.error(res.statusText)
+                if (res.status === 0) {
+                    this.errorMsgBenchmarks = 'Server did not reply to request. The server is most likely down or encountered an exception.';
+                } else if (res.status == 500) {
+                    this.errorMsgBenchmarks = res.error.error;
+                } else if (res.status == 503) {
+                    this.infoMsgBenchmarks = res.error.error;
+                } else {
+                    this.errorMsgBenchmarks = res.statusText;
+                }
+                
+            });
     }
 
     getFlaskMetrics() {
