@@ -8,6 +8,7 @@ config = default_config()
 logging.basicConfig(level=config.LOGGING_LEVEL)
 
 TABLE = 'databases'
+COLUMNS = ("id", "name", "description", "icon")
 
 
 def query_results(n=None):
@@ -23,11 +24,10 @@ def query_results(n=None):
             logging.debug("Executing query: %s LIMIT %d", query, n)
             cur.execute(query + " LIMIT %s", (str(n), ))
 
-        columns = ("id", "name", "description", "icon")
         rows = []
         if cur.rowcount > 0:
             for row in cur.fetchall():
-                rows.append(dict(zip(columns, row)))
+                rows.append(dict(zip(COLUMNS, row)))
         else:
             return None
 
@@ -48,13 +48,30 @@ def find(row_id):
         logging.debug("Executing query: SELECT id, name, description, icon FROM %s WHERE id = %s", TABLE, row_id)
         cur.execute(query, (row_id, ))
 
-        columns = ("id", "name", "description", "icon")
-
         if cur.rowcount > 0:
-            result = dict(zip(columns, cur.fetchone()))
+            result = dict(zip(COLUMNS, cur.fetchone()))
         else:
             return None
 
+        deserialized = providentia.entities.database.deserialize(result)
+
+        return deserialized
+
+
+def find_name(row_name):
+    with current_app.app_context():
+        cur = providentia.db.get_db().cursor()
+        query = "SELECT id, name, description, icon FROM {} WHERE name = {}".format(TABLE, '%s')
+
+        logging.debug("Executing query: SELECT id, name, description, icon FROM results WHERE name = %s", row_name)
+        cur.execute(query, (row_name,))
+
+        if cur.rowcount > 0:
+            result = dict(zip(COLUMNS, cur.fetchone()))
+        else:
+            return None
+
+        logging.debug(str(result))
         deserialized = providentia.entities.database.deserialize(result)
 
         return deserialized

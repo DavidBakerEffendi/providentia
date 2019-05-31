@@ -3,9 +3,8 @@ import logging
 from flask import Blueprint, Response, jsonify
 from config import default_config
 from flask_cors import cross_origin
-from providentia.repository.benchmark_repository import *
 
-bp = Blueprint('result', __name__, )
+bp = Blueprint('benchmark', __name__, )
 config = default_config()
 logging.basicConfig(level=config.LOGGING_LEVEL)
 
@@ -17,9 +16,10 @@ logging.basicConfig(level=config.LOGGING_LEVEL)
 @bp.route("/", methods=['GET'])
 @cross_origin()
 def result_get():
+    import providentia.repository.benchmark_repository as bm_table
     """Show all the posts, most recent first."""
     try:
-        results = query_results(10)
+        results = bm_table.query_results(10)
     except Exception as e:
         logging.error(str(e))
         return jsonify(error="Unexpected error while querying database! The database is most likely down."), 500
@@ -34,20 +34,21 @@ def result_get():
     return Response(json.dumps(results, default=str), status=200, mimetype='application/json')
 
 
-@bp.route("/<result_id>", methods=['GET'])
+@bp.route("/<benchmark_id>", methods=['GET'])
 @cross_origin()
-def result_find(result_id):
+def result_find(benchmark_id):
+    import providentia.repository.benchmark_repository as bm_table
     """Show all the posts, most recent first."""
     try:
-        result = find(result_id)
+        benchmark = bm_table.find(benchmark_id)
     except Exception as e:
         logging.error(str(e))
         return Response({"message": "Unexpected error while querying database!"}, status=500)
 
-    if result is None:
+    if benchmark is None:
         return Response({"message": "Benchmark not found!"}, status=404)
 
-    return Response(json.dumps(result.json, default=str), status=200, mimetype='application/json')
+    return Response(json.dumps(benchmark.json, default=str), status=200, mimetype='application/json')
 
 #######################################################################################################################
 # Object Functionality
@@ -60,27 +61,27 @@ def deserialize(obj):
     import providentia.repository.analysis_repository as an_table
 
     if type(obj) is dict:
-        result = Result()
-        result.result_id = obj['id']
-        result.database = db_table.find(obj['database_id'])
-        result.dataset = ds_table.find(obj['dataset_id'])
-        result.analysis = an_table.find(obj['analysis_id'])
-        result.date_executed = obj['date_executed']
-        result.title = obj['title']
-        result.description = obj['description']
-        result.query_time = obj['query_time']
-        result.analysis_time = obj['analysis_time']
-        return result
+        benchmark = Benchmark()
+        benchmark.benchmark_id = obj['id']
+        benchmark.database = db_table.find(obj['database_id'])
+        benchmark.dataset = ds_table.find(obj['dataset_id'])
+        benchmark.analysis = an_table.find(obj['analysis_id'])
+        benchmark.date_executed = obj['date_executed']
+        benchmark.title = obj['title']
+        benchmark.description = obj['description']
+        benchmark.query_time = obj['query_time']
+        benchmark.analysis_time = obj['analysis_time']
+        return benchmark
     elif type(obj) is str:
         pass
     else:
         raise NotImplementedError("Cannot deserialize data that is not dict or JSON format.")
 
 
-class Result(object):
+class Benchmark(object):
 
     def __init__(self):
-        self.__result_id = None
+        self.__benchmark_id = None
         self.__database = None
         self.__dataset = None
         self.__analysis = None
@@ -91,12 +92,12 @@ class Result(object):
         self.__analysis_time = None
 
     @property
-    def result_id(self):
-        return self.__result_id
+    def benchmark_id(self):
+        return self.__benchmark_id
 
-    @result_id.setter
-    def result_id(self, __result_id):
-        self.__result_id = __result_id
+    @benchmark_id.setter
+    def benchmark_id(self, __benchmark_id):
+        self.__benchmark_id = __benchmark_id
 
     @property
     def database(self):
@@ -165,7 +166,7 @@ class Result(object):
     @property
     def json(self):
         out = dict()
-        out['id'] = self.__result_id
+        out['id'] = self.__benchmark_id
         out['database'] = self.__database.json
         out['dataset'] = self.__dataset.json
         out['analysis'] = self.__analysis.json

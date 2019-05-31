@@ -10,12 +10,17 @@
         </mat-list>
     </div>
 
-    <!-- Info messages -->
+    <!-- Warning messages -->
+    <div *ngIf="warnMsg" class="alert alert-warning" role="alert">
+        <mat-list-item>{{ warnMsg }}</mat-list-item>
+    </div>
+
+    <!-- Success messages -->
     <div *ngIf="successMsg" class="alert alert-success" role="alert">
         <mat-list-item>{{ successMsg }}</mat-list-item>
     </div>
 
-    <mat-content *ngIf="!errorMsgResults">
+    <mat-content *ngIf="!errorMsg" >
         <mat-vertical-stepper linear #stepper>
             <!-- Step 1 -->
             <mat-step [stepControl]="dataOptions">

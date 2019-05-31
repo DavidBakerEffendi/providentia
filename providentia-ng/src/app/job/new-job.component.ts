@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { IDatabase, DatabaseService, IDataset, DatasetService, IAnalysis, AnalysisService, Benchmark, IBenchmark, NewJobService } from '../shared';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -9,6 +9,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
     styleUrls: ['new-job.scss']
 })
 export class NewJobComponent implements OnInit {
+    @ViewChild('stepper') stepper;
 
     databases: IDatabase[];
     datasets: IDataset[];
@@ -20,6 +21,7 @@ export class NewJobComponent implements OnInit {
 
     errorMsg: string;
     successMsg: string;
+    warnMsg: string;
 
     constructor(
         private datasetService: DatasetService,
@@ -101,10 +103,39 @@ export class NewJobComponent implements OnInit {
         this.newJobService.create(newJob)
             .subscribe((res: HttpResponse<IBenchmark>) => {
                 this.successMsg = '"' + newJob.title + '" successfully added to the pipeline!';
+                this.errorMsg = null;
+                this.stepper.reset();
             }, (res: HttpErrorResponse) => {
                 console.error(res.message)
-                this.errorMsg = res.statusText;
+                if (res.status === 0) {
+                    this.errorMsg = 'Server did not reply to request. The server is most likely down or encountered an exception.';
+                } else if (res.status === 500) {
+                    this.errorMsg = res.error.error;
+                } else if (res.status === 400) {
+                    this.warnMsg = res.error.error;
+                    this.errorMsg = "";
+                    // Point user to field to fix
+                    this.changeStep(2);
+                    this.descriptionOptions.reset();
+                } else if (res.status === 404) {
+                    this.warnMsg = res.error.error;
+                    this.errorMsg = "";
+                    // Point user to field to fix
+                    this.changeStep(1);
+                    this.dataOptions.reset();
+                } else {
+                    this.errorMsg = res.statusText;
+                }
+                this.successMsg = "";
             }
-        );
+            );
+    }
+
+    /**
+     * Changes the step to the index specified
+     * @param {number} index The index of the step
+     */
+    changeStep(index: number) {
+        this.stepper.selectedIndex = index;
     }
 }

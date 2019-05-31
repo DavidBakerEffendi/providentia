@@ -1,10 +1,13 @@
 import os
+import logging
+import atexit
 from flask_cors import CORS
 from flask import Flask
 from config import default_config
+import providentia.analysis.job_scheduler as job_scheduler
 
-log = Flask.logger
 config = default_config()
+logging.basicConfig(level=config.LOGGING_LEVEL)
 
 
 def create_app():
@@ -37,4 +40,15 @@ def create_app():
     # register CORS
     CORS(app, resources={r"/api/*": {"origins": config.CORS_ORIGINS}})
 
+    # Enable scheduler
+    from apscheduler.schedulers.background import BackgroundScheduler
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(func=job_scheduler.execute_waiting, id='execute_waiting', trigger='interval', seconds=10)
+    scheduler.start()
+    # Shut down the scheduler when exiting the app
+    atexit.register(lambda: scheduler.shutdown())
+
     return app
+
+
+app = create_app()
