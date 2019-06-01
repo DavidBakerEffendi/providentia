@@ -3,7 +3,7 @@
     <p class="lead">Add a new benchmark job to the pipeline</p>
 
     <!-- Error messages-->
-    <div *ngIf="errorMsg" class="alert alert-danger" role="alert">
+    <div *ngIf="showError" class="alert alert-danger" role="alert">
         Error while communicating to server:
         <mat-list>
             <mat-list-item>{{ errorMsg }}</mat-list-item>
@@ -11,26 +11,26 @@
     </div>
 
     <!-- Warning messages -->
-    <div *ngIf="warnMsg" class="alert alert-warning" role="alert">
+    <div *ngIf="showWarn" class="alert alert-warning" role="alert">
         <mat-list-item>{{ warnMsg }}</mat-list-item>
     </div>
 
     <!-- Success messages -->
-    <div *ngIf="successMsg" class="alert alert-success" role="alert">
+    <div *ngIf="showSuccess" class="alert alert-success" role="alert">
         <mat-list-item>{{ successMsg }}</mat-list-item>
     </div>
 
-    <mat-content *ngIf="!errorMsg" >
+    <mat-content *ngIf="!showError" >
         <mat-vertical-stepper linear #stepper>
             <!-- Step 1 -->
             <mat-step [stepControl]="dataOptions">
-                <form [formGroup]="dataOptions" *ngIf="databases && datasets">
-                    <ng-template matStepLabel>Select a data solution</ng-template>
+                <form [formGroup]="dataOptions" *ngIf="databases && datasets && analysis">
+                    <ng-template matStepLabel>Select a data processing solution</ng-template>
                     <p class="mat-content">Choose a backend storage solution and dataset:</p>
                     <!-- Database -->
                     <mat-form-field [hideRequiredMarker]="dataOptions.value.hideRequired"
                         [floatLabel]="dataOptions.value.floatLabel" style="margin-right: 2pt">
-                        <mat-select formControlName="firstCtrl" required>
+                        <mat-select formControlName="dbCtrl" required>
                             <mat-option *ngFor="let database of databases" value="{{ database.name }}">
                                 {{ database.name }}</mat-option>
                         </mat-select>
@@ -41,7 +41,7 @@
                     <!-- Dataset -->
                     <mat-form-field [hideRequiredMarker]="dataOptions.value.hideRequired"
                         [floatLabel]="dataOptions.value.floatLabel">
-                        <mat-select formControlName="secondCtrl" required>
+                        <mat-select formControlName="dsCtrl" required>
                             <mat-option *ngFor="let dataset of datasets" value="{{ dataset.name }}">{{ dataset.name }}
                             </mat-option>
                         </mat-select>
@@ -49,22 +49,10 @@
                             <mat-icon class="tab-icon">bubble_chart</mat-icon> Dataset
                         </mat-label>
                     </mat-form-field>
-
-                    <div>
-                        <button mat-button matStepperPrevious>Back</button>
-                        <button mat-button matStepperNext>Next</button>
-                    </div>
-                </form>
-            </mat-step>
-            <!-- Step 2 -->
-            <mat-step [stepControl]="analysisOptions">
-                <form [formGroup]="analysisOptions" *ngIf="analysis">
-                    <ng-template matStepLabel>Select an analysis</ng-template>
-                    <p class="mat-content">Choose an analysis to perform on the data:</p>
                     <!-- Analysis -->
-                    <mat-form-field [hideRequiredMarker]="analysisOptions.value.hideRequired"
-                        [floatLabel]="analysisOptions.value.floatLabel">
-                        <mat-select formControlName="firstCtrl" required>
+                    <mat-form-field [hideRequiredMarker]="dataOptions.value.hideRequired"
+                        [floatLabel]="dataOptions.value.floatLabel">
+                        <mat-select formControlName="anCtrl" required>
                             <mat-option *ngFor="let analys of analysis" value="{{ analys.name }}">{{ analys.name }}
                             </mat-option>
                         </mat-select>
@@ -72,6 +60,7 @@
                             <mat-icon class="tab-icon">bubble_chart</mat-icon> Analysis
                         </mat-label>
                     </mat-form-field>
+
                     <div>
                         <button mat-button matStepperPrevious>Back</button>
                         <button mat-button matStepperNext>Next</button>
@@ -87,12 +76,12 @@
                     <!-- Description -->
                     <mat-form-field [hideRequiredMarker]="descriptionOptions.value.hideRequired"
                         [floatLabel]="descriptionOptions.value.floatLabel">
-                        <input matInput formControlName="firstCtrl" placeholder="Title" required>
+                        <input matInput formControlName="titleCtrl" placeholder="Title" required>
                     </mat-form-field>
                     <br />
                     <mat-form-field [hideRequiredMarker]="descriptionOptions.value.hideRequired"
                         [floatLabel]="descriptionOptions.value.floatLabel">
-                        <textarea matInput formControlName="secondCtrl" placeholder="Description"></textarea>
+                        <textarea matInput formControlName="descriptCtrl" placeholder="Description"></textarea>
                     </mat-form-field>
                     <div>
                         <button mat-button matStepperPrevious>Back</button>
