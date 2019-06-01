@@ -1,32 +1,32 @@
-<mat-card *ngIf="result">
-    <h1 class="display-4">{{ result.title }}</h1>
-    <p class="lead">{{ result.description }}</p>
+<mat-card *ngIf="benchmark">
+    <h1 class="display-4">{{ benchmark.title }}</h1>
+    <p class="lead">{{ benchmark.description }}</p>
 
     <!-- <mat-divider></mat-divider> -->
 
     <mat-content>
         <div style="display: block">
             <mat-tab-group>
-                <mat-tab *ngIf="result.database">
+                <mat-tab *ngIf="benchmark.database">
                     <ng-template mat-tab-label>
                         <mat-icon class="tab-icon">storage</mat-icon>
                         Backend Storage
                     </ng-template>
                     <div class="tab-box row">
                         <div class="col-2">
-                            <img alt="{{ result.database.name }}"
-                                src="data:image/png;base64,{{ result.database.icon }}" />
+                            <img alt="{{ benchmark.database.name }}"
+                                src="data:image/png;base64,{{ benchmark.database.icon }}" />
                         </div>
 
                         <div class="col-10">
-                            <h4 class="mat-header">{{ result.database.name }}</h4>
-                            <p class="mat-content">{{ result.database.description }}</p>
+                            <h4 class="mat-header">{{ benchmark.database.name }}</h4>
+                            <p class="mat-content">{{ benchmark.database.description }}</p>
                         </div>
 
                     </div>
                 </mat-tab>
 
-                <mat-tab *ngIf="result.dataset">
+                <mat-tab *ngIf="benchmark.dataset">
                     <ng-template mat-tab-label>
                         <mat-icon class="tab-icon">bubble_chart</mat-icon>
                         Dataset & Analysis
@@ -34,15 +34,15 @@
                     <div class="tab-box">
                         <div class="row">
                             <div class="col-2">
-                                <img alt="{{ result.dataset.name }}"
-                                    src="data:image/png;base64,{{ result.dataset.icon }}" />
+                                <img alt="{{ benchmark.dataset.name }}"
+                                    src="data:image/png;base64,{{ benchmark.dataset.icon }}" />
                             </div>
 
                             <div class="col-10">
-                                <h4 class="mat-header">{{ result.dataset.name }}</h4>
-                                <p class="mat-content">{{ result.dataset.description }}</p>
-                                <h4 class="mat-header">{{ result.analysis.name }}</h4>
-                                <p class="mat-content">{{ result.analysis.description }}</p>
+                                <h4 class="mat-header">{{ benchmark.dataset.name }}</h4>
+                                <p class="mat-content">{{ benchmark.dataset.description }}</p>
+                                <h4 class="mat-header">{{ benchmark.analysis.name }}</h4>
+                                <p class="mat-content">{{ benchmark.analysis.description }}</p>
                             </div>
                         </div>
                     </div>
@@ -54,7 +54,7 @@
                         Results
                     </ng-template>
                     <canvas mdbChart [chartType]="'pie'"
-                        [datasets]="[{ data: [result.query_time, result.analysis_time], label: 'Time' }]"
+                        [datasets]="[{ data: [benchmark.query_time, benchmark.analysis_time], label: 'Time' }]"
                         [labels]="['Querying', 'Analysis']" [colors]="chartColors" [legend]="true"
                         [options]="{ responsive: true }">
                     </canvas>

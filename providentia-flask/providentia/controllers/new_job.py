@@ -28,9 +28,11 @@ def new_job():
         logging.debug("Job title not unique!")
         return jsonify(error='Job title not unique!'), 400
 
-    benchmark = deserialize(data)
-    if benchmark is None:
-        return jsonify(error='Database/dataset/analysis does not exist!'), 404
+    try:
+        benchmark = deserialize(data)
+    except KeyError as e:
+        logging.debug(str(e))
+        return jsonify(error=str(e)), 404
 
     bm_table.insert(benchmark)
 
@@ -50,12 +52,16 @@ def deserialize(obj):
     if type(obj) is dict:
         benchmark = Benchmark()
 
-        database = db_table.find(obj['database'])
-        dataset = ds_table.find(obj['dataset'])
-        analysis = an_table.find(obj['analysis'])
+        database = db_table.find_name(obj['database'])
+        dataset = ds_table.find_name(obj['dataset'])
+        analysis = an_table.find_name(obj['analysis'])
 
-        if database or dataset or analysis is None:
-            return None
+        if database is None:
+            raise KeyError('Database "{}" is not supported!'.format(obj['database']))
+        if dataset is None:
+            raise KeyError('Dataset "{}" is not supported!'.format(obj['dataset']))
+        if analysis is None:
+            raise KeyError('Analysis "{}" is not supported!'.format(obj['analysis']))
 
         benchmark.database = database.database_id
         benchmark.dataset = dataset.dataset_id

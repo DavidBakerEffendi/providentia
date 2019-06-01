@@ -41,6 +41,7 @@ export class BenchmarkComponent implements OnInit {
         this.benchmarkService.find(id)
             .subscribe((res: HttpResponse<IBenchmark>) => {
                 this.benchmark = res.body;
+                console.debug(this.benchmark);
                 this._sanitizer.bypassSecurityTrustResourceUrl('data:image/png;base64,' + this.benchmark.database.icon);
                 this._sanitizer.bypassSecurityTrustResourceUrl('data:image/png;base64,' + this.benchmark.dataset.icon);
             },

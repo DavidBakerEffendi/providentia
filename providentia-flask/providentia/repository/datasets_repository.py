@@ -8,7 +8,7 @@ config = default_config()
 logging.basicConfig(level=config.LOGGING_LEVEL)
 
 TABLE = 'datasets'
-COLUMNS = ("id", "name", "dataset_id", "description", "icon")
+COLUMNS = ("id", "name", "description", "icon")
 
 
 def query_results(n=None):
@@ -45,7 +45,7 @@ def find(row_id):
         query = "SELECT id, name, description, icon " \
                 "FROM {} WHERE id = %s".format(TABLE)
 
-        logging.debug("Executing query: SELECT id, name, description, icon FROM %s WHERE id = %s", TABLE, row_id)
+        logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_id))
         cur.execute(query, (row_id,))
 
         if cur.rowcount > 0:
@@ -61,9 +61,9 @@ def find(row_id):
 def find_name(row_name):
     with current_app.app_context():
         cur = providentia.db.get_db().cursor()
-        query = "SELECT id, name, description, icon FROM {} WHERE name = {}".format(TABLE, '%s')
+        query = "SELECT id, name, description, icon FROM {} WHERE name = %s".format(TABLE)
 
-        logging.debug("Executing query: SELECT id, name, description, icon FROM results WHERE name = %s", row_name)
+        logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_name))
         cur.execute(query, (row_name,))
 
         if cur.rowcount > 0:
@@ -71,7 +71,6 @@ def find_name(row_name):
         else:
             return None
 
-        logging.debug(str(result))
         deserialized = providentia.entities.dataset.deserialize(result)
 
         return deserialized

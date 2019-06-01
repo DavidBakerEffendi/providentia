@@ -16,7 +16,7 @@ def query_results(n=None):
     with current_app.app_context():
         cur = providentia.db.get_db().cursor()
         query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, title, description, query_time, " \
-                "analysis_time FROM {} ORDER BY date_executed DESC".format(TABLE)
+                "analysis_time FROM {} ORDER BY date_executed DESC, title ASC".format(TABLE)
 
         if n is None:
             logging.debug("Executing query: %s", query)
@@ -44,10 +44,9 @@ def find(row_id):
     with current_app.app_context():
         cur = providentia.db.get_db().cursor()
         query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, title, description, query_time, " \
-                "analysis_time FROM {} WHERE id = {}".format(TABLE, '%s')
+                "analysis_time FROM {} WHERE id = %s".format(TABLE)
 
-        logging.debug("Executing query: SELECT id, database_id, dataset_id, analysis_id, date_executed, title, "
-                      "description, query_time, analysis_time FROM results WHERE id = %s", row_id)
+        logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_id))
         cur.execute(query, (row_id,))
 
         if cur.rowcount > 0:
@@ -55,7 +54,6 @@ def find(row_id):
         else:
             return None
 
-        logging.debug(str(result))
         deserialized = providentia.entities.benchmark.deserialize(result)
 
         return deserialized
@@ -65,10 +63,9 @@ def find_title(row_title):
     with current_app.app_context():
         cur = providentia.db.get_db().cursor()
         query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, title, description, query_time, " \
-                "analysis_time FROM {} WHERE title = {}".format(TABLE, '%s')
+                "analysis_time FROM {} WHERE title = %s".format(TABLE)
 
-        logging.debug("Executing query: SELECT id, database_id, dataset_id, analysis_id, date_executed, title, "
-                      "description, query_time, analysis_time FROM results WHERE id = %s", row_title)
+        logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_title))
         cur.execute(query, (row_title,))
 
         if cur.rowcount > 0:
@@ -76,7 +73,6 @@ def find_title(row_title):
         else:
             return None
 
-        logging.debug(str(result))
         deserialized = providentia.entities.benchmark.deserialize(result)
 
         return deserialized
@@ -86,17 +82,54 @@ def insert(benchmark):
     with current_app.app_context():
         insert_into = "INSERT INTO {} (".format(TABLE)
         values = "VALUES ("
+        values_arr = []
+
         if benchmark.benchmark_id is not None:
             insert_into += "{}, ".format(COLUMNS[0])
-            values += "{}, ".format(benchmark.benchmark_id)
+            values += "%s::uuid, "
+            values_arr.append(benchmark.benchmark_id)
         if benchmark.database is not None:
-            insert_into += "{}, ".format(COLUMNS[0])
-            values += "{}, ".format(benchmark.benchmark_id)
-        insert_into = insert_into[:1] + ") "
-        values = values[:1] + ");"
-        # TODO: Test this
-        query = insert_into + values
+            insert_into += "{}, ".format(COLUMNS[1])
+            values += "%s::uuid, "
+            values_arr.append(benchmark.database)
+        if benchmark.dataset is not None:
+            insert_into += "{}, ".format(COLUMNS[2])
+            values += "%s::uuid, "
+            values_arr.append(benchmark.dataset)
+        if benchmark.analysis is not None:
+            insert_into += "{}, ".format(COLUMNS[3])
+            values += "%s::uuid, "
+            values_arr.append(benchmark.analysis)
+        if benchmark.date_executed is not None:
+            insert_into += "{}, ".format(COLUMNS[4])
+            values += "%s::timestamp, "
+            values_arr.append(benchmark.date_executed)
+        if benchmark.title is not None:
+            insert_into += "{}, ".format(COLUMNS[5])
+            values += "%s, "
+            values_arr.append(benchmark.title)
+        if benchmark.description is not None and len(benchmark.description) > 0:
+            insert_into += "{}, ".format(COLUMNS[6])
+            values += "%s, "
+            values_arr.append(benchmark.description)
+        if benchmark.query_time is not None:
+            insert_into += "{}, ".format(COLUMNS[7])
+            values += "%s, "
+            values_arr.append(benchmark.query_time)
+        if benchmark.analysis_time is not None:
+            insert_into += "{}, ".format(COLUMNS[8])
+            values += "%s, "
+            values_arr.append(benchmark.analysis_time)
+
+        insert_into = insert_into[:-2] + ") "
+        values = values[:-2] + ");"
+
+        # execute and commit to reflect immediately for the job scheduler to see
+        db = providentia.db.get_db()
+        query = db.cursor().mogrify(insert_into + values, values_arr)
         logging.debug("Executing query: %s", query)
+        db.cursor().execute(query, values_arr)
+        db.commit()
 
 
 def get_unstarted_jobs():

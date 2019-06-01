@@ -40,12 +40,12 @@ def create_app():
     # register CORS
     CORS(app, resources={r"/api/*": {"origins": config.CORS_ORIGINS}})
 
-    # Enable scheduler
+    # enable scheduler
     from apscheduler.schedulers.background import BackgroundScheduler
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=job_scheduler.execute_waiting, id='execute_waiting', trigger='interval', seconds=10)
+    scheduler.add_job(func=job_scheduler.execute_waiting, id='execute_waiting', trigger='interval', seconds=60)
     scheduler.start()
-    # Shut down the scheduler when exiting the app
+    # shut down the scheduler when exiting the app
     atexit.register(lambda: scheduler.shutdown())
 
     return app
