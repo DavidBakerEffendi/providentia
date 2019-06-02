@@ -26,6 +26,7 @@ def execute_waiting():
 
         with app.app_context():
             logging.debug('Looking for benchmark jobs to execute...')
+            # TODO: Need to look for jobs which were starts but unfinished first
             unstarted_jobs = bm_table.get_unstarted_jobs()
             if unstarted_jobs is None:
                 logging.debug('No jobs available, going back to sleep.')

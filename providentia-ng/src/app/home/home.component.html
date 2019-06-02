@@ -3,33 +3,37 @@
     <p class="lead">Here are some shortcuts to your latest activity</p>
 
     <!-- Error messages-->
-    <div *ngIf="errorMsgBenchmarks" class="alert alert-danger" role="alert">
+    <div *ngIf="showError" class="alert alert-danger" role="alert">
         Error while communicating to server:
         <mat-list> 
-            <mat-list-item>{{ errorMsgBenchmarks }}</mat-list-item>
+            <mat-list-item>{{ errorMsg }}</mat-list-item>
         </mat-list> 
     </div>
 
-    <mat-toolbar *ngIf="!errorMsgBenchmarks || infoMsgBenchmarks">
+    <mat-toolbar *ngIf="!showError || showInfo">
         Recent Benchmarks
     </mat-toolbar>
 
     <!-- If database is empty or any other info regarding recent benchmarks -->
-    <div *ngIf="infoMsgBenchmarks" class="alert alert-info" role="alert">
-        {{ infoMsgBenchmarks }}
+    <div *ngIf="showInfo" class="alert alert-info" role="alert">
+        {{ infoMsg }}
     </div>
 
-    <mat-content *ngIf="!errorMsgBenchmarks">
+    <mat-content *ngIf="!showError">
         <mat-grid-list cols="3" rowHeight="150pt">
-            <mat-grid-tile class="indigo accent-1" *ngFor="let benchmark of recentBenchmarks" [colspan]="1" [rowspan]="1">
+            <mat-grid-tile [ngClass]="setTileClass(benchmark.analysis_time, benchmark.query_time)" *ngFor="let benchmark of recentBenchmarks" [colspan]="1" [rowspan]="1">
                 <div style="cursor: pointer" routerLink="benchmark/{{ benchmark.id }}">
-                    <mat-grid-tile-header>{{ benchmark.title }}</mat-grid-tile-header>
+                    <mat-grid-tile-header class="text-uppercase">{{ benchmark.title }}</mat-grid-tile-header>
 
                     <p class="text-left" *ngIf="benchmark.description">
                         {{ benchmark.description }}
                     </p>
-
-                    <mat-grid-tile-footer>{{ benchmark.date_executed }}</mat-grid-tile-footer>
+                    
+                    <mat-grid-tile-footer>
+                        <div *ngIf="benchmark.date_executed">{{ benchmark.date_executed }}</div>
+                        <div *ngIf="benchmark.analysis_time == 0 && benchmark.query_time == 0">WAITING</div>
+                        <div *ngIf="benchmark.analysis_time == -1 && benchmark.query_time == -1">PROCESSING</div>
+                    </mat-grid-tile-footer>
                 </div>
             </mat-grid-tile>
         </mat-grid-list>
@@ -42,7 +46,7 @@
     <mat-content>
         <mat-grid-list cols="2" rowHeight="300pt">
             <mat-grid-tile class="indigo accent-1" [colspan]="1" [rowspan]="1">
-                <mat-grid-tile-header>Flask Server</mat-grid-tile-header>
+                <mat-grid-tile-header class="text-uppercase">Flask Server</mat-grid-tile-header>
 
                 <div class="text-left">
                     <p>TODO: Low priority | Consider using pandas or numpy to log:</p>
@@ -56,7 +60,7 @@
                 <mat-grid-tile-footer>Last update: {{flaskUpdate | date:'dd-MM-yyyy hh:mm'}}</mat-grid-tile-footer>
             </mat-grid-tile>
             <mat-grid-tile class="indigo accent-1" [colspan]="1" [rowspan]="1">
-                <mat-grid-tile-header>Spring Server</mat-grid-tile-header>
+                <mat-grid-tile-header class="text-uppercase">Spring Server</mat-grid-tile-header>
 
                 <p class="text-left">
                     TODO: Low priority
