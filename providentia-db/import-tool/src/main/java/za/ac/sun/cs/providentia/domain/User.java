@@ -25,7 +25,6 @@ public class User {
     private int complimentFunny;
     private int complimentWriter;
     private int complimentPhotos;
-    private Set<Integer> elite;
     private Set<String> friends;
 
     public User() {
@@ -117,14 +116,6 @@ public class User {
 
     public void setUseful(int useful) {
         this.useful = useful;
-    }
-
-    public Set<Integer> getElite() {
-        return elite;
-    }
-
-    public void setElite(Set<Integer> elite) {
-        this.elite = elite;
     }
 
     public int getComplimentHot() {
@@ -229,7 +220,6 @@ public class User {
         sb.append(", fans=").append(fans);
         sb.append(", type='").append(type).append('\'');
         sb.append(", useful=").append(useful);
-        sb.append(", elite=").append(elite);
         sb.append(", complimentHot=").append(complimentHot);
         sb.append(", complimentMore=").append(complimentMore);
         sb.append(", complimentProfile=").append(complimentProfile);

@@ -38,10 +38,7 @@ public class BusinessDeserializer extends JsonDeserializer<Business> {
             object.setPostalCode(node.get("postal_code").asText());
         }
         if (node.has("is_open")) {
-            object.setIsOpen(node.get("is_open").asInt());
-        }
-        if (node.has("open")) {
-            object.setOpen(node.get("open").asBoolean());
+            object.setIsOpen(node.get("is_open").asBoolean());
         }
         if (node.has("categories")) {
             if (!node.get("categories").isNull()) {
@@ -60,7 +57,7 @@ public class BusinessDeserializer extends JsonDeserializer<Business> {
             object.setReviewCount(node.get("review_count").asInt());
         }
         if (node.has("name")) {
-            object.setName(node.get("name").asText());
+            object.setName(titleCaseConversion(node.get("name").asText()));
         }
         if (node.has("longitude")) {
             object.setLongitude(node.get("longitude").asDouble());
@@ -69,7 +66,7 @@ public class BusinessDeserializer extends JsonDeserializer<Business> {
             object.setLatitude(node.get("latitude").asDouble());
         }
         if (node.has("state")) {
-            object.setState(node.get("state").asText().toUpperCase());
+            object.setState(node.get("state").asText());
         }
         if (node.has("stars")) {
             object.setStars(node.get("stars").asDouble());

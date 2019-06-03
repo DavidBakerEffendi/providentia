@@ -1,8 +1,6 @@
-package za.ac.sun.cs.providentia.import_tool.janus.util;
+package za.ac.sun.cs.providentia.import_tool.janus;
 
 import ch.qos.logback.classic.Logger;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import me.tongfei.progressbar.ProgressBar;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
@@ -15,40 +13,38 @@ import org.janusgraph.core.schema.ConsistencyModifier;
 import org.janusgraph.core.schema.JanusGraphIndex;
 import org.janusgraph.core.schema.JanusGraphManagement;
 import org.slf4j.LoggerFactory;
-import za.ac.sun.cs.providentia.domain.*;
-import za.ac.sun.cs.providentia.domain.deserializers.*;
+import za.ac.sun.cs.providentia.domain.Business;
+import za.ac.sun.cs.providentia.domain.Review;
+import za.ac.sun.cs.providentia.domain.User;
+import za.ac.sun.cs.providentia.import_tool.ImportTool.YELP;
+import za.ac.sun.cs.providentia.import_tool.util.FileReaderWrapper;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
- * Singleton class that manages transactions to the {@link JanusGraph}.
+ * Manages transactions to the {@link JanusGraph}.
  */
-public class TransactionManager {
+public class JanusTransactionManager {
 
     public enum INSERT_MODE {
-        VERTEX, EDGE1, EDGE2, EDGE3
+        VERTEX, EDGE
     }
 
-    public enum YELP {BUSINESS, USER, REVIEW}
+    private final JanusGraph janusGraph;
 
-    private static TransactionManager tm = null;
+    private final Logger LOG = (Logger) LoggerFactory.getLogger(JanusTransactionManager.class);
 
-    private final ObjectMapper objectMapper;
-    private final ExecutorService executorService;
-
-    private final Logger LOG = (Logger) LoggerFactory.getLogger(TransactionManager.class);
+    /**
+     * Creates an instance of {@link JanusTransactionManager}.
+     */
+    public JanusTransactionManager(JanusGraph janusGraph) {
+        this.janusGraph = janusGraph;
+    }
 
     /**
      * Loads the necessary vertex and edge labels representing the different vertex and edge types as well as sets indexes.
-     *
-     * @param janusGraph the Janus graph to load the schema on.
      */
-    public void loadSchema(JanusGraph janusGraph) {
+    public void loadSchema() {
         JanusGraphManagement mgmt = janusGraph.openManagement();
 
         // === Create labels ===
@@ -193,8 +189,7 @@ public class TransactionManager {
         bVert.property("business_id", b.getBusinessId());
         if (b.getAddress() != null) bVert.property("address", b.getAddress());
         if (b.getPostalCode() != null) bVert.property("postal_code", b.getPostalCode());
-        bVert.property("is_open", b.getIsOpen());
-        bVert.property("open", b.isOpen());
+        bVert.property("is_open", b.isOpen());
         bVert.property("review_count", b.getReviewCount());
         bVert.property("name", b.getName());
         bVert.property("location", Geoshape.point(b.getLatitude(), b.getLongitude()));
@@ -222,58 +217,10 @@ public class TransactionManager {
         }
     }
 
-    /**
-     * Creates and adds IN_CATEGORY, IN_CITY, and IN_STATE edges to the Janus graph.
-     *
-     * @param tx the Janus graph transaction.
-     * @param b  the {@link Business} object holding the data to insert.
-     */
-    private void addBusinessEdges(JanusGraphTransaction tx, Business b) throws JanusGraphException, IllegalStateException {
-        GraphTraversalSource g = tx.traversal();
-
-        // Check that all three vertices to connect exist
-        final GraphTraversal<Vertex, Vertex> businessTraversal = g.V().hasLabel("Business").has("business_id", b.getBusinessId());
-        final GraphTraversal<Vertex, Vertex> cityTraversal = g.V().hasLabel("City").has("name", b.getCity());
-        final GraphTraversal<Vertex, Vertex> stateTraversal = g.V().hasLabel("State").has("name", b.getState());
-
-        final Vertex busVert;
-        final Vertex cityVertex;
-        final Vertex stateVertex;
-
-        if (businessTraversal.hasNext() && cityTraversal.hasNext() && stateTraversal.hasNext()) {
-            busVert = businessTraversal.next();
-            cityVertex = cityTraversal.next();
-            stateVertex = stateTraversal.next();
-        } else {
-            return;
-        }
-
-        // Link business to a category
-        if (b.getCategories() != null) {
-            for (String category : b.getCategories()) {
-                // Check that category exists
-                final GraphTraversal<Vertex, Vertex> categoryTraversal = g.V().hasLabel("Category").has("name", category);
-                final Vertex catVert;
-                if (!categoryTraversal.hasNext()) continue;
-
-                catVert = categoryTraversal.next();
-                // Check if edge exists, if not, add it, else do nothing
-                if (!g.V(catVert).in("IN_CATEGORY").hasLabel("Business").has("business_id", b.getBusinessId()).hasNext()) {
-                    busVert.addEdge("IN_CATEGORY", catVert).property("in_cat_id", UUID.randomUUID());
-                }
-            }
-        }
-
-        // Link business to a city
-        // Check if edge exists, if not, add it, else do nothing
-        if (!g.V(cityVertex).in("IN_CITY").hasLabel("Business").has("business_id", b.getBusinessId()).hasNext()) {
-            busVert.addEdge("IN_CITY", cityVertex).property("in_city_id", UUID.randomUUID());
-        }
-        // Link city to an existing state or create new state if it does not yet exist
-        // Check if edge exists, if not, add it, else do nothing
-        if (!g.V(stateVertex).in("IN_STATE").hasLabel("City").has("name", b.getCity()).hasNext()) {
-            cityVertex.addEdge("IN_STATE", stateVertex).property("in_state_id", UUID.randomUUID());
-        }
+    private void addBusinessEdge(JanusGraphTransaction tx, Business b) throws JanusGraphException, IllegalStateException {
+        addBusinessToCategoryEdge(tx, b);
+        addBusinessToCityEdge(tx, b);
+        addCityToStateEdge(tx, b);
     }
 
     private void addBusinessToCategoryEdge(JanusGraphTransaction tx, Business b) throws JanusGraphException, IllegalStateException {
@@ -396,10 +343,6 @@ public class TransactionManager {
         uVert.property("complimentFunny", u.getComplimentFunny());
         uVert.property("complimentWriter", u.getComplimentWriter());
         uVert.property("complimentPhotos", u.getComplimentPhotos());
-        if (u.getElite() != null) {
-            for (Integer year : u.getElite())
-                uVert.property("elite", year);
-        }
     }
 
     /**
@@ -462,116 +405,96 @@ public class TransactionManager {
     }
 
     /**
-     * Grants public static access to {@link TransactionManager#shutDownTransactions()}.
-     */
-    public static void shutDownTransactionManager() {
-        getInstance().shutDownTransactions();
-    }
-
-    /**
-     * Obtains the singleton {@link TransactionManager}.
+     * Depending on data type and insert mode selected, a code identifying the operation is returned.
      *
-     * @return the {@link TransactionManager} object.
+     * @param dataType   the Yelp data being imported.
+     * @param insertMode the insert mode.
+     * @return a short code identifying data being imported.
      */
-    public static synchronized TransactionManager getInstance() {
-        if (tm == null) {
-            tm = new TransactionManager();
+    public static String getDataDescriptorShort(YELP dataType, INSERT_MODE insertMode) {
+        switch (dataType) {
+            case BUSINESS:
+                switch (insertMode) {
+                    case VERTEX:
+                        return "BUS_VERT";
+                    case EDGE:
+                        return "BUS_EDGE";
+                }
+                break;
+            case USER:
+                switch (insertMode) {
+                    case VERTEX:
+                        return "USR_VERT";
+                    case EDGE:
+                        return "USR_EDGE";
+                }
+                break;
+            case REVIEW:
+                return "REV_EDGE";
         }
-        return tm;
-    }
-
-    public static void reinitializeTransactionManager() {
-        tm = new TransactionManager();
-    }
-
-    public static void reinitializeTransactionManager(int nThreads) {
-        tm = new TransactionManager(nThreads);
+        return "UNKNWN";
     }
 
     /**
-     * Creates an instance of {@link TransactionManager} and initializes a executor service.
-     */
-    private TransactionManager() throws NumberFormatException {
-        int noThreads = Runtime.getRuntime().availableProcessors();
-        this.executorService = Executors.newFixedThreadPool(noThreads);
-        // Deserializer
-        this.objectMapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule();
-        module
-                .addDeserializer(Business.class, new BusinessDeserializer())
-                .addDeserializer(User.class, new UserDeserializer())
-                .addDeserializer(Review.class, new ReviewDeserializer());
-        objectMapper.registerModule(module);
-
-    }
-
-    /**
-     * Creates an instance of {@link TransactionManager} and initializes a executor service with n threads.
+     * Depending on data type and insert mode selected, a phrase identifying the operation is returned.
      *
-     * @param n number of threads to initialize the pool with.
+     * @param dataType   the Yelp data being imported.
+     * @param insertMode the insert mode.
+     * @return a short code identifying data being imported.
      */
-    private TransactionManager(int n) throws NumberFormatException {
-        if (n == 1) {
-            this.executorService = Executors.newSingleThreadExecutor();
-        } else {
-            this.executorService = Executors.newFixedThreadPool(n);
+    public static String getDataDescriptorLong(YELP dataType, INSERT_MODE insertMode) {
+        switch (dataType) {
+            case BUSINESS:
+                switch (insertMode) {
+                    case VERTEX:
+                        return "business, attribute, category, city, and state vertices";
+                    case EDGE:
+                        return "business to category, city edges and city to state edges";
+                }
+                break;
+            case USER:
+                switch (insertMode) {
+                    case VERTEX:
+                        return "user vertices";
+                    case EDGE:
+                        return "user to user friend edges";
+                }
+                break;
+            case REVIEW:
+                return "user to business review edge";
         }
-        // Deserializer
-        this.objectMapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule();
-        module
-                .addDeserializer(Business.class, new BusinessDeserializer())
-                .addDeserializer(User.class, new UserDeserializer())
-                .addDeserializer(Review.class, new ReviewDeserializer());
-        objectMapper.registerModule(module);
+        return "unknown";
     }
 
-    /**
-     * Shuts down all transactions and threads in the execution pool
-     */
-    private void shutDownTransactions() {
-        executorService.shutdown();
-    }
-
-    public void newTransaction(JanusGraph janusGraph, List<String> records, YELP
-            type, ProgressBar pb, CountDownLatch cdl, INSERT_MODE insertMode) {
-        TransactionWorker tw = new TransactionWorker(janusGraph, records, type, pb, cdl, insertMode);
-        executorService.execute(tw);
+    public void insertRecords(List<String> records, YELP
+            type, ProgressBar pb, INSERT_MODE insertMode) {
+        Transaction tw = new Transaction(records, type, pb, insertMode);
+        tw.commit();
     }
 
     /**
      * A worker thread designed to process a record from a Yelp file, serialize the values, add the values to the graph
      * and add them to a {@link JanusGraphTransaction}.
      */
-    class TransactionWorker implements Runnable {
+    class Transaction {
 
-        private final JanusGraph janusGraph;
         private final List<String> records;
         private final YELP type;
         private final ProgressBar pb;
-        private final CountDownLatch cdl;
         private final INSERT_MODE insertMode;
 
-        TransactionWorker(
-                JanusGraph janusGraph,
+        Transaction(
                 List<String> records,
                 YELP type,
                 ProgressBar pb,
-                CountDownLatch cdl,
                 INSERT_MODE insertMode) {
-            this.janusGraph = janusGraph;
             this.records = records;
             this.type = type;
             this.pb = pb;
-            this.cdl = cdl;
             this.insertMode = insertMode;
         }
 
-        /**
-         * Identifies what kind of object needs to be inserted into the graph DBMS and performs that transaction.
-         */
-        @Override
-        public void run() {
+        void commit() {
             boolean success = false;
             int failures = 0;
             int waitTime = 50;
@@ -600,62 +523,31 @@ public class TransactionManager {
             } while (!success);
             for (int i = 0; i < records.size(); i++) {
                 // Update counters
-                synchronized (pb) {
-                    pb.step();
-                    cdl.countDown();
-                }
+                pb.step();
             }
         }
 
         private void createAndCommitTx(JanusGraphTransaction tx) throws JanusGraphException {
             // Process and add batch to a single transaction for bulk-loading
             for (String record : records) {
-                Object obj = processJSON(record, type);
+                Object obj = FileReaderWrapper.processJSON(record, type);
                 // Send object to correct transaction
                 if (obj instanceof Business) {
                     if (insertMode == INSERT_MODE.VERTEX)
-                        getInstance().addBusinessVertex(tx, (Business) obj);
-                    else if (insertMode == INSERT_MODE.EDGE1)
-                        getInstance().addBusinessToCategoryEdge(tx, (Business) obj);
-                    else if (insertMode == INSERT_MODE.EDGE2)
-                        getInstance().addBusinessToCityEdge(tx, (Business) obj);
-                    else if (insertMode == INSERT_MODE.EDGE3)
-                        getInstance().addCityToStateEdge(tx, (Business) obj);
+                        addBusinessVertex(tx, (Business) obj);
+                    else if (insertMode == INSERT_MODE.EDGE)
+                        addBusinessEdge(tx, (Business) obj);
                 } else if (obj instanceof User) {
                     if (insertMode == INSERT_MODE.VERTEX)
-                        getInstance().addUserVertex(tx, (User) obj);
-                    else if (insertMode == INSERT_MODE.EDGE1)
-                        getInstance().addUserFriends(tx, (User) obj);
+                        addUserVertex(tx, (User) obj);
+                    else if (insertMode == INSERT_MODE.EDGE)
+                        addUserFriends(tx, (User) obj);
                 } else if (obj instanceof Review) {
-                    getInstance().addReviewEdge(tx, (Review) obj);
+                    addReviewEdge(tx, (Review) obj);
                 }
             }
             // Commit all changes
             tx.commit();
-        }
-
-        /**
-         * Deserializes a given line interpreted as being in JSON format to the given Yelp datatype.
-         *
-         * @param line     the JSON string.
-         * @param dataType the datatype to deserialize to.
-         */
-        private Object processJSON(String line, YELP dataType) {
-            try {
-                synchronized (objectMapper) {
-                    switch (dataType) {
-                        case BUSINESS:
-                            return objectMapper.readValue(line, Business.class);
-                        case USER:
-                            return objectMapper.readValue(line, User.class);
-                        case REVIEW:
-                            return objectMapper.readValue(line, Review.class);
-                    }
-                }
-            } catch (IOException e) {
-                return null;
-            }
-            return null;
         }
 
     }

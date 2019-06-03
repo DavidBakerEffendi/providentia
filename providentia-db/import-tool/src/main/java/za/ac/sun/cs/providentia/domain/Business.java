@@ -11,8 +11,7 @@ public class Business implements Serializable {
     private String businessId;
     private String address;
     private String postalCode;
-    private int isOpen;
-    private boolean open;
+    private boolean isOpen;
     private List<String> categories;
     private String city;
     private int reviewCount;
@@ -49,20 +48,12 @@ public class Business implements Serializable {
         this.postalCode = postalCode;
     }
 
-    public int getIsOpen() {
+    public boolean isOpen() {
         return isOpen;
     }
 
-    public void setIsOpen(int isOpen) {
+    public void setIsOpen(boolean isOpen) {
         this.isOpen = isOpen;
-    }
-
-    public boolean isOpen() {
-        return open;
-    }
-
-    public void setOpen(boolean open) {
-        this.open = open;
     }
 
     public List<String> getCategories() {
@@ -140,7 +131,6 @@ public class Business implements Serializable {
             sb.append(", address='").append(address).append('\'');
             sb.append(", postalCode='").append(postalCode).append('\'');
             sb.append(", isOpen=").append(isOpen);
-            sb.append(", open=").append(open);
             sb.append(", categories=").append(categories);
             sb.append(", city='").append(city).append('\'');
             sb.append(", reviewCount=").append(reviewCount);

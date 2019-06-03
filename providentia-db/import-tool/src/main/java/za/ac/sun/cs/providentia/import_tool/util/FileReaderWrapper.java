@@ -1,13 +1,35 @@
-package za.ac.sun.cs.providentia.import_tool.janus.util;
+package za.ac.sun.cs.providentia.import_tool.util;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import za.ac.sun.cs.providentia.domain.Business;
+import za.ac.sun.cs.providentia.domain.Review;
+import za.ac.sun.cs.providentia.domain.User;
+import za.ac.sun.cs.providentia.domain.deserializers.BusinessDeserializer;
+import za.ac.sun.cs.providentia.domain.deserializers.ReviewDeserializer;
+import za.ac.sun.cs.providentia.domain.deserializers.UserDeserializer;
+import za.ac.sun.cs.providentia.import_tool.ImportTool;
 
 import java.io.*;
 
 public class FileReaderWrapper {
 
-    private File f;
+    private final File f;
     private FileReader fr;
     private BufferedReader br;
     private boolean closed;
+    private static final ObjectMapper objectMapper;
+
+    static {
+        // Deserializer
+        objectMapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        module
+                .addDeserializer(Business.class, new BusinessDeserializer())
+                .addDeserializer(User.class, new UserDeserializer())
+                .addDeserializer(Review.class, new ReviewDeserializer());
+        objectMapper.registerModule(module);
+    }
 
     public FileReaderWrapper(File f) {
         this.f = f;
@@ -81,6 +103,30 @@ public class FileReaderWrapper {
                 }
             }
         }
+    }
+
+    /**
+     * Deserializes a given line interpreted as being in JSON format to the given Yelp datatype.
+     *
+     * @param line     the JSON string.
+     * @param dataType the datatype to deserialize to.
+     */
+    public static Object processJSON(String line, ImportTool.YELP dataType) {
+        try {
+            synchronized (objectMapper) {
+                switch (dataType) {
+                    case BUSINESS:
+                        return objectMapper.readValue(line, Business.class);
+                    case USER:
+                        return objectMapper.readValue(line, User.class);
+                    case REVIEW:
+                        return objectMapper.readValue(line, Review.class);
+                }
+            }
+        } catch (IOException e) {
+            return null;
+        }
+        return null;
     }
 
     /**
