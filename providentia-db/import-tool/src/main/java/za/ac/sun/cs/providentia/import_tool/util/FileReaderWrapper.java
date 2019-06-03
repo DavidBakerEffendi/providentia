@@ -1,7 +1,9 @@
 package za.ac.sun.cs.providentia.import_tool.util;
 
+import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.slf4j.LoggerFactory;
 import za.ac.sun.cs.providentia.domain.Business;
 import za.ac.sun.cs.providentia.domain.Review;
 import za.ac.sun.cs.providentia.domain.User;
@@ -13,6 +15,8 @@ import za.ac.sun.cs.providentia.import_tool.ImportTool;
 import java.io.*;
 
 public class FileReaderWrapper {
+
+    private static final Logger LOG = (Logger) LoggerFactory.getLogger(FileReaderWrapper.class);
 
     private final File f;
     private FileReader fr;
@@ -124,6 +128,7 @@ public class FileReaderWrapper {
                 }
             }
         } catch (IOException e) {
+            LOG.error("Error processing JSON.", e);
             return null;
         }
         return null;

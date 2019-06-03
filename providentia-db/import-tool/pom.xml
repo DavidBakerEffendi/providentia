@@ -96,6 +96,12 @@
             <artifactId>progressbar</artifactId>
             <version>0.7.2</version>
         </dependency>
+        <!-- PostgreSQL -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.5</version>
+        </dependency>
     </dependencies>
 
     <build>

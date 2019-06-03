@@ -40,8 +40,10 @@ public class ImportConfig {
         try {
             // Read properties
             tempDataConfig = new DataConfig(loader.getResourceAsStream(DATA_PROPERTIES));
-            tempJanusGraphConfig = new JanusGraphConfig(loader.getResourceAsStream(JANUS_GRAPH_PROPERTIES));
-            tempPostgresConfig = new PostgresConfig(loader.getResourceAsStream(POSTGRES_PROPERTIES));
+            if (tempDataConfig.importJanusGraph)
+                tempJanusGraphConfig = new JanusGraphConfig(loader.getResourceAsStream(JANUS_GRAPH_PROPERTIES));
+            if (tempDataConfig.importPostgres)
+                tempPostgresConfig = new PostgresConfig(loader.getResourceAsStream(POSTGRES_PROPERTIES));
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -50,6 +52,11 @@ public class ImportConfig {
         this.dataConfig = tempDataConfig;
         this.janusGraphConfig = tempJanusGraphConfig;
         this.postgresConfig = tempPostgresConfig;
+    }
+
+    public void closeAll() {
+        if (janusGraphConfig != null) janusGraphConfig.close();
+        if (postgresConfig != null) postgresConfig.close();
     }
 
     /**
@@ -162,20 +169,24 @@ public class ImportConfig {
             // Size of queue of operations per transaction before committing
             try {
                 tempSectorSize = Double.parseDouble(props.getProperty("import.sector-size"));
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
             // Size of queue of operations per transaction before committing
             try {
                 tempQueueSize = Integer.parseInt(props.getProperty("import.queue-size"));
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
             try {
                 tempLoadSchema = Boolean.parseBoolean(props.getProperty("import.load-schema"));
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
             try {
                 tempPercentageData = Double.parseDouble(props.getProperty("import.data.percentage"));
                 if (tempPercentageData > 1.0 || tempPercentageData < 0.0)
                     tempPercentageData = 1.0;
-                    throw new Exception("Percentage data setting invalid. Using 1.0 default.");
-            } catch (Exception ignored) {}
+                throw new Exception("Percentage data setting invalid. Using 1.0 default.");
+            } catch (Exception ignored) {
+            }
 
             this.sectorSize = tempSectorSize;
             this.queueSize = tempQueueSize;
@@ -235,9 +246,13 @@ public class ImportConfig {
         final String hostname;
         final String port;
         final String database;
+        public final double sectorSize;
+        public final int queueSize;
+        public final boolean loadSchema;
+        public final double percentageData;
 
         PostgresConfig(InputStream propertyStream) throws IOException {
-            LOG.info("Loading JanusGraph config.");
+            LOG.info("Loading Postgres config.");
 
             if (propertyStream == null) {
                 LOG.error("Properties file not found!");
@@ -249,29 +264,60 @@ public class ImportConfig {
             String tempHostName = "localhost";
             String tempPort = "5432";
             String tempDatabase = "yelp";
+            double tempSectorSize = 0.3;
+            int tempQueueSize = 100;
+            boolean tempLoadSchema = false;
+            double tempPercentageData = 1.0;
 
             try {
                 tempHostName = props.getProperty("hostname");
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
             try {
                 tempPort = props.getProperty("port");
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
             try {
                 tempDatabase = props.getProperty("database");
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
+            // Size of queue of operations per transaction before committing
+            try {
+                tempSectorSize = Double.parseDouble(props.getProperty("import.sector-size"));
+            } catch (Exception ignored) {
+            }
+            // Size of queue of operations per transaction before committing
+            try {
+                tempQueueSize = Integer.parseInt(props.getProperty("import.queue-size"));
+            } catch (Exception ignored) {
+            }
+            try {
+                tempLoadSchema = Boolean.parseBoolean(props.getProperty("import.load-schema"));
+            } catch (Exception ignored) {
+            }
+            try {
+                tempPercentageData = Double.parseDouble(props.getProperty("import.data.percentage"));
+                if (tempPercentageData > 1.0 || tempPercentageData < 0.0)
+                    tempPercentageData = 1.0;
+                throw new Exception("Percentage data setting invalid. Using 1.0 default.");
+            } catch (Exception ignored) {
+            }
+
+            this.sectorSize = tempSectorSize;
+            this.queueSize = tempQueueSize;
+            this.loadSchema = tempLoadSchema;
+            this.percentageData = tempPercentageData;
 
             this.hostname = tempHostName;
             this.port = tempPort;
             this.database = tempDatabase;
 
+            LOG.info("Connecting to PostgreSQL server.");
             db = connect();
         }
 
         /**
-         * Note that if the graph doesn't already exist, Janus' behavior is to
-         * create an empty graph.  Since this demo is assuming there is some
-         * existing graph to connect to, it makes no effort to define schema
-         * or any other such thing.
+         * Connects to Postgres over sockets using postgres.properties.
          */
         private Connection connect() {
             ClassLoader classLoader = this.getClass().getClassLoader();
@@ -282,9 +328,7 @@ public class ImportConfig {
                     throw new IOException("Could not find " + POSTGRES_PROPERTIES + "!");
                 } else {
                     Files.copy(isProperties, temp, StandardCopyOption.REPLACE_EXISTING);
-
                     String url = "jdbc:postgresql://" + hostname + ":" + port + "/" + database;
-
                     return DriverManager.getConnection(url, props);
                 }
             } catch (IOException e) {

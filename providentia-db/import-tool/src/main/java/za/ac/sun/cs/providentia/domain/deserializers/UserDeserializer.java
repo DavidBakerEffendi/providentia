@@ -49,7 +49,7 @@ public class UserDeserializer extends JsonDeserializer<User> {
         }
         if (node.has("friends")) {
             Set<String> friendSet = new HashSet<>(Arrays.asList(node.get("friends").toString().split(", ")));
-            object.setFriends(friendSet);
+            object.setFriends(friendSet); // Need to fix this
         }
         if (node.has("fans")) {
             object.setFans(node.get("fans").asInt());
@@ -60,16 +60,7 @@ public class UserDeserializer extends JsonDeserializer<User> {
         if (node.has("useful")) {
             object.setUseful(node.get("useful").asInt());
         }
-        if (node.has("elite")) {
-            if (!"\"\"".equals(node.get("elite").toString())) {
-                String[] elite = node.get("elite").toString().replaceAll("\"", "").split(",");
-                Set<Integer> eliteSet = new HashSet<>();
-                for (String e : elite) {
-                    eliteSet.add(Integer.parseInt(e));
-                }
-                object.setElite(eliteSet);
-            }
-        }
+
         if (node.has("compliment_hot")) {
             object.setComplimentHot(node.get("compliment_hot").asInt());
         }

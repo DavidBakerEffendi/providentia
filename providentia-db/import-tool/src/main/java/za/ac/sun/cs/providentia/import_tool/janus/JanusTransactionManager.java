@@ -62,7 +62,6 @@ public class JanusTransactionManager {
         mgmt.makeEdgeLabel("IN_STATE").make();
         mgmt.makeEdgeLabel("FRIENDS").make();
 
-
         // === Create properties ===
 
         // Business properties
