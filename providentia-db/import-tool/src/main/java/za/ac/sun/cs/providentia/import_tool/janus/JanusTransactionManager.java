@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 import za.ac.sun.cs.providentia.domain.Business;
 import za.ac.sun.cs.providentia.domain.Review;
 import za.ac.sun.cs.providentia.domain.User;
-import za.ac.sun.cs.providentia.import_tool.ImportTool.YELP;
 import za.ac.sun.cs.providentia.import_tool.util.FileReaderWrapper;
 
+import java.time.ZoneOffset;
 import java.util.List;
 
 /**
@@ -326,22 +326,22 @@ public class JanusTransactionManager {
         uVert.property("name", u.getName());
         uVert.property("review_count", u.getReviewCount());
         uVert.property("average_stars", u.getAverageStars());
-        uVert.property("yelping_since", u.getYelpingSince());
+        uVert.property("yelping_since", u.getYelpingSince().toEpochSecond(ZoneOffset.of("-07:00")));
         uVert.property("cool", u.getCool());
         uVert.property("funny", u.getFunny());
         uVert.property("useful", u.getUseful());
         uVert.property("fans", u.getFans());
-        uVert.property("complimentHot", u.getComplimentHot());
-        uVert.property("complimentMore", u.getComplimentMore());
-        uVert.property("complimentProfile", u.getComplimentProfile());
-        uVert.property("complimentCute", u.getComplimentCute());
-        uVert.property("complimentList", u.getComplimentList());
-        uVert.property("complimentNote", u.getComplimentNote());
-        uVert.property("complimentPlain", u.getComplimentPlain());
-        uVert.property("complimentCool", u.getComplimentCool());
-        uVert.property("complimentFunny", u.getComplimentFunny());
-        uVert.property("complimentWriter", u.getComplimentWriter());
-        uVert.property("complimentPhotos", u.getComplimentPhotos());
+//        uVert.property("complimentHot", u.getComplimentHot());
+//        uVert.property("complimentMore", u.getComplimentMore());
+//        uVert.property("complimentProfile", u.getComplimentProfile());
+//        uVert.property("complimentCute", u.getComplimentCute());
+//        uVert.property("complimentList", u.getComplimentList());
+//        uVert.property("complimentNote", u.getComplimentNote());
+//        uVert.property("complimentPlain", u.getComplimentPlain());
+//        uVert.property("complimentCool", u.getComplimentCool());
+//        uVert.property("complimentFunny", u.getComplimentFunny());
+//        uVert.property("complimentWriter", u.getComplimentWriter());
+//        uVert.property("complimentPhotos", u.getComplimentPhotos());
     }
 
     /**
@@ -398,7 +398,7 @@ public class JanusTransactionManager {
         review.property("cool", r.getCool());
         review.property("funny", r.getFunny());
         review.property("useful", r.getUseful());
-        review.property("date", r.getDate());
+        review.property("date", r.getDate().toEpochSecond(ZoneOffset.of("-07:00")));
         review.property("stars", r.getStars());
         review.property("text", r.getText());
     }
@@ -406,30 +406,27 @@ public class JanusTransactionManager {
     /**
      * Depending on data type and insert mode selected, a code identifying the operation is returned.
      *
-     * @param dataType   the Yelp data being imported.
+     * @param classType  the Yelp data being imported.
      * @param insertMode the insert mode.
      * @return a short code identifying data being imported.
      */
-    public static String getDataDescriptorShort(YELP dataType, INSERT_MODE insertMode) {
-        switch (dataType) {
-            case BUSINESS:
-                switch (insertMode) {
-                    case VERTEX:
-                        return "BUS_VERT";
-                    case EDGE:
-                        return "BUS_EDGE";
-                }
-                break;
-            case USER:
-                switch (insertMode) {
-                    case VERTEX:
-                        return "USR_VERT";
-                    case EDGE:
-                        return "USR_EDGE";
-                }
-                break;
-            case REVIEW:
-                return "REV_EDGE";
+    public static String getDataDescriptorShort(Class<?> classType, INSERT_MODE insertMode) {
+        if (classType == Business.class) {
+            switch (insertMode) {
+                case VERTEX:
+                    return "BUS_VERT";
+                case EDGE:
+                    return "BUS_EDGE";
+            }
+        } else if (classType == User.class) {
+            switch (insertMode) {
+                case VERTEX:
+                    return "USR_VERT";
+                case EDGE:
+                    return "USR_EDGE";
+            }
+        } else if (classType == Review.class) {
+            return "REV_EDGE";
         }
         return "UNKNWN";
     }
@@ -437,35 +434,32 @@ public class JanusTransactionManager {
     /**
      * Depending on data type and insert mode selected, a phrase identifying the operation is returned.
      *
-     * @param dataType   the Yelp data being imported.
+     * @param classType  the Yelp data being imported.
      * @param insertMode the insert mode.
      * @return a short code identifying data being imported.
      */
-    public static String getDataDescriptorLong(YELP dataType, INSERT_MODE insertMode) {
-        switch (dataType) {
-            case BUSINESS:
-                switch (insertMode) {
-                    case VERTEX:
-                        return "business, attribute, category, city, and state vertices";
-                    case EDGE:
-                        return "business to category, city edges and city to state edges";
-                }
-                break;
-            case USER:
-                switch (insertMode) {
-                    case VERTEX:
-                        return "user vertices";
-                    case EDGE:
-                        return "user to user friend edges";
-                }
-                break;
-            case REVIEW:
-                return "user to business review edge";
+    public static String getDataDescriptorLong(Class<?> classType, INSERT_MODE insertMode) {
+        if (classType == Business.class) {
+            switch (insertMode) {
+                case VERTEX:
+                    return "business, attribute, category, city, and state vertices";
+                case EDGE:
+                    return "business to category, city edges and city to state edges";
+            }
+        } else if (classType == User.class) {
+            switch (insertMode) {
+                case VERTEX:
+                    return "user vertices";
+                case EDGE:
+                    return "user to user friend edges";
+            }
+        } else if (classType == Review.class) {
+            return "user to business review edge";
         }
         return "unknown";
     }
 
-    public void insertRecords(List<String> records, YELP
+    public void insertRecords(List<String> records, Class<?>
             type, ProgressBar pb, INSERT_MODE insertMode) {
         Transaction tw = new Transaction(records, type, pb, insertMode);
         tw.commit();
@@ -478,13 +472,13 @@ public class JanusTransactionManager {
     class Transaction {
 
         private final List<String> records;
-        private final YELP type;
+        private final Class<?> type;
         private final ProgressBar pb;
         private final INSERT_MODE insertMode;
 
         Transaction(
                 List<String> records,
-                YELP type,
+                Class<?> type,
                 ProgressBar pb,
                 INSERT_MODE insertMode) {
             this.records = records;

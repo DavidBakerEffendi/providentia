@@ -9,7 +9,6 @@ import za.ac.sun.cs.providentia.domain.Review;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 public class ReviewDeserializer extends JsonDeserializer<Review> {
@@ -29,7 +28,7 @@ public class ReviewDeserializer extends JsonDeserializer<Review> {
         }
         if (node.has("date")) {
             object.setDate(LocalDateTime.parse(node.get("date").asText(),
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toEpochSecond(ZoneOffset.of("-07:00")));
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         }
         if (node.has("funny")) {
             object.setFunny(node.get("funny").asInt());

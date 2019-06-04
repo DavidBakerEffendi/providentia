@@ -11,8 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import za.ac.sun.cs.providentia.domain.Business;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Stream;
 
 public class BusinessDeserializer extends JsonDeserializer<Business> {
@@ -41,14 +39,7 @@ public class BusinessDeserializer extends JsonDeserializer<Business> {
             object.setIsOpen(node.get("is_open").asBoolean());
         }
         if (node.has("categories")) {
-            if (!node.get("categories").isNull()) {
-                String[] categories = node.get("categories").asText().split(",");
-                List<String> catList = new LinkedList<>();
-                for (String cat : categories) {
-                    catList.add(titleCaseConversion(cat.trim()));
-                }
-                object.setCategories(catList);
-            }
+            object.setCategories(objectMapper.readValue(node.get("categories").toString(), String[].class));
         }
         if (node.has("city")) {
             object.setCity(titleCaseConversion(node.get("city").asText()));

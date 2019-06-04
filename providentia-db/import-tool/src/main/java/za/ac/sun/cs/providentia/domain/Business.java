@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.List;
 
 public class Business implements Serializable {
 
@@ -12,7 +11,7 @@ public class Business implements Serializable {
     private String address;
     private String postalCode;
     private boolean isOpen;
-    private List<String> categories;
+    private String[] categories;
     private String city;
     private int reviewCount;
     private String name;
@@ -56,11 +55,11 @@ public class Business implements Serializable {
         this.isOpen = isOpen;
     }
 
-    public List<String> getCategories() {
+    public String[] getCategories() {
         return categories;
     }
 
-    public void setCategories(List<String> categories) {
+    public void setCategories(String[] categories) {
         this.categories = categories;
     }
 

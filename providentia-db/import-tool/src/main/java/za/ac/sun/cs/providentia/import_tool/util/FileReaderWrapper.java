@@ -10,7 +10,6 @@ import za.ac.sun.cs.providentia.domain.User;
 import za.ac.sun.cs.providentia.domain.deserializers.BusinessDeserializer;
 import za.ac.sun.cs.providentia.domain.deserializers.ReviewDeserializer;
 import za.ac.sun.cs.providentia.domain.deserializers.UserDeserializer;
-import za.ac.sun.cs.providentia.import_tool.ImportTool;
 
 import java.io.*;
 
@@ -110,26 +109,22 @@ public class FileReaderWrapper {
     }
 
     /**
-     * Deserializes a given line interpreted as being in JSON format to the given Yelp datatype.
+     * Deserializes a given line interpreted as being in JSON format to the given Yelp class.
      *
      * @param line     the JSON string.
-     * @param dataType the datatype to deserialize to.
+     * @param selectedClass the class to deserialize to.
      */
-    public static Object processJSON(String line, ImportTool.YELP dataType) {
+    public static Object processJSON(String line, Class<?> selectedClass) {
         try {
-            synchronized (objectMapper) {
-                switch (dataType) {
-                    case BUSINESS:
-                        return objectMapper.readValue(line, Business.class);
-                    case USER:
-                        return objectMapper.readValue(line, User.class);
-                    case REVIEW:
-                        return objectMapper.readValue(line, Review.class);
-                }
+            if (selectedClass == Business.class) {
+                return objectMapper.readValue(line, Business.class);
+            } else if (selectedClass == User.class) {
+                return objectMapper.readValue(line, User.class);
+            } else if (selectedClass == Review.class) {
+                return objectMapper.readValue(line, Review.class);
             }
         } catch (IOException e) {
             LOG.error("Error processing JSON.", e);
-            return null;
         }
         return null;
     }

@@ -6,6 +6,7 @@ import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
 import org.slf4j.LoggerFactory;
 import za.ac.sun.cs.providentia.import_tool.janus.JanusTransactionManager;
+import za.ac.sun.cs.providentia.import_tool.postgres.PostgresTransactionManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,9 +26,9 @@ public class ImportConfig {
     public final JanusGraphConfig janusGraphConfig;
     public final PostgresConfig postgresConfig;
 
-    final String DATA_PROPERTIES = "data.properties";
-    final String JANUS_GRAPH_PROPERTIES = "janus-graph.properties";
-    final String POSTGRES_PROPERTIES = "postgres.properties";
+    private final String DATA_PROPERTIES = "data.properties";
+    private final String JANUS_GRAPH_PROPERTIES = "janus-graph.properties";
+    private final String POSTGRES_PROPERTIES = "postgres.properties";
 
     private static final Logger LOG = (Logger) LoggerFactory.getLogger(ImportConfig.class);
 
@@ -144,7 +145,7 @@ public class ImportConfig {
         public final JanusTransactionManager tm;
         public final double sectorSize;
         public final int queueSize;
-        public final boolean loadSchema;
+        final boolean loadSchema;
         public final double percentageData;
 
         JanusGraphConfig(InputStream propertyStream) throws IOException {
@@ -228,7 +229,7 @@ public class ImportConfig {
             return null;
         }
 
-        public void close() {
+        void close() {
             try {
                 if (db != null)
                     db.close();
@@ -241,14 +242,14 @@ public class ImportConfig {
 
     public class PostgresConfig {
 
-        final Properties props;
-        final Connection db;
-        final String hostname;
-        final String port;
-        final String database;
+        private final Properties props;
+        private final Connection db;
+        public final PostgresTransactionManager tm;
+        private final String hostname;
+        private final String port;
+        private final String database;
         public final double sectorSize;
         public final int queueSize;
-        public final boolean loadSchema;
         public final double percentageData;
 
         PostgresConfig(InputStream propertyStream) throws IOException {
@@ -266,7 +267,6 @@ public class ImportConfig {
             String tempDatabase = "yelp";
             double tempSectorSize = 0.3;
             int tempQueueSize = 100;
-            boolean tempLoadSchema = false;
             double tempPercentageData = 1.0;
 
             try {
@@ -292,10 +292,6 @@ public class ImportConfig {
             } catch (Exception ignored) {
             }
             try {
-                tempLoadSchema = Boolean.parseBoolean(props.getProperty("import.load-schema"));
-            } catch (Exception ignored) {
-            }
-            try {
                 tempPercentageData = Double.parseDouble(props.getProperty("import.data.percentage"));
                 if (tempPercentageData > 1.0 || tempPercentageData < 0.0)
                     tempPercentageData = 1.0;
@@ -305,7 +301,6 @@ public class ImportConfig {
 
             this.sectorSize = tempSectorSize;
             this.queueSize = tempQueueSize;
-            this.loadSchema = tempLoadSchema;
             this.percentageData = tempPercentageData;
 
             this.hostname = tempHostName;
@@ -314,6 +309,7 @@ public class ImportConfig {
 
             LOG.info("Connecting to PostgreSQL server.");
             db = connect();
+            this.tm = new PostgresTransactionManager(db);
         }
 
         /**
@@ -342,7 +338,7 @@ public class ImportConfig {
             return null;
         }
 
-        public void close() {
+        void close() {
             try {
                 if (db != null)
                     db.close();

@@ -1,5 +1,10 @@
 package za.ac.sun.cs.providentia.domain;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+
 public class Review {
 
     private String reviewId;
@@ -8,7 +13,7 @@ public class Review {
     private int cool;
     private int funny;
     private int useful;
-    private long date;
+    private LocalDateTime date;
     private double stars;
     private String text;
 
@@ -31,11 +36,11 @@ public class Review {
         this.cool = cool;
     }
 
-    public long getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(long date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
@@ -89,17 +94,22 @@ public class Review {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Review{");
-        sb.append("businessId='").append(businessId).append('\'');
-        sb.append(", cool=").append(cool);
-        sb.append(", date=").append(date);
-        sb.append(", funny=").append(funny);
-        sb.append(", userId='").append(userId).append('\'');
-        sb.append(", useful=").append(useful);
-        sb.append(", reviewId='").append(reviewId).append('\'');
-        sb.append(", stars=").append(stars);
-        sb.append(", text='").append(text).append('\'');
-        sb.append('}');
-        return sb.toString();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(this);
+        } catch (IOException e) {
+            final StringBuilder sb = new StringBuilder("Review{");
+            sb.append("businessId='").append(businessId).append('\'');
+            sb.append(", cool=").append(cool);
+            sb.append(", date=").append(date);
+            sb.append(", funny=").append(funny);
+            sb.append(", userId='").append(userId).append('\'');
+            sb.append(", useful=").append(useful);
+            sb.append(", reviewId='").append(reviewId).append('\'');
+            sb.append(", stars=").append(stars);
+            sb.append(", text='").append(text).append('\'');
+            sb.append('}');
+            return sb.toString();
+        }
     }
 }

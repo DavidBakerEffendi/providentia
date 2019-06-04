@@ -9,10 +9,13 @@ DROP TABLE IF EXISTS review;
 DROP TABLE IF EXISTS bus_cat;
 DROP TABLE IF EXISTS business;
 DROP TABLE IF EXISTS friends;
-DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS category;
 DROP TABLE IF EXISTS city;
 DROP TABLE IF EXISTS state;
+
+DROP INDEX IF EXISTS review_date;
+DROP INDEX IF EXISTS business_location;
 
 CREATE TABLE state (
     id uuid DEFAULT uuid_generate_v4(),
@@ -35,7 +38,7 @@ CREATE TABLE category (
 );
 
 CREATE TABLE users (
-    id uuid DEFAULT uuid_generate_v4(),
+    id character varying(22) NOT NULL,
     name character varying(255) NOT NULL,
     review_count integer DEFAULT 0,
     yelping_since timestamp NOT NULL,
@@ -44,29 +47,29 @@ CREATE TABLE users (
     cool integer DEFAULT 0,
     fans integer DEFAULT 0,
     average_stars numeric DEFAULT 0.0,
-    compliment_hot integer DEFAULT 0,
-    compliment_more integer DEFAULT 0,
-    compliment_profile integer DEFAULT 0,
-    compliment_cute integer DEFAULT 0,
-    compliment_list integer DEFAULT 0,
-    compliment_note integer DEFAULT 0,
-    compliment_plain integer DEFAULT 0,
-    compliment_cool integer DEFAULT 0,
-    compliment_funny integer DEFAULT 0,
-    compliment_writer integer DEFAULT 0,
-    compliment_photos integer DEFAULT 0,
+--    compliment_hot integer DEFAULT 0,
+--    compliment_more integer DEFAULT 0,
+--    compliment_profile integer DEFAULT 0,
+--    compliment_cute integer DEFAULT 0,
+--    compliment_list integer DEFAULT 0,
+--    compliment_note integer DEFAULT 0,
+--    compliment_plain integer DEFAULT 0,
+--    compliment_cool integer DEFAULT 0,
+--    compliment_funny integer DEFAULT 0,
+--    compliment_writer integer DEFAULT 0,
+--    compliment_photos integer DEFAULT 0,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE friends (
-    user_id uuid NOT NULL,
-    friend_id uuid NOT NULL,
+    user_id character varying(22),
+    friend_id character varying(22) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (friend_id) REFERENCES users (id)
 );
 
 CREATE TABLE business (
-    id uuid DEFAULT uuid_generate_v4(),
+    id character varying(22),
     name character varying(255) NOT NULL,
     address character varying(255) NOT NULL,
     city_id uuid NOT NULL,
@@ -83,16 +86,16 @@ CREATE TABLE business (
 );
 
 CREATE TABLE bus_cat (
-    business_id uuid NOT NULL,
+    business_id character varying(22) NOT NULL,
     category_id uuid NOT NULL,
     FOREIGN KEY (business_id) REFERENCES business (id),
     FOREIGN KEY (category_id) REFERENCES category (id)
 );
 
 CREATE TABLE review (
-    id uuid DEFAULT uuid_generate_v4(),
-    user_id uuid NOT NULL,
-    business_id uuid NOT NULL,
+    id character varying(22),
+    user_id character varying(22) NOT NULL,
+    business_id character varying(22) NOT NULL,
     stars numeric NOT NULL,
     useful integer DEFAULT 0,
     funny integer DEFAULT 0,
@@ -106,3 +109,4 @@ CREATE TABLE review (
 
 CREATE INDEX review_date ON review (date);
 CREATE INDEX business_location on business (latitude, longitude);
+CREATE INDEX category_name ON category (name);
