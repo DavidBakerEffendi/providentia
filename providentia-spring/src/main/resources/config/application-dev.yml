@@ -36,9 +36,9 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/providentia
-    username: providentia
-    password: dev
+    url: jdbc:postgresql://localhost:5432/yelp
+    username: postgres
+    password: docker
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -52,9 +52,6 @@ spring:
       hibernate.cache.use_second_level_cache: false
       hibernate.cache.use_query_cache: false
       hibernate.generate_statistics: false
-  liquibase:
-    # Remove 'faker' if you do not want the sample data to be loaded automatically
-    contexts: dev, faker
   mail:
     host: localhost
     port: 25

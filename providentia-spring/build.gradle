@@ -8,7 +8,6 @@ buildscript {
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${spring_boot_version}"
         classpath "io.spring.gradle:propdeps-plugin:0.0.10.RELEASE"
-        //jhipster-needle-gradle-buildscript-dependency - JHipster will add additional gradle build script plugins here
     }
 }
 
@@ -17,15 +16,10 @@ plugins {
     id "maven"
     id "war"
     id "idea"
-    id "jacoco"
     id "com.google.cloud.tools.jib" version "0.9.11"
     id "com.gorylenko.gradle-git-properties" version "2.0.0"
-    id "net.ltgt.apt-eclipse" version "0.21"
     id "net.ltgt.apt-idea" version "0.21"
     id "net.ltgt.apt" version "0.21"
-    id "org.liquibase.gradle" version "2.0.1"
-    id "org.sonarqube" version "2.7"
-    //jhipster-needle-gradle-plugins - JHipster will add additional gradle plugins here
 }
 
 sourceCompatibility=1.8
@@ -36,8 +30,6 @@ apply plugin: "org.springframework.boot"
 apply plugin: "propdeps"
 
 apply from: "gradle/docker.gradle"
-apply from: "gradle/sonar.gradle"
-//jhipster-needle-gradle-apply-from - JHipster will add additional gradle scripts to be applied here
 
 if (project.hasProperty("prod")) {
     apply from: "gradle/profile_prod.gradle"
@@ -49,16 +41,6 @@ if (project.hasProperty("prod")) {
 idea {
     module {
         excludeDirs += files("node_modules")
-    }
-}
-
-eclipse {
-    sourceSets {
-        main {
-            java {
-                srcDirs += ["build/generated/source/apt/main"]
-            }
-        }
     }
 }
 
@@ -84,76 +66,8 @@ springBoot {
     mainClassName = "za.ac.sun.cs.providentia.ProvidentiaApp"
 }
 
-test {
-    useJUnitPlatform()
-    exclude "**/*IT*", "**/*IntTest*"
-    testLogging {
-        events 'FAILED', 'SKIPPED'
-    }
-    // uncomment if the tests reports are not generated
-    // see https://github.com/jhipster/generator-jhipster/pull/2771 and https://github.com/jhipster/generator-jhipster/pull/4484
-    // ignoreFailures true
-    reports.html.enabled = false
-}
-
-task integrationTest(type: Test) {
-    useJUnitPlatform()
-    description = "Execute integration tests."
-    group = "verification"
-    include "**/*IT*", "**/*IntTest*"
-
-    testLogging {
-        events 'FAILED', 'SKIPPED'
-    }
-    // uncomment if the tests reports are not generated
-    // see https://github.com/jhipster/generator-jhipster/pull/2771 and https://github.com/jhipster/generator-jhipster/pull/4484
-    // ignoreFailures true
-    reports.html.enabled = false
-}
-
-check.dependsOn integrationTest
-task testReport(type: TestReport) {
-    destinationDir = file("$buildDir/reports/tests")
-    reportOn test
-}
-
-task integrationTestReport(type: TestReport) {
-    destinationDir = file("$buildDir/reports/tests")
-    reportOn integrationTest
-}
-
 if (!project.hasProperty("runList")) {
     project.ext.runList = "main"
-}
-
-project.ext.diffChangelogFile = "src/main/resources/config/liquibase/changelog/" + new Date().format("yyyyMMddHHmmss") + "_changelog.xml"
-
-liquibase {
-    activities {
-        main {
-            driver "org.postgresql.Driver"
-            url "jdbc:postgresql://localhost:5432/providentia"
-            username "providentia"
-            password ""
-            changeLogFile "src/main/resources/config/liquibase/master.xml"
-            defaultSchemaName ""
-            logLevel "debug"
-            classpath "src/main/resources/"
-        }
-        diffLog {
-            driver "org.postgresql.Driver"
-            url "jdbc:postgresql://localhost:5432/providentia"
-            username "providentia"
-            password ""
-            changeLogFile project.ext.diffChangelogFile
-            referenceUrl "hibernate:spring:za.ac.sun.cs.providentia.domain?dialect=org.hibernate.dialect.PostgreSQL95Dialect&hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy"
-            defaultSchemaName ""
-            logLevel "debug"
-            classpath "$buildDir/classes/java/main"
-        }
-    }
-
-    runList = project.ext.runList
 }
 
 configurations {
@@ -165,7 +79,6 @@ repositories {
     mavenLocal()
     mavenCentral()
     jcenter()
-    //jhipster-needle-gradle-repositories - JHipster will add additional repositories
 }
 
 dependencies {
@@ -192,10 +105,6 @@ dependencies {
     implementation "org.hibernate:hibernate-entitymanager"
     implementation "org.hibernate:hibernate-envers"
     implementation "org.hibernate.validator:hibernate-validator"
-    implementation "org.liquibase:liquibase-core"
-    liquibaseRuntime "org.liquibase:liquibase-core"
-    liquibaseRuntime "org.liquibase.ext:liquibase-hibernate5:${liquibase_hibernate5_version}"
-    liquibaseRuntime sourceSets.main.compileClasspath
     implementation "org.springframework.boot:spring-boot-loader-tools"
     implementation "org.springframework.boot:spring-boot-starter-mail"
     implementation "org.springframework.boot:spring-boot-starter-logging"
@@ -221,7 +130,6 @@ dependencies {
     }
     implementation "io.springfox:springfox-bean-validators"
     implementation "org.postgresql:postgresql"
-    liquibaseRuntime "org.postgresql:postgresql"
     implementation "org.mapstruct:mapstruct:${mapstruct_version}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstruct_version}"
     annotationProcessor "org.hibernate:hibernate-jpamodelgen:${hibernate_version}"
@@ -229,20 +137,6 @@ dependencies {
     annotationProcessor ("org.springframework.boot:spring-boot-configuration-processor:${spring_boot_version}") {
         exclude group: "com.vaadin.external.google", module: "android-json"
     }
-    testImplementation "com.jayway.jsonpath:json-path"
-    testImplementation ("org.springframework.boot:spring-boot-starter-test") {
-        exclude module: "junit"
-        exclude group: "com.vaadin.external.google", module: "android-json"
-    }
-    testImplementation "org.springframework.security:spring-security-test"
-    testImplementation "org.springframework.boot:spring-boot-test"
-    testImplementation "org.junit.jupiter:junit-jupiter-engine"
-    testImplementation "org.assertj:assertj-core"
-    testImplementation "junit:junit"
-    testImplementation "org.mockito:mockito-core"
-    testImplementation "org.hamcrest:hamcrest-library"
-    testImplementation "com.h2database:h2"
-    //jhipster-needle-gradle-dependency - JHipster will add additional dependencies here
 }
 
 task cleanResources(type: Delete) {
