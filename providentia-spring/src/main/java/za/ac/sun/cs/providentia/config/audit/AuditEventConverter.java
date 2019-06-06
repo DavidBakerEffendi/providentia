@@ -1,10 +1,9 @@
 package za.ac.sun.cs.providentia.config.audit;
 
-import za.ac.sun.cs.providentia.domain.PersistentAuditEvent;
-
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
+import za.ac.sun.cs.providentia.domain.PersistentAuditEvent;
 
 import java.util.*;
 
@@ -39,7 +38,7 @@ public class AuditEventConverter {
             return null;
         }
         return new AuditEvent(persistentAuditEvent.getAuditEventDate(), persistentAuditEvent.getPrincipal(),
-            persistentAuditEvent.getAuditEventType(), convertDataToObjects(persistentAuditEvent.getData()));
+                persistentAuditEvent.getAuditEventType(), convertDataToObjects(persistentAuditEvent.getData()));
     }
 
     /**

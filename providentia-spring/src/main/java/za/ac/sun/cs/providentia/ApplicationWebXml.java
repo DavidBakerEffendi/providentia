@@ -1,8 +1,8 @@
 package za.ac.sun.cs.providentia;
 
-import za.ac.sun.cs.providentia.config.DefaultProfileUtil;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import za.ac.sun.cs.providentia.config.DefaultProfileUtil;
 
 /**
  * This is a helper Java class that provides an alternative to creating a {@code web.xml}.

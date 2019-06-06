@@ -5,7 +5,6 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.Map;
 
 /**
@@ -13,6 +12,7 @@ import java.util.Map;
  *
  * @see org.springframework.boot.actuate.audit.AuditEvent
  */
+@SuppressWarnings("unused")
 @Entity
 @Table(name = "prv_persistent_audit_event")
 public class PersistentAuditEvent implements Serializable {
@@ -38,7 +38,7 @@ public class PersistentAuditEvent implements Serializable {
     @ElementCollection
     @MapKeyColumn(name = "name")
     @Column(name = "value")
-    @CollectionTable(name = "prv_persistent_audit_evt_data", joinColumns=@JoinColumn(name="event_id"))
+    @CollectionTable(name = "prv_persistent_audit_evt_data", joinColumns = @JoinColumn(name = "event_id"))
     private Map<String, String> data = new HashMap<>();
 
     public Long getId() {
@@ -100,9 +100,9 @@ public class PersistentAuditEvent implements Serializable {
     @Override
     public String toString() {
         return "PersistentAuditEvent{" +
-            "principal='" + principal + '\'' +
-            ", auditEventDate=" + auditEventDate +
-            ", auditEventType='" + auditEventType + '\'' +
-            '}';
+                "principal='" + principal + '\'' +
+                ", auditEventDate=" + auditEventDate +
+                ", auditEventType='" + auditEventType + '\'' +
+                '}';
     }
 }

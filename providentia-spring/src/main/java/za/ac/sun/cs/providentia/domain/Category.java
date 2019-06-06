@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
+@SuppressWarnings("unused")
 @Entity
 @Table(name = "category")
 public class Category {

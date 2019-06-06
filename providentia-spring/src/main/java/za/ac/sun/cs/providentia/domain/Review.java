@@ -2,95 +2,131 @@ package za.ac.sun.cs.providentia.domain;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+@SuppressWarnings("unused")
+@Entity
+@Table(name = "review")
 public class Review {
 
-    // TODO
-    private String reviewId;
-    private String businessId;
-    private String userId;
+    @Id
+    @Size(max = 22)
+    @Column(length = 22)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private String id;
+
+    @OneToOne
+    private Business business;
+
+    @OneToOne
+    private User user;
+
+    @NotNull
+    @Column(name = "cool", nullable = false)
     private int cool;
+
+    @NotNull
+    @Column(name = "funny", nullable = false)
     private int funny;
+
+    @NotNull
+    @Column(name = "useful", nullable = false)
     private int useful;
+
+    @NotNull
+    @Column(name = "date", nullable = false)
     private LocalDateTime date;
+
+    @NotNull
+    @Column(name = "stars", nullable = false)
     private double stars;
+
+    @NotNull
+    @Column(name = "text", nullable = false)
     private String text;
 
-    public Review() {
+    public String getId() {
+        return id;
     }
 
-    public String getBusinessId() {
-        return businessId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setBusinessId(String businessId) {
-        this.businessId = businessId;
+    public Business getBusiness() {
+        return business;
+    }
+
+    public Review setBusiness(Business business) {
+        this.business = business;
+        return this;
     }
 
     public int getCool() {
         return cool;
     }
 
-    public void setCool(int cool) {
+    public Review setCool(int cool) {
         this.cool = cool;
+        return this;
     }
 
     public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public Review setDate(LocalDateTime date) {
         this.date = date;
+        return this;
     }
 
     public int getFunny() {
         return funny;
     }
 
-    public void setFunny(int funny) {
+    public Review setFunny(int funny) {
         this.funny = funny;
+        return this;
     }
 
-    public String getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public Review setUser(User user) {
+        this.user = user;
+        return this;
     }
 
     public int getUseful() {
         return useful;
     }
 
-    public void setUseful(int useful) {
+    public Review setUseful(int useful) {
         this.useful = useful;
-    }
-
-    public String getReviewId() {
-        return reviewId;
-    }
-
-    public void setReviewId(String reviewId) {
-        this.reviewId = reviewId;
+        return this;
     }
 
     public double getStars() {
         return stars;
     }
 
-    public void setStars(double stars) {
+    public Review setStars(double stars) {
         this.stars = stars;
+        return this;
     }
 
     public String getText() {
         return text;
     }
 
-    public void setText(String text) {
+    public Review setText(String text) {
         this.text = text;
+        return this;
     }
 
     @Override
@@ -100,13 +136,13 @@ public class Review {
             return mapper.writeValueAsString(this);
         } catch (IOException e) {
             final StringBuilder sb = new StringBuilder("Review{");
-            sb.append("businessId='").append(businessId).append('\'');
+            sb.append("business='").append(business).append('\'');
             sb.append(", cool=").append(cool);
             sb.append(", date=").append(date);
             sb.append(", funny=").append(funny);
-            sb.append(", userId='").append(userId).append('\'');
+            sb.append(", user='").append(user).append('\'');
             sb.append(", useful=").append(useful);
-            sb.append(", reviewId='").append(reviewId).append('\'');
+            sb.append(", id='").append(id).append('\'');
             sb.append(", stars=").append(stars);
             sb.append(", text='").append(text).append('\'');
             sb.append('}');

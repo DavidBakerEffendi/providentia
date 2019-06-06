@@ -3,12 +3,14 @@ package za.ac.sun.cs.providentia.domain;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings("unused")
 @Entity
 @Table(name = "business")
 public class Business implements Serializable {

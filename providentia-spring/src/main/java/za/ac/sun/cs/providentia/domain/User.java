@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+@SuppressWarnings("unused")
 @Entity
 @Table(name = "users")
 public class User {

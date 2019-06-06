@@ -1,13 +1,12 @@
 package za.ac.sun.cs.providentia.web.rest;
 
-import za.ac.sun.cs.providentia.security.SecurityUtils;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import za.ac.sun.cs.providentia.security.SecurityUtils;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,10 +27,10 @@ public class AccountResource {
     @GetMapping("/account")
     public UserVM getAccount() {
         String login = SecurityUtils.getCurrentUserLogin()
-            .orElseThrow(AccountResourceException::new);
+                .orElseThrow(AccountResourceException::new);
         Set<String> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.toSet());
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
         return new UserVM(login, authorities);
     }
 

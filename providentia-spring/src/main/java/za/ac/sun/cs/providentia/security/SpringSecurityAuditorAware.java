@@ -1,11 +1,10 @@
 package za.ac.sun.cs.providentia.security;
 
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.stereotype.Component;
 import za.ac.sun.cs.providentia.config.Constants;
 
 import java.util.Optional;
-
-import org.springframework.data.domain.AuditorAware;
-import org.springframework.stereotype.Component;
 
 /**
  * Implementation of {@link AuditorAware} based on Spring Security.
