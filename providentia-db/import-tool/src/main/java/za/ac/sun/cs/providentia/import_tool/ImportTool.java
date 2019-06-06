@@ -57,7 +57,8 @@ public class ImportTool {
             importPostgresData(User.class, true);
             // Adds all user's friends
             importPostgresData(User.class, false);
-            // TODO: Review
+            // Adds all reviews
+            importPostgresData(Review.class);
         }
         if (dataConfig.importCassandra) {
             LOG.info("Importing Yelp data into Cassandra.");

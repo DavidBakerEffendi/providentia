@@ -218,12 +218,6 @@ public class PostgresTransactionManager {
             if (p.executeUpdate() == 0) {
                 throw new SQLException("Creating a '" + businessName + "' link failed, no rows affected.");
             }
-
-            try (ResultSet generatedKeys = p.getGeneratedKeys()) {
-                if (!generatedKeys.next()) {
-                    throw new SQLException("Creating a '" + businessName + "' link failed, no ID obtained.");
-                }
-            }
         } catch (SQLException e) {
             LOG.error("Error inserting a " + businessName + " link into table 'bus_cat'.", e);
         }
@@ -262,12 +256,6 @@ public class PostgresTransactionManager {
 
                 if (p.executeUpdate() == 0) {
                     throw new SQLException("Creating '" + b.getName() + "' failed, no rows affected.");
-                }
-
-                try (ResultSet generatedKeys = p.getGeneratedKeys()) {
-                    if (!generatedKeys.next()) {
-                        throw new SQLException("Creating '" + b.getName() + "' failed, no ID obtained.");
-                    }
                 }
             }
         } catch (SQLException e) {
@@ -320,12 +308,6 @@ public class PostgresTransactionManager {
 
             if (p.executeUpdate() == 0) {
                 throw new SQLException("Creating a '" + user + "' link failed, no rows affected.");
-            }
-
-            try (ResultSet generatedKeys = p.getGeneratedKeys()) {
-                if (!generatedKeys.next()) {
-                    throw new SQLException("Creating a '" + user + "' link failed, no ID obtained.");
-                }
             }
         } catch (SQLException e) {
             LOG.error("Error inserting a " + user + " link into table 'friends'.", e);
@@ -390,7 +372,58 @@ public class PostgresTransactionManager {
      * @param r the review POJO containing the data to insert.
      */
     private void insertReview(Review r) {
-        // TODO
+        // Does user exist?
+        try {
+            String sql = "SELECT id FROM users WHERE id = ?";
+            PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            p.setObject(1, r.getUserId());
+            ResultSet rs = p.executeQuery();
+            if (!rs.first()) {
+                return;
+            }
+        } catch (SQLException e) {
+            LOG.error("Error selecting " + r.getUserId() + " from table 'friends'.", e);
+        }
+        // Does business exist?
+        try {
+            String sql = "SELECT id FROM business WHERE id = ?";
+            PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            p.setObject(1, r.getBusinessId());
+            ResultSet rs = p.executeQuery();
+            if (!rs.first()) {
+                return;
+            }
+        } catch (SQLException e) {
+            LOG.error("Error selecting " + r.getBusinessId() + " from table 'business'.", e);
+        }
+
+        try {
+            String sql = "SELECT id FROM review WHERE id = ?";
+            PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            p.setString(1, r.getReviewId());
+            ResultSet rs = p.executeQuery();
+            if (!rs.first()) {
+                sql = "INSERT INTO review (" +
+                        "id, user_id, business_id, stars, useful, funny, cool, text, date) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                p.setString(1, r.getReviewId());
+                p.setString(2, r.getUserId());
+                p.setString(3, r.getBusinessId());
+                p.setDouble(4, r.getStars());
+                p.setInt(5, r.getUseful());
+                p.setInt(6, r.getFunny());
+                p.setInt(7, r.getCool());
+                p.setString(8, r.getText());
+                p.setObject(9, r.getDate());
+
+                if (p.executeUpdate() == 0) {
+                    throw new SQLException("Creating '" + r.getReviewId() + "' failed, no rows affected.");
+                }
+            }
+        } catch (SQLException e) {
+            LOG.error("Error creating '" + r.getReviewId() + "' for table 'review'.", e);
+        }
     }
 
     public static String getDataDescriptorShort(Class<?> classType) {
