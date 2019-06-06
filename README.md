@@ -3,7 +3,7 @@ A web-based bench marking tool for testing query speeds of JanusGraph vs other D
 
 ## Project Structure
 
-![Providentia Structure](assets/Providentia.png "Providentia Structure")
+![Providentia Structure](providentia-assets/Providentia.png "Providentia Structure")
 
 * Client is based on Angular6+.
 * Flask is used to communicate with the client and the Python backend is used for analysis and machine learning.

@@ -18,7 +18,7 @@ The following are the steps on how to get started:
 
 ## Yelp JanusGraph Schema
 
-![Yelp JanusGraph Schema](schema/ProvidentiaJanus.png "Yelp JanusGraph Schema")
+![Yelp JanusGraph Schema](../../providentia-assets/ProvidentiaJanus.png "Yelp JanusGraph Schema")
 
 The above diagram illustrates the schema created by this application. Indices created on vertices holding custom unique 
 IDs from the data filtered by vertex labels. What is indexed in the graph is written in italics on the diagram.
