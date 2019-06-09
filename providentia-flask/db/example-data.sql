@@ -66,7 +66,8 @@ insert into benchmarks (
     title,
     description,
     query_time,
-    analysis_time
+    analysis_time,
+    status
 )
 values
     (
@@ -77,7 +78,8 @@ values
         'Graph benchmark for Flask testing',
         'Example result for testing Flask/Angular connection and displaying of results.',
 	    50432,
-        110465
+        110465,
+        'COMPLETE'
     ),
     (
         'd3dd123d-5f55-4d82-abb2-648a06211beb',
@@ -87,7 +89,8 @@ values
         'Cassandra benchmark for Flask testing',
         'Example result for testing Flask/Angular connection and displaying of results.',
 	    70432,
-        110265
+        110265,
+        'COMPLETE'
     ),
     (
         '291a3c67-7838-40e4-ab4a-677200bc4743',
@@ -97,5 +100,6 @@ values
         'Postgres benchmark for Flask testing',
         'Example result for testing Flask/Angular connection and displaying of results.',
 	    72432,
-        110365
+        110365,
+        'COMPLETE'
     );

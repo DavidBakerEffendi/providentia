@@ -70,7 +70,7 @@
         </dependency>
         <dependency>
             <groupId>org.janusgraph</groupId>
-            <artifactId>janusgraph-cassandra</artifactId>
+            <artifactId>janusgraph-cql</artifactId>
             <version>${janusgraph.version}</version>
         </dependency>
         <!-- Jackson -->

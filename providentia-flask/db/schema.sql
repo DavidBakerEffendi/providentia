@@ -43,6 +43,7 @@ CREATE TABLE benchmarks (
     description text,
     query_time integer,
     analysis_time integer,
+    status character varying(20) NOT NULL,   -- COMPLETE, WAITING, PROCESSING, UNCONFIRMED
     PRIMARY KEY (id),
     FOREIGN KEY (database_id) REFERENCES databases (id),
     FOREIGN KEY (dataset_id) REFERENCES datasets (id),
