@@ -25,6 +25,9 @@ public class Business implements Serializable {
     @Column(name = "address", nullable = false)
     private String address;
 
+    @ManyToOne()
+    private City city;
+
     @NotNull
     @Column(name = "postalCode", nullable = false)
     private String postalCode;
@@ -34,14 +37,11 @@ public class Business implements Serializable {
     private boolean isOpen;
 
     @ManyToMany
-    @JoinTable(
-            name = "bus_cat",
-            joinColumns = @JoinColumn(name = "business_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JoinColumns({
+            @JoinColumn(name = "category", insertable = false, updatable = false),
+            @JoinColumn(name = "business_id", insertable = false, updatable = false)
+    })
     private Set<Category> categories = new HashSet<>();
-
-    @ManyToOne()
-    private City city;
 
     @NotNull
     @Column(name = "review_count", nullable = false)

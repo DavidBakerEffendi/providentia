@@ -11,38 +11,25 @@ public class City {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+    private String id;
 
     @NotNull
     @Column(name = "name", nullable = false)
-    private String name;
+    private String state;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(unique = true)
-    private State state;
-
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public City setName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public State getState() {
+    public String getState() {
         return state;
     }
 
-    public City setState(State state) {
+    public City setState(String state) {
         this.state = state;
         return this;
     }

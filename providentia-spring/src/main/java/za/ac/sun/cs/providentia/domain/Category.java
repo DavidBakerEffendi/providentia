@@ -6,31 +6,18 @@ import java.util.UUID;
 
 @SuppressWarnings("unused")
 @Entity
-@Table(name = "category")
+@Table(name = "bus_by_cat")
 public class Category {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private UUID id;
+    @EmbeddedId
+    private CategoryId id;
 
-    @NotNull
-    @Column(name = "name", nullable = false)
-    private String name;
-
-    public UUID getId() {
+    public CategoryId getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public Category setId(CategoryId id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Category setName(String name) {
-        this.name = name;
         return this;
     }
 
