@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import za.ac.sun.cs.providentia.domain.Business;
 import za.ac.sun.cs.providentia.domain.Review;
 import za.ac.sun.cs.providentia.domain.User;
+import za.ac.sun.cs.providentia.import_tool.transaction.CassandraTransactionManager;
 import za.ac.sun.cs.providentia.import_tool.transaction.JanusTransactionManager;
 import za.ac.sun.cs.providentia.import_tool.transaction.PostgresTransactionManager;
 import za.ac.sun.cs.providentia.import_tool.util.FileReaderWrapper;
@@ -81,7 +82,7 @@ public class ImportTool {
             boolean completed = false;
             long totalTransactions = Math.round(FileReaderWrapper.countLines(f) * cassandraConfig.percentageData);
 
-            try (final ProgressBar pb = new ProgressBar(PostgresTransactionManager.getDataDescriptorShort(classType), totalTransactions)) {
+            try (final ProgressBar pb = new ProgressBar(CassandraTransactionManager.getDataDescriptorShort(classType), totalTransactions)) {
                 String line = reader.readLine();
                 int linesRead = 0;
                 int sectorCount = 1;
@@ -107,7 +108,7 @@ public class ImportTool {
                     }
                 } while (linesRead < pb.getMax());
                 LOG.info("All records from " + classType + " successfully read. Waiting to process "
-                        + PostgresTransactionManager.getDataDescriptorLong(classType) + ".");
+                        + CassandraTransactionManager.getDataDescriptorLong(classType) + ".");
 
                 if (pb.getMax() == pb.getCurrent()) {
                     completed = true;
@@ -118,9 +119,9 @@ public class ImportTool {
             }
 
             if (completed) {
-                LOG.info(PostgresTransactionManager.getDataDescriptorLong(classType) + " data imported successfully!");
+                LOG.info(CassandraTransactionManager.getDataDescriptorLong(classType) + " data imported successfully!");
             } else {
-                LOG.error(PostgresTransactionManager.getDataDescriptorLong(classType) + "  data could not be imported.");
+                LOG.error(CassandraTransactionManager.getDataDescriptorLong(classType) + "  data could not be imported.");
             }
         } else {
             LOG.error("Could not import " + classType.toString() + " data as JSON file was not found at '"

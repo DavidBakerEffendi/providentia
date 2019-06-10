@@ -7,113 +7,95 @@ CREATE DATABASE yelp;
 
 -- If already connected to the database, run from here to create the schema
 
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 DROP TABLE IF EXISTS review;
-DROP TABLE IF EXISTS bus_cat;
+DROP TABLE IF EXISTS bus_by_cat;
 DROP TABLE IF EXISTS business;
 DROP TABLE IF EXISTS friends;
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS category;
 DROP TABLE IF EXISTS city;
-DROP TABLE IF EXISTS state;
 
-DROP INDEX IF EXISTS review_date;
-DROP INDEX IF EXISTS business_location;
-
-CREATE TABLE state (
-    id uuid DEFAULT uuid_generate_v4(),
-    name character varying(255) NOT NULL,
-    PRIMARY KEY (id, name)
-);
+DROP INDEX IF EXISTS review_date_ind;
+DROP INDEX IF EXISTS business_location_ind;
+DROP INDEX IF EXISTS business_city_ind;
 
 CREATE TABLE city (
-    id uuid DEFAULT uuid_generate_v4(),
-    name character varying(255) NOT NULL,
-    state_id uuid NOT NULL,
-    PRIMARY KEY (id, name),
-    FOREIGN KEY (state_id) REFERENCES state (id)
-);
-
--- TODO: Change this to simply have the name by the many to many table
-CREATE TABLE category (
-    id uuid DEFAULT uuid_generate_v4(),
-    name character varying(255) NOT NULL,
-    PRIMARY KEY (id, name)
+    id CHARACTER VARYING(50) UNIQUE,
+    state CHARACTER VARYING(2) NOT NULL,
+    PRIMARY KEY (id, state)
 );
 
 CREATE TABLE users (
-    id character varying(22) NOT NULL,
-    name character varying(255) NOT NULL,
-    review_count integer DEFAULT 0,
-    yelping_since timestamp NOT NULL,
-    useful integer DEFAULT 0,
-    funny integer DEFAULT 0,
-    cool integer DEFAULT 0,
-    fans integer DEFAULT 0,
-    average_stars numeric DEFAULT 0.0,
---    compliment_hot integer DEFAULT 0,
---    compliment_more integer DEFAULT 0,
---    compliment_profile integer DEFAULT 0,
---    compliment_cute integer DEFAULT 0,
---    compliment_list integer DEFAULT 0,
---    compliment_note integer DEFAULT 0,
---    compliment_plain integer DEFAULT 0,
---    compliment_cool integer DEFAULT 0,
---    compliment_funny integer DEFAULT 0,
---    compliment_writer integer DEFAULT 0,
---    compliment_photos integer DEFAULT 0,
+    id CHARACTER VARYING(22) UNIQUE,
+    name CHARACTER VARYING(255) NOT NULL,
+    review_count INTEGER DEFAULT 0,
+    yelping_since TIMESTAMP NOT NULL,
+    useful INTEGER DEFAULT 0,
+    funny INTEGER DEFAULT 0,
+    cool INTEGER DEFAULT 0,
+    fans INTEGER DEFAULT 0,
+    average_stars NUMERIC DEFAULT 0.0,
+--    compliment_hot INTEGER DEFAULT 0,
+--    compliment_more INTEGER DEFAULT 0,
+--    compliment_profile INTEGER DEFAULT 0,
+--    compliment_cute INTEGER DEFAULT 0,
+--    compliment_list INTEGER DEFAULT 0,
+--    compliment_note INTEGER DEFAULT 0,
+--    compliment_plain INTEGER DEFAULT 0,
+--    compliment_cool INTEGER DEFAULT 0,
+--    compliment_funny INTEGER DEFAULT 0,
+--    compliment_writer INTEGER DEFAULT 0,
+--    compliment_photos INTEGER DEFAULT 0,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE friends (
-    user_id character varying(22),
-    friend_id character varying(22) NOT NULL,
+    user_id CHARACTER VARYING(22),
+    friend_id CHARACTER VARYING(22) NOT NULL,
     PRIMARY KEY (user_id, friend_id),
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (friend_id) REFERENCES users (id)
 );
 
 CREATE TABLE business (
-    id character varying(22),
-    name character varying(255) NOT NULL,
-    address character varying(255) NOT NULL,
-    city_id uuid NOT NULL,
-    state_id uuid NOT NULL,
-    postal_code character varying(50) NOT NULL,
-    latitude numeric NOT NULL,
-    longitude numeric NOT NULL,
-    stars numeric NOT NULL,
-    review_count integer DEFAULT 0,
+    id CHARACTER VARYING(22) UNIQUE,
+    name CHARACTER VARYING(255) NOT NULL,
+    address CHARACTER VARYING(255) NOT NULL,
+    city CHARACTER VARYING(50) NOT NULL,
+    postal_code CHARACTER VARYING(50) NOT NULL,
+    latitude NUMERIC NOT NULL,
+    longitude NUMERIC NOT NULL,
+    stars NUMERIC NOT NULL,
+    review_count INTEGER DEFAULT 0,
     is_open boolean DEFAULT false,
     PRIMARY KEY (id),
-    FOREIGN KEY (city_id) REFERENCES city (id),
-    FOREIGN KEY (state_id) REFERENCES state (id)
+    FOREIGN KEY (city) REFERENCES city (id)
 );
 
-CREATE TABLE bus_cat (
-    business_id character varying(22) NOT NULL,
-    category_id uuid NOT NULL,
-    PRIMARY KEY (business_id, category_id),
-    FOREIGN KEY (business_id) REFERENCES business (id),
-    FOREIGN KEY (category_id) REFERENCES category (id)
+CREATE TABLE bus_by_cat (
+    business_id CHARACTER VARYING(22) NOT NULL,
+    category CHARACTER VARYING(50) NOT NULL,
+    PRIMARY KEY (business_id, category),
+    FOREIGN KEY (business_id) REFERENCES business (id)
 );
 
 CREATE TABLE review (
-    id character varying(22),
-    user_id character varying(22) NOT NULL,
-    business_id character varying(22) NOT NULL,
-    stars numeric NOT NULL,
-    useful integer DEFAULT 0,
-    funny integer DEFAULT 0,
-    cool integer DEFAULT 0,
-    text text NOT NULL,
-    date timestamp NOT NULL,
+    id CHARACTER VARYING(22) UNIQUE,
+    user_id CHARACTER VARYING(22) NOT NULL,
+    business_id CHARACTER VARYING(22) NOT NULL,
+    stars NUMERIC NOT NULL,
+    useful INTEGER DEFAULT 0,
+    funny INTEGER DEFAULT 0,
+    cool INTEGER DEFAULT 0,
+    text TEXT NOT NULL,
+    date TIMESTAMP NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (business_id) REFERENCES business (id)
 );
-
-CREATE INDEX review_date ON review (date);
-CREATE INDEX business_location on business (latitude, longitude);
-CREATE INDEX category_name ON category (name);
+-- Index spatio-temporal data
+CREATE INDEX review_date_ind ON review (date);
+CREATE INDEX business_location_ind ON business (latitude, longitude);
+CREATE INDEX business_city_ind ON business (city);
+-- Cluster reviews by date and businesses by location
+CLUSTER review USING review_date_ind;
+CLUSTER business USING business_city_ind;

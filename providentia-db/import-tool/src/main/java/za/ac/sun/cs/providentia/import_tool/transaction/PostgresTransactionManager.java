@@ -62,164 +62,75 @@ public class PostgresTransactionManager {
     }
 
     /**
-     * Inserts the state into the database. If the state already exists, return the id.
-     *
-     * @param stateName the name of the state to insert.
-     * @return the UUID associated with that state.
-     */
-    private UUID insertState(String stateName) {
-        try {
-            String sql = "SELECT id FROM state WHERE name = ?";
-            PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            p.setString(1, stateName);
-            ResultSet rs = p.executeQuery();
-            if (rs.first()) {
-                return UUID.fromString(rs.getString(1));
-            }
-        } catch (SQLException e) {
-            LOG.error("Error selecting " + stateName + " from table 'state'.", e);
-        }
-
-        try {
-            String sql = "INSERT INTO state (name) VALUES (?)";
-            PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            p.setString(1, stateName);
-
-            if (p.executeUpdate() == 0) {
-                throw new SQLException("Creating '" + stateName + "' failed, no rows affected.");
-            }
-
-            try (ResultSet generatedKeys = p.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return UUID.fromString(generatedKeys.getString(1));
-                } else {
-                    throw new SQLException("Creating '" + stateName + "' failed, no ID obtained.");
-                }
-            }
-        } catch (SQLException e) {
-            LOG.error("Error inserting " + stateName + " into table 'state'.", e);
-        }
-
-        return null;
-    }
-
-    /**
      * Inserts the city into the database. If the city already exists, return the id.
      *
-     * @param cityName the name of the state to insert.
-     * @param stateId  the UUID of the state which this city falls under.
-     * @return the UUID associated with that city.
+     * @param cityName  the name of the state to insert.
+     * @param stateName the name of the state which this city falls under.
      */
-    private UUID insertCity(String cityName, UUID stateId) {
+    private void insertCity(String cityName, String stateName) {
         try {
-            String sql = "SELECT id FROM city WHERE name = ?";
+            String sql = "SELECT id FROM city WHERE id = ?";
             PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             p.setString(1, cityName);
             ResultSet rs = p.executeQuery();
             if (rs.first()) {
-                return UUID.fromString(rs.getString(1));
+                return;
             }
         } catch (SQLException e) {
             LOG.error("Error selecting " + cityName + " from table 'city'.", e);
         }
 
         try {
-            String sql = "INSERT INTO city (name, state_id) VALUES (?, ?)";
+            String sql = "INSERT INTO city (id, state) VALUES (?, ?)";
             PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             p.setString(1, cityName);
-            p.setObject(2, stateId);
+            p.setObject(2, stateName);
 
             if (p.executeUpdate() == 0) {
                 throw new SQLException("Creating '" + cityName + "' failed, no rows affected.");
             }
 
             try (ResultSet generatedKeys = p.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return UUID.fromString(generatedKeys.getString(1));
-                } else {
+                if (!generatedKeys.next()) {
                     throw new SQLException("Creating '" + cityName + "' failed, no ID obtained.");
                 }
             }
         } catch (SQLException e) {
             LOG.error("Error inserting " + cityName + " into table 'city'.", e);
         }
-
-        return null;
-    }
-
-    /**
-     * Inserts the category into the database. If the state already exists, return the id.
-     *
-     * @param categoryName the name of the category to insert.
-     * @return the UUID associated with that category.
-     */
-    private UUID insertCategory(String categoryName) {
-        try {
-            String sql = "SELECT id FROM category WHERE name = ?";
-            PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            p.setString(1, categoryName);
-            ResultSet rs = p.executeQuery();
-            if (rs.first()) {
-                return UUID.fromString(rs.getString(1));
-            }
-        } catch (SQLException e) {
-            LOG.error("Error selecting " + categoryName + " from table 'category'.", e);
-        }
-
-        try {
-            String sql = "INSERT INTO category (name) VALUES (?)";
-            PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            p.setString(1, categoryName);
-
-            if (p.executeUpdate() == 0) {
-                throw new SQLException("Creating '" + categoryName + "' failed, no rows affected.");
-            }
-
-            try (ResultSet generatedKeys = p.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return UUID.fromString(generatedKeys.getString(1));
-                } else {
-                    throw new SQLException("Creating '" + categoryName + "' failed, no ID obtained.");
-                }
-            }
-        } catch (SQLException e) {
-            LOG.error("Error inserting " + categoryName + " into table 'category'.", e);
-        }
-
-        return null;
     }
 
     /**
      * Inserts the link between a business and category into the database.
      *
      * @param businessName the name of the business to link.
-     * @param categoryId   the UUID of the category which this business falls under.
+     * @param categoryName the name of the category which this business falls under.
      */
-    private void insertBus2Cat(String businessName, UUID categoryId) {
+    private void insertBusinessByCategory(String businessName, String categoryName) {
         try {
-            String sql = "SELECT business_id FROM bus_cat WHERE business_id = ? AND category_id = ?";
+            String sql = "SELECT business_id FROM bus_by_cat WHERE business_id = ? AND category = ?";
             PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             p.setString(1, businessName);
-            p.setObject(2, categoryId);
+            p.setObject(2, categoryName);
             ResultSet rs = p.executeQuery();
             if (rs.first()) {
                 return;
             }
         } catch (SQLException e) {
-            LOG.error("Error selecting " + businessName + " from table 'bus_cat'.", e);
+            LOG.error("Error selecting " + businessName + " from table 'bus_by_cat'.", e);
         }
 
         try {
-            String sql = "INSERT INTO bus_cat (business_id, category_id) VALUES (?, ?)";
+            String sql = "INSERT INTO bus_by_cat (business_id, category) VALUES (?, ?)";
             PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             p.setString(1, businessName);
-            p.setObject(2, categoryId);
+            p.setObject(2, categoryName);
 
             if (p.executeUpdate() == 0) {
                 throw new SQLException("Creating a '" + businessName + "' link failed, no rows affected.");
             }
         } catch (SQLException e) {
-            LOG.error("Error inserting a " + businessName + " link into table 'bus_cat'.", e);
+            LOG.error("Error inserting a " + businessName + " link into table 'bus_by_cat'.", e);
         }
     }
 
@@ -229,8 +140,7 @@ public class PostgresTransactionManager {
      * @param b the business POJO containing the data to insert.
      */
     private void insertBusiness(Business b) {
-        UUID stateId = insertState(b.getState());
-        UUID cityId = insertCity(b.getCity(), stateId);
+        insertCity(b.getCity(), b.getState());
 
         try {
             String sql = "SELECT id FROM business WHERE id = ?";
@@ -238,21 +148,20 @@ public class PostgresTransactionManager {
             p.setString(1, b.getBusinessId());
             ResultSet rs = p.executeQuery();
             if (!rs.first()) {
-                sql = "INSERT INTO business (" +
-                        "id, name, address, city_id, state_id, postal_code, latitude, longitude, stars, review_count, " +
-                        "is_open) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                sql = "INSERT INTO business " +
+                        "(id, name, address, city, postal_code, latitude, longitude, stars, review_count, is_open) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 p.setString(1, b.getBusinessId());
                 p.setString(2, b.getName());
                 p.setString(3, b.getAddress());
-                p.setObject(4, cityId);
-                p.setObject(5, stateId);
-                p.setString(6, b.getPostalCode());
-                p.setDouble(7, b.getLatitude());
-                p.setDouble(8, b.getLongitude());
-                p.setDouble(9, b.getStars());
-                p.setInt(10, b.getReviewCount());
-                p.setBoolean(11, b.isOpen());
+                p.setObject(4, b.getCity());
+                p.setString(5, b.getPostalCode());
+                p.setDouble(6, b.getLatitude());
+                p.setDouble(7, b.getLongitude());
+                p.setDouble(8, b.getStars());
+                p.setInt(9, b.getReviewCount());
+                p.setBoolean(10, b.isOpen());
 
                 if (p.executeUpdate() == 0) {
                     throw new SQLException("Creating '" + b.getName() + "' failed, no rows affected.");
@@ -263,7 +172,7 @@ public class PostgresTransactionManager {
         }
 
         for (String categoryName : b.getCategories()) {
-            insertBus2Cat(b.getBusinessId(), insertCategory(categoryName));
+            insertBusinessByCategory(b.getBusinessId(), categoryName);
         }
     }
 
@@ -439,7 +348,7 @@ public class PostgresTransactionManager {
 
     public static String getDataDescriptorLong(Class<?> classType) {
         if (classType == Business.class)
-            return "business, attribute, category, city, and state tables";
+            return "business, category, city and tables";
         else if (classType == User.class)
             return "user and friend tables";
         else if (classType == Review.class)

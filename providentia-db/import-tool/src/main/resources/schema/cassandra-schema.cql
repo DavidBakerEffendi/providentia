@@ -34,7 +34,7 @@ CREATE TABLE yelp.users (
     cool INT,
     fans INT,
     average_stars FLOAT,
-    friends LIST<TEXT>,
+    friends SET<TEXT>,
 --    compliment_hot INT,
 --    compliment_more INT,
 --    compliment_profile INT,

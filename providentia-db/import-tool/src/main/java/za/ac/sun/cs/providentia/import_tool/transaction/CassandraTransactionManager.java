@@ -3,8 +3,6 @@ package za.ac.sun.cs.providentia.import_tool.transaction;
 import ch.qos.logback.classic.Logger;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.slf4j.LoggerFactory;
 import za.ac.sun.cs.providentia.domain.Business;
 import za.ac.sun.cs.providentia.domain.Review;
@@ -16,7 +14,6 @@ import java.util.LinkedList;
 public class CassandraTransactionManager {
 
     private final Session session;
-    private final Gson gson = new GsonBuilder().create();
 
     private final Logger LOG = (Logger) LoggerFactory.getLogger(CassandraTransactionManager.class);
 
@@ -133,10 +130,28 @@ public class CassandraTransactionManager {
         cql.append(", ").append(u.getCool());
         cql.append(", ").append(u.getFans());
         cql.append(", ").append(u.getAverageStars());
-        cql.append(", ").append(gson.toJson(u.getFriends()).replaceAll("\"", "'"));
+        cql.append(", ").append(toCassandraSet(u.getFriends()));
         cql.append(")");
 
         session.execute(cql.toString());
+    }
+
+    /**
+     * Converts an array to Cassandra set notation.
+     *
+     * @param a the array to convert.
+     * @return the String representation of the array.
+     */
+    private String toCassandraSet(String[] a) {
+        if (a.length == 0) return "{}";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("{'").append(a[0]).append("' ");
+        for (int i = 1; i < a.length; i++)
+            sb.append(", '").append(a[i]).append("'");
+        sb.append("}");
+
+        return sb.toString();
     }
 
     /**
@@ -171,6 +186,28 @@ public class CassandraTransactionManager {
         cql.append(")");
 
         session.execute(cql.toString());
+    }
+
+    public static String getDataDescriptorShort(Class<?> classType) {
+        if (classType == Business.class)
+            return "BUS";
+        else if (classType == User.class)
+            return "USR";
+        else if (classType == Review.class)
+            return "REV";
+        else
+            return "UNKNWN";
+    }
+
+    public static String getDataDescriptorLong(Class<?> classType) {
+        if (classType == Business.class)
+            return "business and category tables";
+        else if (classType == User.class)
+            return "user table";
+        else if (classType == Review.class)
+            return "review table";
+        else
+            return "unknown";
     }
 
 }
