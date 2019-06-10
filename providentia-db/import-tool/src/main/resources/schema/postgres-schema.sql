@@ -1,7 +1,11 @@
--- Create the database and connect to it after which run the uncommented queries to create
--- the schema and indexes for the Yelp database.
+-- From the psql bash, run the following to create the database and schema:
 
--- CREATE DATABASE yelp;
+-- To create and connect to the database, run from here
+
+CREATE DATABASE yelp;
+\c yelp;
+
+-- If already connected to the database, run from here to create the schema
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -20,21 +24,22 @@ DROP INDEX IF EXISTS business_location;
 CREATE TABLE state (
     id uuid DEFAULT uuid_generate_v4(),
     name character varying(255) NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id, name)
 );
 
 CREATE TABLE city (
     id uuid DEFAULT uuid_generate_v4(),
     name character varying(255) NOT NULL,
     state_id uuid NOT NULL,
-    PRIMARY KEY (id),
+    PRIMARY KEY (id, name),
     FOREIGN KEY (state_id) REFERENCES state (id)
 );
 
+-- TODO: Change this to simply have the name by the many to many table
 CREATE TABLE category (
     id uuid DEFAULT uuid_generate_v4(),
     name character varying(255) NOT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id, name)
 );
 
 CREATE TABLE users (
@@ -64,6 +69,7 @@ CREATE TABLE users (
 CREATE TABLE friends (
     user_id character varying(22),
     friend_id character varying(22) NOT NULL,
+    PRIMARY KEY (user_id, friend_id),
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (friend_id) REFERENCES users (id)
 );
@@ -88,6 +94,7 @@ CREATE TABLE business (
 CREATE TABLE bus_cat (
     business_id character varying(22) NOT NULL,
     category_id uuid NOT NULL,
+    PRIMARY KEY (business_id, category_id),
     FOREIGN KEY (business_id) REFERENCES business (id),
     FOREIGN KEY (category_id) REFERENCES category (id)
 );

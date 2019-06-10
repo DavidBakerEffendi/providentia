@@ -2,11 +2,14 @@ package za.ac.sun.cs.providentia.import_tool.util;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Session;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
 import org.slf4j.LoggerFactory;
-import za.ac.sun.cs.providentia.import_tool.janus.JanusTransactionManager;
-import za.ac.sun.cs.providentia.import_tool.postgres.PostgresTransactionManager;
+import za.ac.sun.cs.providentia.import_tool.transaction.CassandraTransactionManager;
+import za.ac.sun.cs.providentia.import_tool.transaction.JanusTransactionManager;
+import za.ac.sun.cs.providentia.import_tool.transaction.PostgresTransactionManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,10 +28,12 @@ public class ImportConfig {
     public final DataConfig dataConfig;
     public final JanusGraphConfig janusGraphConfig;
     public final PostgresConfig postgresConfig;
+    public final CassandraConfig cassandraConfig;
 
     private final String DATA_PROPERTIES = "data.properties";
     private final String JANUS_GRAPH_PROPERTIES = "janus-graph.properties";
     private final String POSTGRES_PROPERTIES = "postgres.properties";
+    private final String CASSANDRA_PROPERTIES = "cassandra.properties";
 
     private static final Logger LOG = (Logger) LoggerFactory.getLogger(ImportConfig.class);
 
@@ -36,6 +41,7 @@ public class ImportConfig {
         DataConfig tempDataConfig = null;
         JanusGraphConfig tempJanusGraphConfig = null;
         PostgresConfig tempPostgresConfig = null;
+        CassandraConfig tempCassandraConfig = null;
         // Get property files
         ClassLoader loader = this.getClass().getClassLoader();
         try {
@@ -45,6 +51,8 @@ public class ImportConfig {
                 tempJanusGraphConfig = new JanusGraphConfig(loader.getResourceAsStream(JANUS_GRAPH_PROPERTIES));
             if (tempDataConfig.importPostgres)
                 tempPostgresConfig = new PostgresConfig(loader.getResourceAsStream(POSTGRES_PROPERTIES));
+            if (tempDataConfig.importCassandra)
+                tempCassandraConfig = new CassandraConfig(loader.getResourceAsStream(CASSANDRA_PROPERTIES));
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -53,11 +61,13 @@ public class ImportConfig {
         this.dataConfig = tempDataConfig;
         this.janusGraphConfig = tempJanusGraphConfig;
         this.postgresConfig = tempPostgresConfig;
+        this.cassandraConfig = tempCassandraConfig;
     }
 
     public void closeAll() {
         if (janusGraphConfig != null) janusGraphConfig.close();
         if (postgresConfig != null) postgresConfig.close();
+        if (cassandraConfig != null) cassandraConfig.close();
     }
 
     /**
@@ -85,6 +95,11 @@ public class ImportConfig {
                 LOG.error("Properties file not found!");
                 throw new IOException("Properties file not found!");
             }
+
+            // Set logging level
+            Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+            root.setLevel(Level.INFO);
+
             Properties props = new Properties();
             props.load(propertyStream);
 
@@ -158,10 +173,6 @@ public class ImportConfig {
             Properties props = new Properties();
             props.load(propertyStream);
 
-            // Set logging level
-            Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-            root.setLevel(Level.INFO);
-
             double tempSectorSize = 0.3;
             int tempQueueSize = 100;
             boolean tempLoadSchema = false;
@@ -223,7 +234,7 @@ public class ImportConfig {
                 }
             } catch (IOException e) {
                 LOG.error("IOException while creating temporary copy of " + JANUS_GRAPH_PROPERTIES + " to give to JanusGraph" +
-                        "database.", e);
+                        "keyspace.", e);
                 System.exit(1);
             }
             return null;
@@ -329,10 +340,116 @@ public class ImportConfig {
                 }
             } catch (IOException e) {
                 LOG.error("IOException while creating temporary copy of " + POSTGRES_PROPERTIES + " to give to PostgreSQL" +
-                        "database.", e);
+                        "keyspace.", e);
                 System.exit(1);
             } catch (SQLException e) {
                 LOG.error("SQLException while connecting to " + hostname + ":" + port + "/" + database, e);
+                System.exit(1);
+            }
+            return null;
+        }
+
+        void close() {
+            try {
+                if (db != null)
+                    db.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public class CassandraConfig {
+
+        private final Properties props;
+        private final Session db;
+        public final CassandraTransactionManager tm;
+        private final String hostname;
+        private final String port;
+        private final String keyspace;
+        public final double sectorSize;
+        public final int queueSize;
+        public final double percentageData;
+
+        CassandraConfig(InputStream propertyStream) throws IOException {
+            LOG.info("Loading Cassandra config.");
+
+            if (propertyStream == null) {
+                LOG.error("Properties file not found!");
+                throw new IOException("Properties file not found!");
+            }
+            props = new Properties();
+            props.load(propertyStream);
+
+            String tempHostName = "localhost";
+            String tempPort = "9042";
+            String tempKeyspace = "yelp";
+            double tempSectorSize = 0.3;
+            int tempQueueSize = 100;
+            double tempPercentageData = 1.0;
+
+            try {
+                tempHostName = props.getProperty("hostname");
+            } catch (Exception ignored) {
+            }
+            try {
+                tempPort = props.getProperty("port");
+            } catch (Exception ignored) {
+            }
+            try {
+                tempKeyspace = props.getProperty("database");
+            } catch (Exception ignored) {
+            }
+            // Size of queue of operations per transaction before committing
+            try {
+                tempSectorSize = Double.parseDouble(props.getProperty("import.sector-size"));
+            } catch (Exception ignored) {
+            }
+            // Size of queue of operations per transaction before committing
+            try {
+                tempQueueSize = Integer.parseInt(props.getProperty("import.queue-size"));
+            } catch (Exception ignored) {
+            }
+            try {
+                tempPercentageData = Double.parseDouble(props.getProperty("import.data.percentage"));
+                if (tempPercentageData > 1.0 || tempPercentageData < 0.0)
+                    tempPercentageData = 1.0;
+                throw new Exception("Percentage data setting invalid. Using 1.0 default.");
+            } catch (Exception ignored) {
+            }
+
+            this.sectorSize = tempSectorSize;
+            this.queueSize = tempQueueSize;
+            this.percentageData = tempPercentageData;
+
+            this.hostname = tempHostName;
+            this.port = tempPort;
+            this.keyspace = tempKeyspace;
+
+            LOG.info("Connecting to Cassandra server.");
+            db = connect();
+            this.tm = new CassandraTransactionManager(db);
+        }
+
+        /**
+         * Connects to Cassandra over sockets using cassandra.properties.
+         */
+        private Session connect() {
+            ClassLoader classLoader = this.getClass().getClassLoader();
+            try {
+                Path temp = Files.createTempFile("resource-", ".ext");
+                InputStream isProperties = classLoader.getResourceAsStream(CASSANDRA_PROPERTIES);
+                if (isProperties == null) {
+                    throw new IOException("Could not find " + POSTGRES_PROPERTIES + "!");
+                } else {
+                    Files.copy(isProperties, temp, StandardCopyOption.REPLACE_EXISTING);
+                    Cluster.Builder b = Cluster.builder().addContactPoint(hostname).withPort(Integer.parseInt(port));
+                    return b.build().connect(keyspace);
+                }
+            } catch (IOException e) {
+                LOG.error("IOException while connecting to Cassandra cluster '" + hostname + ":" + port +
+                        "' using properties file '" + CASSANDRA_PROPERTIES + "'.", e);
                 System.exit(1);
             }
             return null;

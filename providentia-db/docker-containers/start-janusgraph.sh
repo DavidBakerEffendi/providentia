@@ -1,4 +1,6 @@
 #!/bin/sh
 
-docker-compose -f docker-compose-cql-es.yml up
+docker container start jce-elasticsearch
+docker container start jce-cassandra
+docker container start jce-janusgraph
 

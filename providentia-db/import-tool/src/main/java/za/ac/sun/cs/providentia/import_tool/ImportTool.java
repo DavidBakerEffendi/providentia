@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import za.ac.sun.cs.providentia.domain.Business;
 import za.ac.sun.cs.providentia.domain.Review;
 import za.ac.sun.cs.providentia.domain.User;
-import za.ac.sun.cs.providentia.import_tool.janus.JanusTransactionManager;
-import za.ac.sun.cs.providentia.import_tool.postgres.PostgresTransactionManager;
+import za.ac.sun.cs.providentia.import_tool.transaction.JanusTransactionManager;
+import za.ac.sun.cs.providentia.import_tool.transaction.PostgresTransactionManager;
 import za.ac.sun.cs.providentia.import_tool.util.FileReaderWrapper;
 import za.ac.sun.cs.providentia.import_tool.util.ImportConfig;
 
@@ -62,6 +62,69 @@ public class ImportTool {
         }
         if (dataConfig.importCassandra) {
             LOG.info("Importing Yelp data into Cassandra.");
+            // Adds all business, city, categories, and states
+            importCassandraData(Business.class);
+            // Adds all users. The varargs is my cheap way to determine adding friends or users.
+            importCassandraData(User.class);
+            // Adds all reviews
+            importCassandraData(Review.class);
+        }
+    }
+
+    private void importCassandraData(Class<?> classType) {
+        ImportConfig.CassandraConfig cassandraConfig = config.cassandraConfig;
+        File f = getYelpFile(classType);
+
+        if (f.exists()) {
+            FileReaderWrapper reader = new FileReaderWrapper(f);
+            reader.open();
+            boolean completed = false;
+            long totalTransactions = Math.round(FileReaderWrapper.countLines(f) * cassandraConfig.percentageData);
+
+            try (final ProgressBar pb = new ProgressBar(PostgresTransactionManager.getDataDescriptorShort(classType), totalTransactions)) {
+                String line = reader.readLine();
+                int linesRead = 0;
+                int sectorCount = 1;
+
+                do {
+                    // Create a batch of records
+                    LinkedList<String> records = new LinkedList<>();
+                    while (line != null && records.size() < cassandraConfig.queueSize && linesRead < pb.getMax()) {
+                        records.add(line);
+                        line = reader.readLine();
+                        linesRead++;
+                        pb.step();
+                    }
+
+                    // Insert records into DB
+                    cassandraConfig.tm.createTransaction(records, classType);
+
+                    // Waiting for transaction count to catch up to lines read - prevent memory overflow and save
+                    // space for cache
+                    if (linesRead > sectorCount * pb.getMax() * cassandraConfig.sectorSize) {
+                        blockReads(linesRead, pb);
+                        sectorCount++;
+                    }
+                } while (linesRead < pb.getMax());
+                LOG.info("All records from " + classType + " successfully read. Waiting to process "
+                        + PostgresTransactionManager.getDataDescriptorLong(classType) + ".");
+
+                if (pb.getMax() == pb.getCurrent()) {
+                    completed = true;
+                }
+            } finally {
+                if (!reader.isClosed())
+                    reader.close();
+            }
+
+            if (completed) {
+                LOG.info(PostgresTransactionManager.getDataDescriptorLong(classType) + " data imported successfully!");
+            } else {
+                LOG.error(PostgresTransactionManager.getDataDescriptorLong(classType) + "  data could not be imported.");
+            }
+        } else {
+            LOG.error("Could not import " + classType.toString() + " data as JSON file was not found at '"
+                    + f.getAbsolutePath() + "'!");
         }
     }
 

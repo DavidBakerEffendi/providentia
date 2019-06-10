@@ -1,4 +1,4 @@
-package za.ac.sun.cs.providentia.import_tool.janus;
+package za.ac.sun.cs.providentia.import_tool.transaction;
 
 import ch.qos.logback.classic.Logger;
 import me.tongfei.progressbar.ProgressBar;

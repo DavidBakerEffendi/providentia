@@ -1,4 +1,4 @@
-package za.ac.sun.cs.providentia.import_tool.postgres;
+package za.ac.sun.cs.providentia.import_tool.transaction;
 
 import ch.qos.logback.classic.Logger;
 import org.slf4j.LoggerFactory;
