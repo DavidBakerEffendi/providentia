@@ -1,0 +1,45 @@
+{
+  "review": {
+    "properties": {
+      "review_id": {
+        "type": "text",
+        "cql_collection": "singleton",
+        "cql_primary_key_order": 0,
+        "cql_partition_key": true
+      },
+      "user_id": {
+        "type": "text",
+        "cql_collection": "singleton"
+      },
+      "business_id": {
+        "type": "text",
+        "cql_collection": "singleton"
+      },
+      "funny": {
+        "type": "integer",
+        "cql_collection": "singleton"
+      },
+      "useful": {
+        "type": "integer",
+        "cql_collection": "singleton"
+      },
+      "cool": {
+        "type": "integer",
+        "cql_collection": "singleton"
+      },
+      "stars": {
+        "type": "float",
+        "cql_collection": "singleton"
+      },
+      "date": {
+        "type": "date",
+        "cql_collection": "singleton",
+        "cql_primary_key_order": 1
+      },
+      "text": {
+        "type": "text",
+        "cql_collection": "singleton"
+      }
+    }
+  }
+}

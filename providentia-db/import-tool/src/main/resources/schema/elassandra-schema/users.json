@@ -1,0 +1,49 @@
+{
+  "users": {
+    "properties": {
+      "user_id": {
+        "type": "text",
+        "cql_collection": "singleton",
+        "cql_primary_key_order": 0,
+        "cql_partition_key": true
+      },
+      "name": {
+        "type": "text",
+        "cql_collection": "singleton"
+      },
+      "review_count": {
+        "type": "integer",
+        "cql_collection": "singleton"
+      },
+      "yelping_since": {
+        "type": "date",
+        "cql_collection": "singleton",
+        "cql_primary_key_order": 1
+      },
+      "useful": {
+        "type": "integer",
+        "cql_collection": "singleton"
+      },
+      "funny": {
+        "type": "integer",
+        "cql_collection": "singleton"
+      },
+      "cool": {
+        "type": "integer",
+        "cql_collection": "singleton"
+      },
+      "fans": {
+        "type": "integer",
+        "cql_collection": "singleton"
+      },
+      "average_stars": {
+        "type": "float",
+        "cql_collection": "singleton"
+      },
+      "friends": {
+        "type": "text",
+        "cql_collection": "list"
+      }
+    }
+  }
+}

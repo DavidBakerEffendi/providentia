@@ -64,9 +64,9 @@ public class ImportTool {
         if (dataConfig.importCassandra) {
             LOG.info("Importing Yelp data into Cassandra.");
             // Adds all business, city, categories, and states
-            importCassandraData(Business.class);
+//            importCassandraData(Business.class);
             // Adds all users. The varargs is my cheap way to determine adding friends or users.
-            importCassandraData(User.class);
+//            importCassandraData(User.class);
             // Adds all reviews
             importCassandraData(Review.class);
         }

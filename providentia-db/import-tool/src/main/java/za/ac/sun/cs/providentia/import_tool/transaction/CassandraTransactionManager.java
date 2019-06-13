@@ -44,31 +44,6 @@ public class CassandraTransactionManager {
     }
 
     /**
-     * Inserts the link between a business and category into the database.
-     *
-     * @param businessId   the id of the business to link.
-     * @param categoryName the name of the category which this business falls under.
-     */
-    private void insertBusByCat(String businessId, String categoryName) {
-        StringBuilder cql = new StringBuilder();
-        cql.append("SELECT COUNT(*) FROM yelp.busByCat WHERE ");
-        cql.append("category = $$").append(categoryName).append("$$ AND ");
-        cql.append("business_id = $$").append(businessId).append("$$ LIMIT 1");
-        ResultSet rs = session.execute(cql.toString());
-        if (rs.one() == null) {
-            return;
-        }
-        cql = new StringBuilder();
-        cql.append("INSERT INTO yelp.busByCat (category, business_id) ");
-        cql.append("VALUES (");
-        cql.append("$$").append(categoryName).append("$$");
-        cql.append(", $$").append(businessId).append("$$");
-        cql.append(")");
-
-        session.execute(cql.toString());
-    }
-
-    /**
      * Inserts all the data linked to this business into the database.
      *
      * @param b the business POJO containing the data to insert.
@@ -76,32 +51,29 @@ public class CassandraTransactionManager {
     private void insertBusiness(Business b) {
         StringBuilder cql = new StringBuilder();
         cql.append("SELECT COUNT(*) FROM yelp.business WHERE ");
-        cql.append("id = $$").append(b.getBusinessId()).append("$$ LIMIT 1");
+        cql.append("business_id = $$").append(b.getBusinessId()).append("$$ LIMIT 1");
         ResultSet rs = session.execute(cql.toString());
         if (rs.one() == null) {
             return;
         }
         cql = new StringBuilder();
         cql.append("INSERT INTO yelp.business ");
-        cql.append("(id, name, address, city, state, postal_code, latitude, longitude, stars, review_count, is_open) ");
+        cql.append("(business_id, name, address, categories, city, state, postal_code, location, stars, review_count, is_open) ");
         cql.append("VALUES (");
         cql.append("$$").append(b.getBusinessId()).append("$$");
         cql.append(", $$").append(b.getName()).append("$$");
         cql.append(", $$").append(b.getAddress()).append("$$");
+        cql.append(", ").append(toCassandraSet(b.getCategories()));
         cql.append(", $$").append(b.getCity()).append("$$");
         cql.append(", $$").append(b.getState()).append("$$");
         cql.append(", $$").append(b.getPostalCode()).append("$$");
-        cql.append(", ").append(b.getLatitude());
-        cql.append(", ").append(b.getLongitude());
+        cql.append(", ").append("{ \"lat\": ").append(b.getLatitude()).append(",  \"lon\": ").append(b.getLongitude()).append("}");
         cql.append(", ").append(b.getStars());
         cql.append(", ").append(b.getReviewCount());
         cql.append(", ").append(b.isOpen());
         cql.append(")");
 
         session.execute(cql.toString());
-
-        for (String category : b.getCategories())
-            insertBusByCat(b.getBusinessId(), category);
     }
 
     /**
@@ -112,14 +84,14 @@ public class CassandraTransactionManager {
     private void insertUser(User u) {
         StringBuilder cql = new StringBuilder();
         cql.append("SELECT COUNT(*) FROM yelp.users WHERE ");
-        cql.append("id = $$").append(u.getUserId()).append("$$ LIMIT 1");
+        cql.append("user_id = $$").append(u.getUserId()).append("$$ LIMIT 1");
         ResultSet rs = session.execute(cql.toString());
         if (rs.one() == null) {
             return;
         }
         cql = new StringBuilder();
         cql.append("INSERT INTO yelp.users ");
-        cql.append("(id, name, review_count, yelping_since, useful, funny, cool, fans, average_stars, friends) ");
+        cql.append("(user_id, name, review_count, yelping_since, useful, funny, cool, fans, average_stars, friends) ");
         cql.append("VALUES (");
         cql.append("$$").append(u.getUserId()).append("$$");
         cql.append(", $$").append(u.getName()).append("$$");
@@ -146,9 +118,9 @@ public class CassandraTransactionManager {
         if (a.length == 0) return "{}";
 
         StringBuilder sb = new StringBuilder();
-        sb.append("{'").append(a[0]).append("' ");
+        sb.append("{$$").append(a[0]).append("$$ ");
         for (int i = 1; i < a.length; i++)
-            sb.append(", '").append(a[i]).append("'");
+            sb.append(", $$").append(a[i]).append("$$");
         sb.append("}");
 
         return sb.toString();
@@ -162,16 +134,14 @@ public class CassandraTransactionManager {
     private void insertReview(Review r) {
         StringBuilder cql = new StringBuilder();
         cql.append("SELECT COUNT(*) FROM yelp.review WHERE ");
-        cql.append("id = $$").append(r.getReviewId()).append("$$ AND ");
-        cql.append("user_id = $$").append(r.getUserId()).append("$$ AND ");
-        cql.append("business_id = $$").append(r.getBusinessId()).append("$$ LIMIT 1");
+        cql.append("review_id = $$").append(r.getReviewId()).append("$$ LIMIT 1");
         ResultSet rs = session.execute(cql.toString());
         if (rs.one() == null) {
             return;
         }
         cql = new StringBuilder();
         cql.append("INSERT INTO yelp.review ");
-        cql.append("(id, user_id, business_id, stars, useful, funny, cool, text, date) ");
+        cql.append("(review_id, user_id, business_id, stars, useful, funny, cool, text, date) ");
         cql.append("VALUES (");
         cql.append("$$").append(r.getReviewId()).append("$$");
         cql.append(", $$").append(r.getUserId()).append("$$");
