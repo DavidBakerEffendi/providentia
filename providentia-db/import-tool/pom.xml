@@ -54,6 +54,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <tinkerpop.version>3.3.3</tinkerpop.version>
         <janusgraph.version>0.3.1</janusgraph.version>
+        <elastic.search.version>7.2.0</elastic.search.version>
     </properties>
 
     <dependencies>
@@ -107,6 +108,24 @@
             <groupId>com.datastax.cassandra</groupId>
             <artifactId>cassandra-driver-core</artifactId>
             <version>3.1.0</version>
+        </dependency>
+        <!-- ElasticSearch -->
+        <dependency>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>${elastic.search.version}</version>
+        </dependency>
+        <!-- Elastic Search REST Client -->
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-client</artifactId>
+            <version>${elastic.search.version}</version>
+        </dependency>
+        <!-- ElasticSearch High Level REST Client -->
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <version>${elastic.search.version}</version>
         </dependency>
     </dependencies>
 

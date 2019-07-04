@@ -1,7 +1,7 @@
 {
   "users": {
     "properties": {
-      "user_id": {
+      "userId": {
         "type": "text",
         "cql_collection": "singleton",
         "cql_primary_key_order": 0,
@@ -11,11 +11,11 @@
         "type": "text",
         "cql_collection": "singleton"
       },
-      "review_count": {
+      "reviewCount": {
         "type": "integer",
         "cql_collection": "singleton"
       },
-      "yelping_since": {
+      "yelpingSince": {
         "type": "date",
         "cql_collection": "singleton",
         "cql_primary_key_order": 1
@@ -36,7 +36,7 @@
         "type": "integer",
         "cql_collection": "singleton"
       },
-      "average_stars": {
+      "averageStars": {
         "type": "float",
         "cql_collection": "singleton"
       },

@@ -2,8 +2,9 @@
 
 docker run \
 	--rm --name prv-elassandra \
-	-p 127.0.0.1:9043:9042 \
-	-p 127.0.0.1:9201:9020 \
+	-p 9043:9042 \
+	-p 9201:9020 \
+	-p 9301:9300 \
 	-v $HOME/docker/volumes/elassandra:/var/lib/cassandra \
 	strapdata/elassandra
 

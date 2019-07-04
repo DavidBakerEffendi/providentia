@@ -4,6 +4,8 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
+import org.apache.http.HttpHost;
+import org.elasticsearch.client.RestClient;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
 import org.slf4j.LoggerFactory;
@@ -364,10 +366,14 @@ public class ImportConfig {
 
         private final Properties props;
         private final Session db;
+        private final RestClient es;
         public final CassandraTransactionManager tm;
-        private final String hostname;
-        private final String port;
-        private final String keyspace;
+        private final String storageAddress;
+        private final int storagePort;
+        private final String storageKeyspace;
+        private final String indexAddress;
+        private final int indexPort;
+        private final boolean useES;
         public final double sectorSize;
         public final int queueSize;
         public final double percentageData;
@@ -382,23 +388,44 @@ public class ImportConfig {
             props = new Properties();
             props.load(propertyStream);
 
-            String tempHostName = "localhost";
-            String tempPort = "9042";
-            String tempKeyspace = "yelp";
+            boolean tempUsES = false;
+
+            String tempStorageAddress = "localhost";
+            int tempStoragePort = 9042;
+            String tempStorageKeyspace = "yelp";
+
+            String tempIndexAddress = "localhost";
+            int tempIndexPort = 9200;
+
             double tempSectorSize = 0.3;
             int tempQueueSize = 100;
             double tempPercentageData = 1.0;
 
+            // Check setting
             try {
-                tempHostName = props.getProperty("hostname");
+                tempUsES = Boolean.parseBoolean(props.getProperty("import.elassandra"));
+            } catch (Exception ignored) {
+            }
+            // Plain Cassandra connection details
+            try {
+                tempStorageAddress = props.getProperty("storage.address");
             } catch (Exception ignored) {
             }
             try {
-                tempPort = props.getProperty("port");
+                tempStoragePort = Integer.parseInt(props.getProperty("storage.port"));
             } catch (Exception ignored) {
             }
             try {
-                tempKeyspace = props.getProperty("database");
+                tempStorageKeyspace = props.getProperty("storage.keyspace");
+            } catch (Exception ignored) {
+            }
+            // ElasticSearch connection details
+            try {
+                tempIndexAddress = props.getProperty("index.address");
+            } catch (Exception ignored) {
+            }
+            try {
+                tempIndexPort = Integer.parseInt(props.getProperty("index.port"));
             } catch (Exception ignored) {
             }
             // Size of queue of operations per transaction before committing
@@ -419,17 +446,31 @@ public class ImportConfig {
             } catch (Exception ignored) {
             }
 
+            this.useES = tempUsES;
+
             this.sectorSize = tempSectorSize;
             this.queueSize = tempQueueSize;
             this.percentageData = tempPercentageData;
 
-            this.hostname = tempHostName;
-            this.port = tempPort;
-            this.keyspace = tempKeyspace;
+            this.storageAddress = tempStorageAddress;
+            this.storagePort = tempStoragePort;
+            this.storageKeyspace = tempStorageKeyspace;
 
-            LOG.info("Connecting to Cassandra server.");
-            db = connect();
-            this.tm = new CassandraTransactionManager(db);
+            this.indexAddress = tempIndexAddress;
+            this.indexPort = tempIndexPort;
+
+            if (!this.useES) {
+                LOG.info("Connecting to Cassandra server.");
+                this.db = connect();
+                this.es = null;
+                this.tm = new CassandraTransactionManager(db);
+            } else {
+                LOG.info("Connecting to Elassandra server.");
+                this.db = null;
+                this.es = RestClient.builder(
+                        new HttpHost(indexAddress, indexPort, "http")).build();
+                this.tm = new CassandraTransactionManager(es);
+            }
         }
 
         /**
@@ -444,11 +485,11 @@ public class ImportConfig {
                     throw new IOException("Could not find " + POSTGRES_PROPERTIES + "!");
                 } else {
                     Files.copy(isProperties, temp, StandardCopyOption.REPLACE_EXISTING);
-                    Cluster.Builder b = Cluster.builder().addContactPoint(hostname).withPort(Integer.parseInt(port));
-                    return b.build().connect(keyspace);
+                    Cluster.Builder b = Cluster.builder().addContactPoint(storageAddress).withPort(storagePort);
+                    return b.build().connect(storageKeyspace);
                 }
             } catch (IOException e) {
-                LOG.error("IOException while connecting to Cassandra cluster '" + hostname + ":" + port +
+                LOG.error("IOException while connecting to Cassandra cluster '" + storageAddress + ":" + storagePort +
                         "' using properties file '" + CASSANDRA_PROPERTIES + "'.", e);
                 System.exit(1);
             }
@@ -457,8 +498,11 @@ public class ImportConfig {
 
         void close() {
             try {
-                if (db != null)
-                    db.close();
+//                if (db != null)
+//                    db.close();
+                if (es != null) {
+                    es.close();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

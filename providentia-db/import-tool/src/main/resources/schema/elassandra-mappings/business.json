@@ -1,7 +1,7 @@
 {
   "business": {
     "properties": {
-      "business_id": {
+      "businessId": {
         "type": "text",
         "cql_collection": "singleton",
         "cql_primary_key_order": 0,
@@ -27,7 +27,7 @@
         "type": "text",
         "cql_collection": "singleton"
       },
-      "postal_code": {
+      "postalCode": {
         "type": "text",
         "cql_collection": "singleton"
       },
@@ -40,11 +40,11 @@
         "type": "float",
         "cql_collection": "singleton"
       },
-      "review_count": {
+      "reviewCount": {
         "type": "integer",
         "cql_collection": "singleton"
       },
-      "is_open": {
+      "open": {
         "type": "boolean",
         "cql_collection": "singleton"
       }

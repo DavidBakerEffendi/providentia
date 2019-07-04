@@ -21,41 +21,41 @@ CREATE TYPE IF NOT EXISTS yelp.geo_point (
 // ourselves.
 
 CREATE TABLE yelp.users (
-    user_id TEXT,
+    userId TEXT,
     name TEXT,
-    review_count INT,
-    yelping_since TIMESTAMP,
+    reviewCount INT,
+    yelpingSince TIMESTAMP,
     useful INT,
     funny INT,
     cool INT,
     fans INT,
-    average_stars FLOAT,
+    averageStars FLOAT,
     friends SET<TEXT>,
-    PRIMARY KEY (user_id, yelping_since)
+    PRIMARY KEY (userId, yelpingSince)
     // Cluster by temporal data
-) WITH CLUSTERING ORDER BY (yelping_since DESC);
+) WITH CLUSTERING ORDER BY (yelpingSince DESC);
 
 CREATE TABLE yelp.business (
-    business_id TEXT,
+    businessId TEXT,
     name TEXT,
     address TEXT,
     city TEXT,
     state TEXT,
-    postal_code TEXT,
+    postalCode TEXT,
     location FROZEN<geo_point>,
     categories SET<TEXT>,
     stars FLOAT,
-    review_count INT,
-    is_open BOOLEAN,
+    reviewCount INT,
+    open BOOLEAN,
     // Partition id and cluster by spatial. To quickly get businesses in city and state then
     // query from other tables
-    PRIMARY KEY (business_id, location)
+    PRIMARY KEY (businessId, location)
 );
 
 CREATE TABLE yelp.review (
-    review_id TEXT,
-    user_id TEXT,
-    business_id TEXT,
+    reviewId TEXT,
+    userId TEXT,
+    businessId TEXT,
     stars FLOAT,
     useful INT,
     funny INT,
@@ -63,7 +63,7 @@ CREATE TABLE yelp.review (
     text TEXT,
     date TIMESTAMP,
     // Use the IDs together as a partition key and cluster by date
-    PRIMARY KEY (review_id, date)
+    PRIMARY KEY (reviewId, date)
 ) WITH CLUSTERING ORDER BY (date DESC); // cluster by temporal data
 
 // In Cassandra, high-cardinality indexes are a bad idea. We have the option of ALLOW FILTERING for range queries

@@ -18,6 +18,7 @@ import za.ac.sun.cs.providentia.domain.Review;
 import za.ac.sun.cs.providentia.domain.User;
 import za.ac.sun.cs.providentia.import_tool.util.FileReaderWrapper;
 
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 
@@ -77,26 +78,15 @@ public class JanusTransactionManager {
         // User properties
         mgmt.makePropertyKey("user_id").dataType(String.class).cardinality(Cardinality.SINGLE).make();
         mgmt.makePropertyKey("average_stars").dataType(Double.class).cardinality(Cardinality.SINGLE).make();
-        mgmt.makePropertyKey("yelping_since").dataType(Long.class).cardinality(Cardinality.SINGLE).make();
+        mgmt.makePropertyKey("yelping_since").dataType(Instant.class).cardinality(Cardinality.SINGLE).make();
         mgmt.makePropertyKey("cool").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
         mgmt.makePropertyKey("funny").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
         mgmt.makePropertyKey("useful").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
         mgmt.makePropertyKey("fans").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentHot").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentMore").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentProfile").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentCute").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentList").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentNote").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentPlain").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentCool").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentFunny").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentWriter").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentPhotos").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
 
         // Review properties
         mgmt.makePropertyKey("review_id").dataType(String.class).cardinality(Cardinality.SINGLE).make();
-        mgmt.makePropertyKey("date").dataType(Long.class).cardinality(Cardinality.SET).make();
+        mgmt.makePropertyKey("date").dataType(Instant.class).cardinality(Cardinality.SET).make();
         mgmt.makePropertyKey("text").dataType(String.class).cardinality(Cardinality.SINGLE).make();
 
         // === Create indexes ===
@@ -325,22 +315,11 @@ public class JanusTransactionManager {
         uVert.property("name", u.getName());
         uVert.property("review_count", u.getReviewCount());
         uVert.property("average_stars", u.getAverageStars());
-        uVert.property("yelping_since", u.getYelpingSince().toEpochSecond(ZoneOffset.of("-07:00")));
+        uVert.property("yelping_since", u.getYelpingSince());
         uVert.property("cool", u.getCool());
         uVert.property("funny", u.getFunny());
         uVert.property("useful", u.getUseful());
         uVert.property("fans", u.getFans());
-//        uVert.property("complimentHot", u.getComplimentHot());
-//        uVert.property("complimentMore", u.getComplimentMore());
-//        uVert.property("complimentProfile", u.getComplimentProfile());
-//        uVert.property("complimentCute", u.getComplimentCute());
-//        uVert.property("complimentList", u.getComplimentList());
-//        uVert.property("complimentNote", u.getComplimentNote());
-//        uVert.property("complimentPlain", u.getComplimentPlain());
-//        uVert.property("complimentCool", u.getComplimentCool());
-//        uVert.property("complimentFunny", u.getComplimentFunny());
-//        uVert.property("complimentWriter", u.getComplimentWriter());
-//        uVert.property("complimentPhotos", u.getComplimentPhotos());
     }
 
     /**
@@ -397,7 +376,7 @@ public class JanusTransactionManager {
         review.property("cool", r.getCool());
         review.property("funny", r.getFunny());
         review.property("useful", r.getUseful());
-        review.property("date", r.getDate().toEpochSecond(ZoneOffset.of("-07:00")));
+        review.property("date", r.getDate());
         review.property("stars", r.getStars());
         review.property("text", r.getText());
     }

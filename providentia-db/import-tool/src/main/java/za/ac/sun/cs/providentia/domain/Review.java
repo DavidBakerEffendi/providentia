@@ -1,9 +1,6 @@
 package za.ac.sun.cs.providentia.domain;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public class Review {
 
@@ -13,7 +10,7 @@ public class Review {
     private int cool;
     private int funny;
     private int useful;
-    private LocalDateTime date;
+    private Instant date;
     private double stars;
     private String text;
 
@@ -36,11 +33,11 @@ public class Review {
         this.cool = cool;
     }
 
-    public LocalDateTime getDate() {
+    public Instant getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(Instant date) {
         this.date = date;
     }
 
@@ -92,24 +89,23 @@ public class Review {
         this.text = text;
     }
 
+    public String toEsString() {
+        return this.toString();
+    }
+
     @Override
     public String toString() {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writeValueAsString(this);
-        } catch (IOException e) {
-            final StringBuilder sb = new StringBuilder("Review{");
-            sb.append("businessId='").append(businessId).append('\'');
-            sb.append(", cool=").append(cool);
-            sb.append(", date=").append(date);
-            sb.append(", funny=").append(funny);
-            sb.append(", userId='").append(userId).append('\'');
-            sb.append(", useful=").append(useful);
-            sb.append(", reviewId='").append(reviewId).append('\'');
-            sb.append(", stars=").append(stars);
-            sb.append(", text='").append(text).append('\'');
-            sb.append('}');
-            return sb.toString();
-        }
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"businessId\": \"").append(businessId).append('\"');
+        sb.append(", \"cool\": ").append(cool);
+        sb.append(", \"date\": \"").append(date.toString()).append('\"');
+        sb.append(", \"funny\": ").append(funny);
+        sb.append(", \"userId\": \"").append(userId).append('\"');
+        sb.append(", \"useful\": ").append(useful);
+        sb.append(", \"reviewId\": \"").append(reviewId).append('\"');
+        sb.append(", \"stars\": ").append(stars);
+        sb.append(", \"text\": \"").append(text.replaceAll("[^a-zA-Z0-9 ]+", "")).append('\"');
+        sb.append("}");
+        return sb.toString();
     }
 }

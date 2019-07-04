@@ -1,17 +1,17 @@
 {
   "review": {
     "properties": {
-      "review_id": {
+      "reviewId": {
         "type": "text",
         "cql_collection": "singleton",
         "cql_primary_key_order": 0,
         "cql_partition_key": true
       },
-      "user_id": {
+      "userId": {
         "type": "text",
         "cql_collection": "singleton"
       },
-      "business_id": {
+      "businessId": {
         "type": "text",
         "cql_collection": "singleton"
       },

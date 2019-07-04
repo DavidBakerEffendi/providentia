@@ -3,27 +3,147 @@ package za.ac.sun.cs.providentia.import_tool.transaction;
 import ch.qos.logback.classic.Logger;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.ResponseException;
+import org.elasticsearch.client.RestClient;
 import org.slf4j.LoggerFactory;
 import za.ac.sun.cs.providentia.domain.Business;
 import za.ac.sun.cs.providentia.domain.Review;
 import za.ac.sun.cs.providentia.domain.User;
 import za.ac.sun.cs.providentia.import_tool.util.FileReaderWrapper;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
 public class CassandraTransactionManager {
 
     private final Session session;
+    private final RestClient client;
 
     private final Logger LOG = (Logger) LoggerFactory.getLogger(CassandraTransactionManager.class);
 
     /**
      * Creates an instance of {@link CassandraTransactionManager}.
      */
-    public CassandraTransactionManager(Session db) {
-        this.session = db;
+    public CassandraTransactionManager(RestClient client) {
+        this.session = null;
+        this.client = client;
     }
 
+    /**
+     * @deprecated Now using ElasticSearch instead of vanilla Cassandra.
+     * Creates an instance of {@link CassandraTransactionManager}.
+     */
+    @Deprecated
+    public CassandraTransactionManager(Session session) {
+        this.session = session;
+        this.client = null;
+    }
+
+    /**
+     * Creates an ElasticSearch transaction.
+     *
+     * @param records       records to insert.
+     * @param selectedClass the selected class of records to insert.
+     */
+    public void createESTransaction(LinkedList<String> records, Class<?> selectedClass) {
+        try {
+            for (String row : records) {
+                Object obj = FileReaderWrapper.processJSON(row, selectedClass);
+                if (obj == null) continue;
+                if (selectedClass == Business.class) {
+                    insertBusinessViaES((Business) obj);
+                } else if (selectedClass == User.class) {
+                    insertUserViaES((User) obj);
+                } else if (selectedClass == Review.class) {
+                    insertReviewViaES((Review) obj);
+                }
+            }
+        } catch (Exception e) {
+            //Handle errors for Cassandra
+            LOG.error("Error processing Cassandra transaction.", e);
+        }
+    }
+
+    /**
+     * Inserts the given Business record into ElasticSearch via the API.
+     *
+     * @param obj Business POJO.
+     */
+    private void insertBusinessViaES(Business obj) {
+        Request request = new Request(
+                "POST",
+                "/business-locations/business");
+        request.setJsonEntity(obj.toEsString());
+        try {
+            // Optimistically post data to business index
+            client.performRequest(request);
+        } catch (IOException e) {
+            LOG.error(obj.toEsString());
+            if (e instanceof ResponseException) {
+                // If status code not 2xx or 404
+                e.printStackTrace();
+            } else {
+                // Other issue
+                e.printStackTrace();
+            }
+            System.exit(1);
+        }
+    }
+
+    /**
+     * Inserts the given User record into ElasticSearch via the API.
+     *
+     * @param obj User POJO.
+     */
+    private void insertUserViaES(User obj) {
+        Request request = new Request(
+                "POST",
+                "/user-reviews/users");
+        request.setJsonEntity(obj.toEsString());
+        try {
+            // Optimistically post data to user index
+            client.performRequest(request);
+        } catch (IOException e) {
+            LOG.error(obj.toEsString());
+            if (e instanceof ResponseException) {
+                // If status code not 2xx or 404
+                e.printStackTrace();
+            } else {
+                // Other issue
+                e.printStackTrace();
+            }
+            System.exit(1);
+        }
+    }
+
+    /**
+     * Inserts the given Review record into ElasticSearch via the API.
+     *
+     * @param obj Review POJO.
+     */
+    private void insertReviewViaES(Review obj) {
+        Request request = new Request(
+                "POST",
+                "/review-times/review");
+        request.setJsonEntity(obj.toEsString());
+        try {
+            // Optimistically post data to review index
+            client.performRequest(request);
+        } catch (IOException e) {
+            LOG.error(obj.toEsString());
+            if (e instanceof ResponseException) {
+                // If status code not 2xx or 404
+                e.printStackTrace();
+            } else {
+                // Other issue
+                e.printStackTrace();
+            }
+            System.exit(1);
+        }
+    }
+
+    @Deprecated
     public void createTransaction(LinkedList<String> records, Class<?> selectedClass) {
         try {
             for (String row : records) {
@@ -44,10 +164,11 @@ public class CassandraTransactionManager {
     }
 
     /**
-     * Inserts all the data linked to this business into the database.
-     *
      * @param b the business POJO containing the data to insert.
+     * @deprecated Now using ElasticSearch instead of vanilla Cassandra
+     * Inserts all the data linked to this business into the database.
      */
+    @Deprecated
     private void insertBusiness(Business b) {
         StringBuilder cql = new StringBuilder();
         cql.append("SELECT COUNT(*) FROM yelp.business WHERE ");
@@ -77,10 +198,11 @@ public class CassandraTransactionManager {
     }
 
     /**
-     * Inserts all the data linked to this user into the database.
-     *
      * @param u the user POJO containing the data to insert.
+     * @deprecated Now using ElasticSearch instead of vanilla Cassandra
+     * Inserts all the data linked to this user into the database.
      */
+    @Deprecated
     private void insertUser(User u) {
         StringBuilder cql = new StringBuilder();
         cql.append("SELECT COUNT(*) FROM yelp.users WHERE ");
@@ -109,11 +231,12 @@ public class CassandraTransactionManager {
     }
 
     /**
-     * Converts an array to Cassandra set notation.
-     *
      * @param a the array to convert.
      * @return the String representation of the array.
+     * @deprecated Now using ElasticSearch instead of vanilla Cassandra
+     * Converts an array to Cassandra set notation.
      */
+    @Deprecated
     private String toCassandraSet(String[] a) {
         if (a.length == 0) return "{}";
 
@@ -127,10 +250,11 @@ public class CassandraTransactionManager {
     }
 
     /**
-     * Inserts all the data linked to this review into the database.
-     *
      * @param r the review POJO containing the data to insert.
+     * @deprecated Now using ElasticSearch instead of vanilla Cassandra
+     * Inserts all the data linked to this review into the database.
      */
+    @Deprecated
     private void insertReview(Review r) {
         StringBuilder cql = new StringBuilder();
         cql.append("SELECT COUNT(*) FROM yelp.review WHERE ");

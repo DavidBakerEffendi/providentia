@@ -119,6 +119,28 @@ public class Business implements Serializable {
         this.stars = stars;
     }
 
+    public String toEsString() {
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("\"businessId\":\"").append(businessId).append('\"');
+        sb.append(", \"address\":\"").append(address).append('\"');
+        sb.append(", \"postalCode\":\"").append(postalCode).append('\"');
+        sb.append(", \"open\":").append(isOpen);
+        sb.append(", \"categories\": [");
+        for (int i = 0; i < categories.length; i++) {
+            sb.append('\"').append(categories[i]).append('\"');
+            if (i < categories.length - 1) sb.append(", ");
+        }
+        sb.append("]");
+        sb.append(", \"city\":\"").append(city).append('\"');
+        sb.append(", \"reviewCount\":").append(reviewCount);
+        sb.append(", \"name\":\"").append(name.replaceAll("\"", "'")).append('\"');
+        sb.append(", \"location\": { \"lat\": ").append(latitude).append(", \"lon\": ").append(longitude).append("}");
+        sb.append(", \"state\":\"").append(state).append('\"');
+        sb.append(", \"stars\":").append(stars);
+        sb.append('}');
+        return sb.toString();
+    }
+
     @Override
     public String toString() {
         ObjectMapper mapper = new ObjectMapper();
