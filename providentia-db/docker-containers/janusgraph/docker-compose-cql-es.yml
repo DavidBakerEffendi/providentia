@@ -3,16 +3,16 @@ version: "3"
 services:
   janusgraph:
     image: janusgraph/janusgraph:latest
-    container_name: jce-janusgraph
+    container_name: prv-janusgraph
     environment:
       JANUS_PROPS_TEMPLATE: cassandra-es
       janusgraph.storage.backend: cql
-      janusgraph.storage.hostname: jce-cassandra
-      janusgraph.index.search.hostname: jce-elastic
+      janusgraph.storage.hostname: prv-cassandra
+      janusgraph.index.search.hostname: prv-elastic
     ports:
       - "8182:8182"
     networks:
-      - jce-network
+      - prv-network
     healthcheck:
       test: ["CMD", "bin/gremlin.sh", "-e", "scripts/remote-connect.groovy"]
       interval: 10s
@@ -20,15 +20,15 @@ services:
       retries: 3
   cassandra:
     image: cassandra:3
-    container_name: jce-cassandra
+    container_name: prv-cassandra
     ports:
       - "9042:9042"
       - "9160:9160"
     networks:
-      - jce-network
+      - prv-network
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:6.6.0
-    container_name: jce-elastic
+    container_name: prv-elastic
     environment:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "http.host=0.0.0.0"
@@ -40,9 +40,9 @@ services:
     ports:
       - "9200:9200"
     networks:
-      - jce-network
+      - prv-network
 
 networks:
-  jce-network:
+  prv-network:
 volumes:
-  janusgraph-default-data:
+  prv-janusgraph-data:
