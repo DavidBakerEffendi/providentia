@@ -5,6 +5,10 @@
 CREATE DATABASE yelp;
 \c yelp;
 
+-- Use PostGis
+
+CREATE EXTENSION postgis;
+
 -- If already connected to the database, run from here to create the schema
 
 DROP TABLE IF EXISTS review;
@@ -34,17 +38,6 @@ CREATE TABLE users (
     cool INTEGER DEFAULT 0,
     fans INTEGER DEFAULT 0,
     average_stars NUMERIC DEFAULT 0.0,
---    compliment_hot INTEGER DEFAULT 0,
---    compliment_more INTEGER DEFAULT 0,
---    compliment_profile INTEGER DEFAULT 0,
---    compliment_cute INTEGER DEFAULT 0,
---    compliment_list INTEGER DEFAULT 0,
---    compliment_note INTEGER DEFAULT 0,
---    compliment_plain INTEGER DEFAULT 0,
---    compliment_cool INTEGER DEFAULT 0,
---    compliment_funny INTEGER DEFAULT 0,
---    compliment_writer INTEGER DEFAULT 0,
---    compliment_photos INTEGER DEFAULT 0,
     PRIMARY KEY (id)
 );
 
@@ -62,8 +55,7 @@ CREATE TABLE business (
     address CHARACTER VARYING(255) NOT NULL,
     city CHARACTER VARYING(50) NOT NULL,
     postal_code CHARACTER VARYING(50) NOT NULL,
-    latitude NUMERIC NOT NULL,
-    longitude NUMERIC NOT NULL,
+    location geometry(Point, 4326) NOT NULL,
     stars NUMERIC NOT NULL,
     review_count INTEGER DEFAULT 0,
     is_open boolean DEFAULT false,
@@ -94,7 +86,7 @@ CREATE TABLE review (
 );
 -- Index spatio-temporal data
 CREATE INDEX review_date_ind ON review (date);
-CREATE INDEX business_location_ind ON business (latitude, longitude);
+CREATE INDEX business_location_ind ON business USING GIST (location);
 CREATE INDEX business_city_ind ON business (city);
 -- Cluster reviews by date and businesses by location
 CLUSTER review USING review_date_ind;

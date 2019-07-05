@@ -134,7 +134,7 @@ public class Business implements Serializable {
         sb.append(", \"city\":\"").append(city).append('\"');
         sb.append(", \"reviewCount\":").append(reviewCount);
         sb.append(", \"name\":\"").append(name.replaceAll("\"", "'")).append('\"');
-        sb.append(", \"location\": { \"lat\": ").append(latitude).append(", \"lon\": ").append(longitude).append("}");
+        sb.append(", \"location\": \"").append(latitude).append(", ").append(longitude).append("\"");
         sb.append(", \"state\":\"").append(state).append('\"');
         sb.append(", \"stars\":").append(stars);
         sb.append('}');

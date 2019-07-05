@@ -1,6 +1,7 @@
 package za.ac.sun.cs.providentia.import_tool.transaction;
 
 import ch.qos.logback.classic.Logger;
+import jline.internal.Log;
 import org.slf4j.LoggerFactory;
 import za.ac.sun.cs.providentia.domain.Business;
 import za.ac.sun.cs.providentia.domain.Review;
@@ -149,8 +150,8 @@ public class PostgresTransactionManager {
             ResultSet rs = p.executeQuery();
             if (!rs.first()) {
                 sql = "INSERT INTO business " +
-                        "(id, name, address, city, postal_code, latitude, longitude, stars, review_count, is_open) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        "(id, name, address, city, postal_code, location, stars, review_count, is_open) " +
+                        "VALUES (?, ?, ?, ?, ?, ST_SetSRID(ST_MakePoint(?, ?), 4326), ?, ?, ?)";
                 p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 p.setString(1, b.getBusinessId());
                 p.setString(2, b.getName());
@@ -169,6 +170,8 @@ public class PostgresTransactionManager {
             }
         } catch (SQLException e) {
             LOG.error("Error creating '" + b.getName() + "' for table 'business'.", e);
+            Log.error(e.toString());
+            System.exit(1);
         }
 
         for (String categoryName : b.getCategories()) {
@@ -253,7 +256,7 @@ public class PostgresTransactionManager {
                 p.setString(1, u.getUserId());
                 p.setString(2, u.getName());
                 p.setInt(3, u.getReviewCount());
-                p.setObject(4, u.getYelpingSince());
+                p.setTimestamp(4, new Timestamp(u.getYelpingSince().toEpochMilli()));
                 p.setInt(5, u.getUseful());
                 p.setInt(6, u.getFunny());
                 p.setInt(7, u.getCool());
@@ -272,6 +275,8 @@ public class PostgresTransactionManager {
             }
         } catch (SQLException e) {
             LOG.error("Error creating '" + u.getName() + "' for table 'users'.", e);
+            Log.error(e.toString());
+            System.exit(1);
         }
     }
 
@@ -324,7 +329,7 @@ public class PostgresTransactionManager {
                 p.setInt(6, r.getFunny());
                 p.setInt(7, r.getCool());
                 p.setString(8, r.getText());
-                p.setObject(9, r.getDate());
+                p.setTimestamp(9, new Timestamp(r.getDate().toEpochMilli()));
 
                 if (p.executeUpdate() == 0) {
                     throw new SQLException("Creating '" + r.getReviewId() + "' failed, no rows affected.");
