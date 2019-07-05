@@ -15,9 +15,9 @@ The JanusGraph docker image is built from a 3 stage docker-compose; JanusGraph, 
 ### PostgreSQL 
 
 The Postgres docker container is built from the official PostgreSQL image. TODO: This will be changed to the PostGis image.
-* `postgres/pull.sh`: Pulls the PostgreSQL image.
-* `postgres/start.sh`: Creates and runs a PostgreSQL container from the image. See the script for configurations to edit.
-* `postgres/sql.sh`: Grants access to the SQL shell in the Postgres container.
+* `postgis/pull.sh`: Pulls the PostgreSQL image.
+* `postgis/start.sh`: Creates and runs a PostgreSQL container from the image. See the script for configurations to edit.
+* `postgis/sql.sh`: Grants access to the SQL shell in the Postgres container.
 
 ### Elassandra 
 

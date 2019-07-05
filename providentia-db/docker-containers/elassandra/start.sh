@@ -6,7 +6,7 @@ docker run \
 	-p 9201:9020 \
 	-p 9301:9300 \
 	-v $HOME/docker/volumes/elassandra:/var/lib/cassandra \
-	strapdata/elassandra
+	strapdata/elassandra:6.2.3.17
 
 	#-e CASSANDRA__storage_port=7002 \
 	#-e CASSANDRA__ssl_storage_port=7003 \
