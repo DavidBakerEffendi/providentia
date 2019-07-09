@@ -86,7 +86,7 @@ public class JanusTransactionManager {
 
         // Review properties
         mgmt.makePropertyKey("review_id").dataType(String.class).cardinality(Cardinality.SINGLE).make();
-        mgmt.makePropertyKey("date").dataType(Instant.class).cardinality(Cardinality.SET).make();
+        mgmt.makePropertyKey("date").dataType(Instant.class).cardinality(Cardinality.SINGLE).make();
         mgmt.makePropertyKey("text").dataType(String.class).cardinality(Cardinality.SINGLE).make();
 
         // === Create indexes ===
@@ -138,17 +138,16 @@ public class JanusTransactionManager {
         // --- Spatio-temporal indexes ---
         PropertyKey datePK = mgmt.getPropertyKey("date");
         PropertyKey locPK = mgmt.getPropertyKey("location");
-        // Location indexes
+        // Location (mixed) indexes
         mgmt.buildIndex("byLocation", Vertex.class)
                 .addKey(locPK)
                 .indexOnly(businessLabel)
-                .buildMixedIndex("search");
-        // Date index for reviews
-        mgmt.buildEdgeIndex(
-                reviewLabel,
-                "byReviewDate",
-                Direction.BOTH,
-                datePK);
+                .buildMixedIndex("search"); // search specifies using indexing backend
+        // Date index for reviews (mixed index)
+        mgmt.buildIndex("byReviewDate", Edge.class)
+                .addKey(datePK)
+                .indexOnly(reviewLabel)
+                .buildMixedIndex("search"); // search specifies using indexing backend
 
         // === Commit transaction ===
         try {

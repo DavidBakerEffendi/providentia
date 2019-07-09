@@ -10,7 +10,6 @@ import za.ac.sun.cs.providentia.import_tool.util.FileReaderWrapper;
 
 import java.sql.*;
 import java.util.LinkedList;
-import java.util.UUID;
 
 public class PostgresTransactionManager {
 

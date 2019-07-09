@@ -77,6 +77,7 @@ public class CassandraTransactionManager {
         request.setJsonEntity(obj.toEsString());
         try {
             // Optimistically post data to business index
+            if (client == null) throw new NullPointerException();
             client.performRequest(request);
         } catch (IOException e) {
             LOG.error(obj.toEsString());
@@ -87,6 +88,9 @@ public class CassandraTransactionManager {
                 // Other issue
                 e.printStackTrace();
             }
+            System.exit(1);
+        } catch (NullPointerException e) {
+            LOG.error(this.getClass() + " needs to be constructed using the RestClient constructor!");
             System.exit(1);
         }
     }
