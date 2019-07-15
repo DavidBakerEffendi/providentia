@@ -1,19 +1,20 @@
-import os
-import logging
 import atexit
-from flask_cors import CORS
-from flask import Flask
-from config import default_config
-import providentia.analysis.job_scheduler as job_scheduler
+import logging
+import os
 
-config = default_config()
-logging.basicConfig(level=config.LOGGING_LEVEL)
+from flask import Flask
+from flask_cors import CORS
+import config
 
 
 def create_app():
     """Create and configure an instance of the Flask application."""
-    app = Flask(__name__)
-    app.config.from_object('config.DevelopmentConfig')
+    app = Flask(__name__, instance_relative_config=True)
+    app.config.from_object(config)
+    app.config.from_pyfile('config.py')
+
+    # set logging level
+    logging.basicConfig(level=app.config['LOGGING_LEVEL'])
 
     # ensure the instance folder exists
     try:
@@ -22,13 +23,12 @@ def create_app():
         pass
 
     # register the database commands
-    from providentia import db
-
+    from providentia.db import this as db
     db.init_app(app)
 
     # apply the blueprints to Providentia
-    from providentia.controllers import home, new_job
-    from providentia.entities import benchmark, dataset, database, analysis
+    logging.debug('Applying blueprints to routes.')
+    from providentia.views import home, new_job, dataset, database, benchmark, analysis
 
     app.register_blueprint(benchmark.bp, url_prefix='/api/benchmark')
     app.register_blueprint(dataset.bp, url_prefix='/api/dataset')
@@ -38,10 +38,14 @@ def create_app():
     app.register_blueprint(new_job.bp, url_prefix='/api/new-job')
 
     # register CORS
-    CORS(app, resources={r"/api/*": {"origins": config.CORS_ORIGINS}})
+    logging.debug('Registering CORS filter.')
+    CORS(app, resources={r"/api/*": {"origins": app.config['CORS_ORIGINS']}})
 
     # enable scheduler
+    logging.debug('Starting background jobs.')
     from apscheduler.schedulers.background import BackgroundScheduler
+    import providentia.analysis.job_scheduler as job_scheduler
+
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=job_scheduler.execute_waiting, id='execute_waiting', trigger='interval', seconds=60)
     scheduler.start()

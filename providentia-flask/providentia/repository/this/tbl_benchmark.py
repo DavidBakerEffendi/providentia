@@ -1,11 +1,9 @@
-import providentia.db
-import providentia.entities.benchmark
 import logging
-from flask import current_app
-from config import default_config
 
-config = default_config()
-logging.basicConfig(level=config.LOGGING_LEVEL)
+from flask import current_app
+
+from providentia.db.this import get_db
+from providentia.models import benchmark_decoder
 
 TABLE = 'benchmarks'
 COLUMNS = ("id", "database_id", "dataset_id", "analysis_id", "date_executed", "title", "description", "query_time",
@@ -14,7 +12,7 @@ COLUMNS = ("id", "database_id", "dataset_id", "analysis_id", "date_executed", "t
 
 def query_results(n=None):
     with current_app.app_context():
-        cur = providentia.db.get_db().cursor()
+        cur = get_db().cursor()
         query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, title, description, query_time, " \
                 "analysis_time FROM {} ORDER BY date_executed DESC, title ASC".format(TABLE)
 
@@ -23,7 +21,7 @@ def query_results(n=None):
             cur.execute(query)
         else:
             logging.debug("Executing query: %s LIMIT %d", query, n)
-            cur.execute(query + " LIMIT %s", (str(n), ))
+            cur.execute(query + " LIMIT %s", (str(n),))
 
         rows = []
         if cur.rowcount > 0:
@@ -35,14 +33,14 @@ def query_results(n=None):
         deserialized = []
 
         for row in rows:
-            deserialized.append(providentia.entities.benchmark.deserialize(row))
+            deserialized.append(benchmark_decoder(row))
 
         return deserialized
 
 
 def find(row_id):
     with current_app.app_context():
-        cur = providentia.db.get_db().cursor()
+        cur = get_db().cursor()
         query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, title, description, query_time, " \
                 "analysis_time FROM {} WHERE id = %s".format(TABLE)
 
@@ -54,14 +52,14 @@ def find(row_id):
         else:
             return None
 
-        deserialized = providentia.entities.benchmark.deserialize(result)
+        deserialized = benchmark_decoder(result)
 
         return deserialized
 
 
 def find_title(row_title):
     with current_app.app_context():
-        cur = providentia.db.get_db().cursor()
+        cur = get_db().cursor()
         query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, title, description, query_time, " \
                 "analysis_time FROM {} WHERE title = %s".format(TABLE)
 
@@ -73,7 +71,7 @@ def find_title(row_title):
         else:
             return None
 
-        deserialized = providentia.entities.benchmark.deserialize(result)
+        deserialized = benchmark_decoder(result)
 
         return deserialized
 
@@ -125,7 +123,7 @@ def insert(benchmark):
         values = values[:-2] + ");"
 
         # execute and commit to reflect immediately for the job scheduler to see
-        db = providentia.db.get_db()
+        db = get_db()
         query = db.cursor().mogrify(insert_into + values, values_arr)
         logging.debug("Executing query: %s", query)
         db.cursor().execute(query, values_arr)
@@ -134,7 +132,7 @@ def insert(benchmark):
 
 def get_unstarted_jobs():
     with current_app.app_context():
-        cur = providentia.db.get_db().cursor()
+        cur = get_db().cursor()
         query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, title, description, query_time, " \
                 "analysis_time FROM {} WHERE date_executed IS NULL".format(TABLE)
 
@@ -151,6 +149,6 @@ def get_unstarted_jobs():
         deserialized = []
 
         for row in rows:
-            deserialized.append(providentia.entities.benchmark.deserialize(row))
+            deserialized.append(benchmark_decoder(row))
 
         return deserialized

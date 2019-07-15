@@ -1,10 +1,11 @@
-import psycopg2
 import click
-from config import default_config
+import psycopg2
 from flask import current_app, g
 from flask.cli import with_appcontext
 
-config = default_config()
+
+# This is the main database where analysis results are stored. The database used for this is
+# PostgreSQL.
 
 
 def get_db():
@@ -13,12 +14,12 @@ def get_db():
     again.
     """
     if "db" not in g:
-        if config.DEBUG:
+        if current_app.config['DEBUG']:
             # Use debug config
-            g.db = psycopg2.connect(config.DATABASE_URI)
+            g.db = psycopg2.connect(current_app.config['DATABASE_URI'])
         else:
             # Use prod config
-            g.db = psycopg2.connect(config.DATABASE_URI)
+            g.db = psycopg2.connect(current_app.config['DATABASE_URI'])
 
     return g.db
 
@@ -56,7 +57,7 @@ def load_example_data():
 def init_db_command():
     """Clear existing data and create new tables."""
     init_db()
-    if config.DEBUG:
+    if current_app.config['DEBUG']:
         load_example_data()
     click.echo("Initialized the database.")
 

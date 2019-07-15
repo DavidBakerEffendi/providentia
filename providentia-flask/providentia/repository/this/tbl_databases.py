@@ -1,11 +1,10 @@
-import providentia.db
-import providentia.entities.database
+import json
 import logging
-from flask import current_app
-from config import default_config
 
-config = default_config()
-logging.basicConfig(level=config.LOGGING_LEVEL)
+from flask import current_app
+
+from providentia.db.this import get_db
+from providentia.models import database_decoder
 
 TABLE = 'databases'
 COLUMNS = ("id", "name", "description", "icon")
@@ -13,7 +12,7 @@ COLUMNS = ("id", "name", "description", "icon")
 
 def query_results(n=None):
     with current_app.app_context():
-        cur = providentia.db.get_db().cursor()
+        cur = get_db().cursor()
         query = "SELECT id, name, description, icon " \
                 "FROM {} ORDER BY name DESC".format(TABLE)
 
@@ -22,7 +21,7 @@ def query_results(n=None):
             cur.execute(query)
         else:
             logging.debug("Executing query: %s LIMIT %d", query, n)
-            cur.execute(query + " LIMIT %s", (str(n), ))
+            cur.execute(query + " LIMIT %s", (str(n),))
 
         rows = []
         if cur.rowcount > 0:
@@ -34,33 +33,33 @@ def query_results(n=None):
         deserialized = []
 
         for row in rows:
-            deserialized.append(providentia.entities.database.deserialize(row))
+            deserialized.append(json.dumps(row, default=database_decoder))
 
         return deserialized
 
 
 def find(row_id):
     with current_app.app_context():
-        cur = providentia.db.get_db().cursor()
+        cur = get_db().cursor()
         query = "SELECT id, name, description, icon " \
                 "FROM {} WHERE id = %s".format(TABLE)
 
         logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_id))
-        cur.execute(query, (row_id, ))
+        cur.execute(query, (row_id,))
 
         if cur.rowcount > 0:
             result = dict(zip(COLUMNS, cur.fetchone()))
         else:
             return None
 
-        deserialized = providentia.entities.database.deserialize(result)
+        deserialized = json.dumps(result, default=database_decoder)
 
         return deserialized
 
 
 def find_name(row_name):
     with current_app.app_context():
-        cur = providentia.db.get_db().cursor()
+        cur = get_db().cursor()
         query = "SELECT id, name, description, icon FROM {} WHERE name = %s".format(TABLE)
 
         logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_name))
@@ -71,6 +70,6 @@ def find_name(row_name):
         else:
             return None
 
-        deserialized = providentia.entities.database.deserialize(result)
+        deserialized = json.dumps(result, default=database_decoder)
 
         return deserialized

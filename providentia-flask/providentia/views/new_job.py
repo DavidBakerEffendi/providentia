@@ -1,12 +1,11 @@
 import logging
+
 from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
-from config import default_config
-from providentia.entities.benchmark import Benchmark
+
+from providentia.models import Benchmark
 
 bp = Blueprint('new-job', __name__, )
-config = default_config()
-logging.basicConfig(level=config.LOGGING_LEVEL)
 
 
 #######################################################################################################################
@@ -18,7 +17,7 @@ logging.basicConfig(level=config.LOGGING_LEVEL)
 @cross_origin()
 def new_job():
     """Capture new job to begin processing."""
-    import providentia.repository.benchmark_repository as bm_table
+    import providentia.repository.this.tbl_benchmark as bm_table
 
     data = request.get_json()
     logging.debug(data)
@@ -45,9 +44,10 @@ def new_job():
 
 
 def deserialize(obj):
-    import providentia.repository.databases_repository as db_table
-    import providentia.repository.datasets_repository as ds_table
-    import providentia.repository.analysis_repository as an_table
+    # TODO: Move this towards using a model decoder
+    import providentia.repository.this.tbl_databases as db_table
+    import providentia.repository.this.tbl_datasets as ds_table
+    import providentia.repository.this.tbl_analysis as an_table
 
     if type(obj) is dict:
         benchmark = Benchmark()
