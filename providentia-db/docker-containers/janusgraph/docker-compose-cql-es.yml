@@ -33,6 +33,7 @@ services:
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - "http.host=0.0.0.0"
       - "network.host=0.0.0.0"
+      - "discovery.type=single-node"
       - "transport.host=127.0.0.1"
       - "cluster.name=docker-cluster"
       - "xpack.security.enabled=false"
