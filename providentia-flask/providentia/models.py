@@ -64,6 +64,7 @@ class Database(object):
         self.name = None
         self.description = None
         self.icon = None
+        self.status = 'DOWN'
 
     @property
     def json(self):
@@ -72,6 +73,7 @@ class Database(object):
         out['name'] = self.name
         out['description'] = self.description
         out['icon'] = self.icon
+        out['status'] = self.status
 
         return out
 
@@ -181,6 +183,8 @@ def database_decoder(o: dict):
     database.name = o['name']
     database.description = o['description']
     database.icon = o['icon']
+    database.status = o['status']
+    return database
 
 
 def dataset_decoder(o: dict):

@@ -30,10 +30,7 @@ def query_results(n=None):
         else:
             return None
 
-        deserialized = []
-
-        for row in rows:
-            deserialized.append(benchmark_decoder(row))
+        deserialized = [benchmark_decoder(row) for row in rows]
 
         return deserialized
 

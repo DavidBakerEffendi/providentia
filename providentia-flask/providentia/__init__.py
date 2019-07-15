@@ -4,7 +4,23 @@ import os
 
 from flask import Flask
 from flask_cors import CORS
+
 import config
+
+
+def test_database_connections(app):
+    from providentia.db import janus_graph, postgres
+    from providentia.repository.this import tbl_databases
+
+    if janus_graph.test_connection(app):
+        tbl_databases.set_status('JanusGraph', status='UP', app=app)
+    else:
+        tbl_databases.set_status('JanusGraph', status='DOWN', app=app)
+
+    if postgres.test_connection(app):
+        tbl_databases.set_status('Postgres', status='UP', app=app)
+    else:
+        tbl_databases.set_status('Postgres', status='DOWN', app=app)
 
 
 def create_app():
@@ -36,6 +52,14 @@ def create_app():
     app.register_blueprint(analysis.bp, url_prefix='/api/analysis')
     app.register_blueprint(home.bp, url_prefix='/api/home')
     app.register_blueprint(new_job.bp, url_prefix='/api/new-job')
+
+    # establish analysis database for this app
+    logging.debug('Establishing database connections.')
+    from providentia.db import this
+    app.teardown_appcontext(this.disconnect)
+
+    # test connections to benchmark databases
+    test_database_connections(app)
 
     # register CORS
     logging.debug('Registering CORS filter.')

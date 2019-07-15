@@ -13,6 +13,7 @@ CREATE TABLE databases (
     name character varying(255) NOT NULL,
     description text NOT NULL,
     icon text NOT NULL,
+    status text NOT NULL DEFAULT 'DOWN', -- UP, DOWN
     PRIMARY KEY (id)
 );
 

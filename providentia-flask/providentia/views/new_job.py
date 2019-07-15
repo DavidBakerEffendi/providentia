@@ -4,6 +4,7 @@ from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
 
 from providentia.models import Benchmark
+from providentia.repository.this import tbl_benchmark
 
 bp = Blueprint('new-job', __name__, )
 
@@ -17,13 +18,11 @@ bp = Blueprint('new-job', __name__, )
 @cross_origin()
 def new_job():
     """Capture new job to begin processing."""
-    import providentia.repository.this.tbl_benchmark as bm_table
-
     data = request.get_json()
     logging.debug(data)
 
     # Check for uniqueness
-    if bm_table.find_title(data['title']) is not None:
+    if tbl_benchmark.find_title(data['title']) is not None:
         logging.debug("Job title not unique!")
         return jsonify(error='Job title not unique!'), 400
 
@@ -33,7 +32,7 @@ def new_job():
         logging.debug(str(e))
         return jsonify(error=str(e)), 404
 
-    bm_table.insert(benchmark)
+    tbl_benchmark.insert(benchmark)
 
     return jsonify(message='Not yet implemented.'), 200
 

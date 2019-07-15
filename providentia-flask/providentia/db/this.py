@@ -24,10 +24,8 @@ def get_db():
     return g.db
 
 
-def close_db(e=None):
-    """If this request connected to the database, close the
-    connection.
-    """
+def disconnect(e=None):
+    """If this request connected to the database, close the connection."""
     db = g.pop("db", None)
 
     if db is not None:
@@ -63,8 +61,8 @@ def init_db_command():
 
 
 def init_app(app):
-    """Register database functions with the Flask app. This is called by
+    """
+    Register database functions with the Flask app. This is called by
     the application factory.
     """
-    app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)

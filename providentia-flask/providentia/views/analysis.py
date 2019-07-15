@@ -8,6 +8,7 @@ from providentia.repository.this import tbl_analysis
 
 bp = Blueprint('analysis', __name__, )
 
+
 @bp.route("/", methods=['GET'])
 @cross_origin()
 def result_get():
@@ -22,7 +23,6 @@ def result_get():
         return Response({"message": "Database empty."}, status=200)
 
     # Serialize objects
-    for i in range(len(results)):
-        results[i] = results[i].json
+    results = [result.__dict__ for result in results]
 
     return Response(json.dumps(results, default=str), status=200, mimetype='application/json')

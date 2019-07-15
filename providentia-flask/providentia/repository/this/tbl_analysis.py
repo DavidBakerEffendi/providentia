@@ -1,4 +1,3 @@
-import json
 import logging
 
 from flask import current_app
@@ -30,10 +29,7 @@ def query_results(n=None):
         else:
             return None
 
-        deserialized = []
-
-        for row in rows:
-            deserialized.append(json.dumps(row, default=analysis_decoder))
+        deserialized = [analysis_decoder(row) for row in rows]
 
         return deserialized
 
@@ -51,9 +47,7 @@ def find(row_id):
         else:
             return None
 
-        deserialized = json.dumps(result, default=analysis_decoder)
-
-        return deserialized
+        return analysis_decoder(result)
 
 
 def find_name(row_name):
@@ -69,6 +63,4 @@ def find_name(row_name):
         else:
             return None
 
-        deserialized = json.dumps(result, default=analysis_decoder)
-
-        return deserialized
+        return analysis_decoder(result)

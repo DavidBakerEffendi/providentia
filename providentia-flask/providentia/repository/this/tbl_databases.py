@@ -1,4 +1,3 @@
-import json
 import logging
 
 from flask import current_app
@@ -7,13 +6,13 @@ from providentia.db.this import get_db
 from providentia.models import database_decoder
 
 TABLE = 'databases'
-COLUMNS = ("id", "name", "description", "icon")
+COLUMNS = ("id", "name", "description", "icon", "status")
 
 
 def query_results(n=None):
     with current_app.app_context():
         cur = get_db().cursor()
-        query = "SELECT id, name, description, icon " \
+        query = "SELECT id, name, description, icon, status " \
                 "FROM {} ORDER BY name DESC".format(TABLE)
 
         if n is None:
@@ -30,10 +29,7 @@ def query_results(n=None):
         else:
             return None
 
-        deserialized = []
-
-        for row in rows:
-            deserialized.append(json.dumps(row, default=database_decoder))
+        deserialized = [database_decoder(row) for row in rows]
 
         return deserialized
 
@@ -52,7 +48,7 @@ def find(row_id):
         else:
             return None
 
-        deserialized = json.dumps(result, default=database_decoder)
+        deserialized = database_decoder(result)
 
         return deserialized
 
@@ -70,6 +66,22 @@ def find_name(row_name):
         else:
             return None
 
-        deserialized = json.dumps(result, default=database_decoder)
+        deserialized = database_decoder(result)
 
         return deserialized
+
+
+def set_status(db_name, status, app):
+    if status == 'DOWN' or status == 'UP':
+        with app.app_context():
+            conn = get_db()
+            cur = get_db().cursor()
+            query = "UPDATE {} SET status = %s WHERE name = %s".format(TABLE)
+            logging.debug("Executing query: %s", query.replace('%s', '{}').format(status, db_name))
+            cur.execute(query, (status, db_name,))
+            if cur.rowcount > 0:
+                conn.commit()
+            else:
+                return None
+    else:
+        raise AttributeError('Database status may only be UP or DOWN')

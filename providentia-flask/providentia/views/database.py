@@ -1,7 +1,7 @@
 import json
 import logging
 
-from flask import Blueprint, Response
+from flask import Blueprint, Response, request
 from flask_cors import cross_origin
 
 from providentia.repository.this import tbl_databases
@@ -23,7 +23,36 @@ def result_get():
         return Response({"message": "Database empty."}, status=200)
 
     # Serialize objects
-    for i in range(len(results)):
-        results[i] = results[i].json
+    results = [result.__dict__ for result in results]
 
     return Response(json.dumps(results, default=str), status=200, mimetype='application/json')
+
+
+@bp.route("/query/<db_name>", methods=['POST'])
+@cross_origin()
+def query_db(db_name):
+    """Submit query to db, return response."""
+    from providentia.db import janus_graph, postgres
+    from time import perf_counter_ns
+
+    data = request.get_json()
+
+    logging.debug('Incoming query for {}: {}'.format(db_name, str(data['query'])))
+
+    query = data['query']
+    if 'delete' in query.lower() or 'update' in query.lower() or 'drop' in query.lower() or 'add' in query.lower():
+        return Response({"message": "You may only use select-style queries!"}, status=400)
+
+    result = ''
+
+    start = perf_counter_ns()
+    if db_name == "JanusGraph":
+        result = str(janus_graph.execute_query(query))
+    elif db_name == "Postgres":
+        result = str(postgres.execute_query(query))
+    elif db_name == "Cassandra":
+        pass
+    time_elapsed = (perf_counter_ns() - start) / 1000
+
+    logging.debug('Query response: {}'.format(result))
+    return Response(json.dumps({'result': result, 'time': time_elapsed}), status=200, mimetype='application/json')

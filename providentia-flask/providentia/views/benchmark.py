@@ -23,8 +23,7 @@ def result_get():
         return jsonify(error="No results in database, you can add more by navigating to 'New Job' in the sidebar."), 503
 
     # Serialize objects
-    for i in range(len(results)):
-        results[i] = results[i].__dict__
+    results = [result.__dict__ for result in results]
 
     return Response(json.dumps(results, default=str), status=200, mimetype='application/json')
 

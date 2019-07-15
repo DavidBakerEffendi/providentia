@@ -19,6 +19,11 @@ LOGGING_LEVEL = logging.INFO
 # DATABASE_URI = 'postgres://postgres:docker@127.0.0.1:5432/providentia'
 # LOGGING_LEVEL = logging.DEBUG
 
+# Config for databases to benchmark
+# POSTGRES_YELP_CONN = 'postgres://postgres:docker@127.0.0.1:5432/yelp'
+# JANUSGRAPH_YELP_CONN = 'ws://localhost:8182/gremlin'
+# CASSANDRA_YELP_CONN = 'todo'
+
 # Example testing
 # TESTING = True
 
