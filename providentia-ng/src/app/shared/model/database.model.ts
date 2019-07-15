@@ -3,6 +3,7 @@ export interface IDatabase {
     name?: String;
     description?: String;
     icon?: String;
+    status?: String;
 }
 
 export class Database implements IDatabase {
@@ -12,6 +13,7 @@ export class Database implements IDatabase {
         public name?: String,
         public description?: String,
         public icon?: String,
+        public status?: String
     ) {}
 
 }

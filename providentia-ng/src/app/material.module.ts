@@ -13,6 +13,7 @@ import {
     MatSelectModule,
     MatInputModule,
     MatStepperModule,
+    MatExpansionModule,
 } from '@angular/material';
 import {
     NavbarModule,
@@ -42,6 +43,7 @@ import { NgModule } from '@angular/core';
         MatSelectModule,
         MatInputModule,
         MatStepperModule,
+        MatExpansionModule,
     ],
     exports: [
         MatButtonModule,
@@ -62,6 +64,7 @@ import { NgModule } from '@angular/core';
         MatSelectModule,
         MatInputModule,
         MatStepperModule,
+        MatExpansionModule,
     ],
 })
 export class AngularMaterialModule { }

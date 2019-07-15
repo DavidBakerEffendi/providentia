@@ -35,4 +35,8 @@ export class DatabaseService {
     delete(id: number): Observable<HttpResponse<any>> {
         return this.http.delete<any>(`${this.resourceUrl}${id}`, { observe: 'response' });
     }
+
+    submitQuery(name: String, query: string):  Observable<HttpResponse<any>> {
+        return this.http.post<any>(`${this.resourceUrl}query/${name}`, {'query': query}, { observe: 'response' });
+    }
 }

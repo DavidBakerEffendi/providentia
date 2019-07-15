@@ -9,7 +9,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { ProvidentiaHomeModule } from './home';
 import { ProvidentiaNewJobModule } from './job';
-import { ProvidentiaAboutModule } from './about';
+import { ProvidentiaDatabasesModule } from './databases';
 import { ProvidentiaHistoryModule } from './history';
 import { ProvidentiaBenchmarkModule } from './benchmark';
 import { AngularMaterialModule } from './material.module';
@@ -46,7 +46,7 @@ import { NavbarComponent, FooterComponent, ErrorComponent, SidenavbarComponent }
     HttpClientModule,
     ProvidentiaHomeModule,
     ProvidentiaNewJobModule,
-    ProvidentiaAboutModule,
+    ProvidentiaDatabasesModule,
     ProvidentiaHistoryModule,
     ProvidentiaBenchmarkModule,
     ProvidentiaAppRoutingModule,

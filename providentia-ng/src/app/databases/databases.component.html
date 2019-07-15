@@ -1,0 +1,61 @@
+<mat-card>
+    <h1 class="display-4">Databases</h1>
+    <p class="lead">Have a look at the status of your databases</p>
+
+    <!-- Error messages-->
+    <div *ngIf="showError" class="alert alert-danger" role="alert">
+        Error while communicating to server:
+        <mat-list>
+            <mat-list-item>{{ errorMsg }}</mat-list-item>
+        </mat-list>
+    </div>
+
+    <!-- Warning messages -->
+    <div *ngIf="showWarn" class="alert alert-warning" role="alert">
+        <mat-list-item>{{ warnMsg }}</mat-list-item>
+    </div>
+
+    <!-- Success messages -->
+    <div *ngIf="showSuccess" class="alert alert-success" role="alert">
+        <mat-list-item>{{ successMsg }}</mat-list-item>
+    </div>
+
+    <mat-content>
+        <mat-accordion *ngIf="databases" class="example-headers-align">
+            <mat-expansion-panel *ngFor="let database of databases">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        {{ database.name }}
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        <p> </p><!-- Placeholder to force icons to align-right -->
+                        <mat-icon *ngIf="database.status === 'UP'" title="{{database.name}} is up.">done</mat-icon>
+                        <mat-icon *ngIf="database.status === 'DOWN'" title="{{database.name}} is currently down!">
+                            warning</mat-icon>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <p>{{ database.description }}</p>
+                <div *ngIf="queryResponses.has(database.name)">
+                    <p class="code elegant-color-dark text-white p-3">{{ queryResponses.get(database.name).result }}</p>
+                    <p>Query took: {{ queryResponses.get(database.name).time / 1000000 | number:'.1-6' }} ms</p>
+                </div>
+
+                <mat-action-row *ngIf="database.status !== 'DOWN'">
+                    <div class="container">
+                        <div class="row no-gutters">
+                            <p class="col-sm-12 m-0" style="padding: 0">Submit a query:</p>
+                            <mat-form-field class="code col-sm-12">
+                                <textarea matInput #queryInput
+                                    (keydown.enter)="submitQuery(database.name, queryInput.value); false"></textarea>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <button color="primary" (click)="submitQuery(database.name, queryInput.value)" mat-icon-button>
+                        <mat-icon>send</mat-icon>
+                    </button>
+                </mat-action-row>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </mat-content>
+</mat-card>
