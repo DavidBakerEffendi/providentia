@@ -1,3 +1,0 @@
-"""
-Place for global variables
-"""

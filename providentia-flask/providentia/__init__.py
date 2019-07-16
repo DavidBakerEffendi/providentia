@@ -69,9 +69,15 @@ def create_app():
     logging.debug('Starting background jobs.')
     from apscheduler.schedulers.background import BackgroundScheduler
     import providentia.analysis.job_scheduler as job_scheduler
+    from providentia.classifier import sentiment
+    from datetime import datetime, timedelta
+
+    classifier_start_train = datetime.now() + + timedelta(0, 10)
 
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=job_scheduler.execute_waiting, id='execute_waiting', trigger='interval', seconds=60)
+    scheduler.add_job(func=sentiment.train_model, id='train_sentiment', trigger='date', next_run_time=classifier_start_train,
+                      args=[app.config['SENTIMENT_DATA'], app])
     scheduler.start()
     # shut down the scheduler when exiting the app
     atexit.register(lambda: scheduler.shutdown())
