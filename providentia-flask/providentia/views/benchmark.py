@@ -16,7 +16,7 @@ def result_get():
     try:
         results = tbl_benchmark.query_results(10)
     except Exception as e:
-        logging.error("Error on GET /api/benchmark/: " + str(e))
+        logging.error("Error on GET /api/benchmark/: {}".format(str(e)))
         return jsonify(error="Unexpected error while querying database! The database is most likely down."), 500
 
     if results is None:

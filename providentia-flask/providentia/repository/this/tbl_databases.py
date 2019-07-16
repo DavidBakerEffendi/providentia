@@ -37,7 +37,7 @@ def query_results(n=None):
 def find(row_id):
     with current_app.app_context():
         cur = get_db().cursor()
-        query = "SELECT id, name, description, icon " \
+        query = "SELECT id, name, description, icon, status " \
                 "FROM {} WHERE id = %s".format(TABLE)
 
         logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_id))
@@ -56,7 +56,7 @@ def find(row_id):
 def find_name(row_name):
     with current_app.app_context():
         cur = get_db().cursor()
-        query = "SELECT id, name, description, icon FROM {} WHERE name = %s".format(TABLE)
+        query = "SELECT id, name, description, icon, status FROM {} WHERE name = %s".format(TABLE)
 
         logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_name))
         cur.execute(query, (row_name,))

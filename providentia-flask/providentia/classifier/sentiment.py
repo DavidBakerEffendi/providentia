@@ -7,11 +7,28 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
+classifier = None
+word_features = None
+
+
+def get_classifier():
+    global classifier
+    return classifier
+
 
 def train_model(train_dir, app):
+    global classifier
+    global word_features
+
+    with app.app_context():
+        try:
+            perc_data = app.config['CLASSIFIER_PERC_DATA']
+        except Exception:
+            perc_data = 1
+
     logging.debug('[SENTIMENT] Training sentiment classifier')
 
-    logging.debug('[SENTIMENT] Checking necessary NLTK resources are installed')
+    logging.debug('[SENTIMENT] (0/6) Checking necessary NLTK resources are installed')
     try:
         nltk.data.find('tokenizers/punkt')
     except LookupError:
@@ -26,7 +43,7 @@ def train_model(train_dir, app):
         nltk.download('averaged_perceptron_tagger')
 
     logging.debug('[SENTIMENT] (1/6) Loading bag of words')
-    all_words, documents = load_words(train_dir)
+    all_words, documents = load_words(train_dir, perc_data)
 
     logging.debug('[SENTIMENT] (2/6) Obtaining frequency distribution of each adjective')
     all_words = nltk.FreqDist(all_words)
@@ -51,11 +68,11 @@ def train_model(train_dir, app):
     # pos, neg = show_most_informative_features_in_list(classifier, 100)
     with app.app_context():
         from flask import g
-        if 'sentiment' not in g:
-            g.sentiment = classifier
+        g.sentiment = classifier
+        g.sentiment_features = word_features
 
 
-def load_words(train_dir):
+def load_words(train_dir, perc_data):
     all_words = []
     documents = []
     # Load adjectives, this has shown the highest accuracy
@@ -63,10 +80,16 @@ def load_words(train_dir):
 
     stop_words = list(set(stopwords.words('english')))
 
-    files_pos = os.listdir(train_dir + '/pos')
-    files_pos = [open(train_dir + '/pos/' + f, 'r').read() for f in files_pos]
-    files_neg = os.listdir(train_dir + '/neg')
-    files_neg = [open(train_dir + '/neg/' + f, 'r').read() for f in files_neg]
+    files_pos = os.listdir(train_dir + '/positive')
+    files_pos = [open(train_dir + '/positive/' + f, 'r').read() for f in files_pos]
+    files_neg = os.listdir(train_dir + '/negative')
+    files_neg = [open(train_dir + '/negative/' + f, 'r').read() for f in files_neg]
+
+    logging.debug('[SENTIMENT] Loading %.2f%% of training set. (%d documents)',
+                  perc_data * 100, int(len(files_pos) * perc_data))
+
+    files_pos = files_pos[:int(len(files_pos) * perc_data)]
+    files_neg = files_neg[:int(len(files_neg) * perc_data)]
 
     logging.debug('[SENTIMENT] Loaded training set. Tokenizing positive reviews.')
 
@@ -163,3 +186,11 @@ def show_most_informative_features_in_list(classifier, n=10):
         elif labels[-1] == "neg":
             neg_dict[fname] = ratio
     return pos_dict, neg_dict
+
+
+def classify(text):
+    global classifier
+    global word_features
+    if classifier is not None:
+        features = find_features(text, word_features)
+        return classifier.classify(features)

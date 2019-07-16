@@ -24,7 +24,7 @@ def get_db():
     return g.db
 
 
-def disconnect(e=None):
+def close_db(e=None):
     """If this request connected to the database, close the connection."""
     db = g.pop("db", None)
 

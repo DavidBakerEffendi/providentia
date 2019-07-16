@@ -44,7 +44,7 @@ def create_app():
 
     # apply the blueprints to Providentia
     logging.debug('Applying blueprints to routes.')
-    from providentia.views import home, new_job, dataset, database, benchmark, analysis
+    from providentia.views import home, new_job, dataset, database, benchmark, analysis, classifier
 
     app.register_blueprint(benchmark.bp, url_prefix='/api/benchmark')
     app.register_blueprint(dataset.bp, url_prefix='/api/dataset')
@@ -52,12 +52,12 @@ def create_app():
     app.register_blueprint(analysis.bp, url_prefix='/api/analysis')
     app.register_blueprint(home.bp, url_prefix='/api/home')
     app.register_blueprint(new_job.bp, url_prefix='/api/new-job')
+    app.register_blueprint(classifier.bp, url_prefix='/api/classifier')
 
     # establish analysis database for this app
     logging.debug('Establishing database connections.')
     from providentia.db import this
-    app.teardown_appcontext(this.disconnect)
-
+    app.teardown_appcontext(this.close_db)
     # test connections to benchmark databases
     test_database_connections(app)
 
@@ -76,8 +76,8 @@ def create_app():
 
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=job_scheduler.execute_waiting, id='execute_waiting', trigger='interval', seconds=60)
-    scheduler.add_job(func=sentiment.train_model, id='train_sentiment', trigger='date', next_run_time=classifier_start_train,
-                      args=[app.config['SENTIMENT_DATA'], app])
+    scheduler.add_job(func=sentiment.train_model, id='train_sentiment', trigger='date',
+                      next_run_time=classifier_start_train, args=[app.config['SENTIMENT_DATA'], app])
     scheduler.start()
     # shut down the scheduler when exiting the app
     atexit.register(lambda: scheduler.shutdown())
