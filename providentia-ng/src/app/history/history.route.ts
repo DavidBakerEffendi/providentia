@@ -7,6 +7,6 @@ export const HISTORY_ROUTE: Route = {
   component: HistoryComponent,
   data: {
     authorities: [],
-    pageTitle: 'History - Providentia'
+    pageTitle: 'History | Providentia'
   }
 };

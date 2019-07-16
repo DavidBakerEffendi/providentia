@@ -7,6 +7,6 @@ export const DATABASES_ROUTE: Route = {
   component: DatabasesComponent,
   data: {
     authorities: [],
-    pageTitle: 'Databases'
+    pageTitle: 'Databases | Providentia'
   }
 };

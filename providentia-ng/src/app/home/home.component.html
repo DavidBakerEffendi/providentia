@@ -1,6 +1,5 @@
 <mat-card>
-    <h1 class="display-4">Home</h1>
-    <p class="lead">Here are some shortcuts to your latest activity</p>
+    <mat-toolbar>Here are some shortcuts to your latest activity</mat-toolbar>
 
     <!-- Error messages-->
     <div *ngIf="showError" class="alert alert-danger" role="alert">
@@ -10,9 +9,9 @@
         </mat-list> 
     </div>
 
-    <mat-toolbar *ngIf="!showError || showInfo">
+    <h2 class="py-3" *ngIf="!showError || showInfo">
         Recent Benchmarks
-    </mat-toolbar>
+    </h2>
 
     <!-- If database is empty or any other info regarding recent benchmarks -->
     <div *ngIf="showInfo" class="alert alert-info" role="alert">
@@ -39,9 +38,9 @@
         </mat-grid-list>
     </mat-content>
 
-    <mat-toolbar>
+    <h2 class="py-3">
         Server Metrics
-    </mat-toolbar>
+    </h2>
 
     <mat-content>
         <mat-grid-list cols="2" rowHeight="300pt">

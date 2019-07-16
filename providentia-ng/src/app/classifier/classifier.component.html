@@ -1,6 +1,6 @@
 <mat-card>
     <mat-card-title>
-        <mat-toolbar>Have a look at the status of your databases</mat-toolbar>
+        <mat-toolbar>See the status of and test the text classifiers</mat-toolbar>
     </mat-card-title>
 
     <!-- Error messages-->
@@ -22,39 +22,38 @@
     </div>
 
     <mat-content>
-        <mat-accordion *ngIf="databases" class="example-headers-align">
-            <mat-expansion-panel *ngFor="let database of databases">
+        <mat-accordion class="headers-align">
+            <mat-expansion-panel>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
-                        {{ database.name }}
+                        Sentiment Classifier
                     </mat-panel-title>
                     <mat-panel-description class="row">
                         <div class="col-11"></div><!-- Placeholder to force icons to align-right -->
-                        <mat-icon class="col-1" *ngIf="database.status === 'UP'" title="{{database.name}} is up.">done
+                        <mat-icon class="col-1" *ngIf="sentimentReady" title="Classifier is up.">done
                         </mat-icon>
-                        <mat-icon class="col-1" *ngIf="database.status === 'DOWN'"
-                            title="{{database.name}} is currently down!">
+                        <mat-icon class="col-1" *ngIf="!sentimentReady" title="Classifer is not ready!">
                             warning</mat-icon>
                     </mat-panel-description>
                 </mat-expansion-panel-header>
 
-                <p>{{ database.description }}</p>
-                <div *ngIf="queryResponses.has(database.name)">
-                    <p class="code elegant-color-dark text-white p-3">{{ queryResponses.get(database.name).result }}</p>
-                    <p>Query took: {{ queryResponses.get(database.name).time / 1000000 | number:'.1-6' }} ms</p>
+                <p>Classifies whether the given text suggests a positive or negative sentiment. The classifier was
+                    trained on 20,000 restaurant reviews from the Yelp dataset.</p>
+                <div *ngIf="sentimentClassifierResult">
+                    <p class="code elegant-color-dark text-white p-3">{{ sentimentClassifierResult }}</p>
                 </div>
 
-                <mat-action-row *ngIf="database.status !== 'DOWN'">
+                <mat-action-row *ngIf="sentimentReady">
                     <div class="container">
                         <div class="row no-gutters">
-                            <p class="col-sm-12 m-0" style="padding: 0">Submit a query:</p>
+                            <p class="col-sm-12 m-0" style="padding: 0">Submit text:</p>
                             <mat-form-field class="code col-sm-12">
                                 <textarea matInput #queryInput
-                                    (keydown.enter)="submitQuery(database.name, queryInput.value); false"></textarea>
+                                    (keydown.enter)="classifySentiment(queryInput.value); false"></textarea>
                             </mat-form-field>
                         </div>
                     </div>
-                    <button color="primary" (click)="submitQuery(database.name, queryInput.value)" mat-icon-button>
+                    <button color="primary" (click)="classifySentiment(queryInput.value)" mat-icon-button>
                         <mat-icon>send</mat-icon>
                     </button>
                 </mat-action-row>

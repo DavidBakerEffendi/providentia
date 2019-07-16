@@ -10,3 +10,4 @@ export * from './service/database.service';
 export * from './service/dataset.service';
 export * from './service/analysis.service';
 export * from './service/new-job.service';
+export * from './service/classifier.service';

@@ -7,6 +7,6 @@ export const NEW_JOB_ROUTE: Route = {
   component: NewJobComponent,
   data: {
     authorities: [],
-    pageTitle: 'New Job - Providentia'
+    pageTitle: 'New Job | Providentia'
   }
 };

@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { IDatabase, DatabaseService, IDataset, DatasetService, IAnalysis, AnalysisService, IBenchmark, NewJobService } from '../shared';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { InfoMessage } from '../shared';
 
 @Component({
@@ -10,7 +10,6 @@ import { InfoMessage } from '../shared';
     styleUrls: ['new-job.scss']
 })
 export class NewJobComponent extends InfoMessage implements OnInit {
-    @ViewChild('stepper') stepper;
 
     databases: IDatabase[];
     datasets: IDataset[];
@@ -30,21 +29,16 @@ export class NewJobComponent extends InfoMessage implements OnInit {
         this.dataOptions = fb.group({
             hideRequired: false,
             floatLabel: 'auto',
-            dbCtrl: ['', Validators.required],
-            dsCtrl: ['', Validators.required],
-            anCtrl: ['', Validators.required]
-        });
-        this.descriptionOptions = fb.group({
-            hideRequired: false,
-            floatLabel: 'auto',
-            titleCtrl: ['', Validators.required],
-            descriptCtrl: [''],
+            dbCtrl: new FormControl('', Validators.required),
+            dsCtrl: new FormControl('', Validators.required),
+            anCtrl: new FormControl('', Validators.required)
         });
     }
 
     ngOnInit() {
         this.databaseService.query().subscribe((res: HttpResponse<IDatabase[]>) => {
             this.databases = res.body;
+            this.showError = false;
         },
             (res: HttpErrorResponse) => {
                 console.error(res.statusText);
@@ -98,7 +92,6 @@ export class NewJobComponent extends InfoMessage implements OnInit {
         this.newJobService.create(newJob)
             .subscribe((res: HttpResponse<IBenchmark>) => {
                 this.showSuccessMsg('"' + newJob.title + '" successfully added to the pipeline!');
-                this.stepper.reset();
             }, (res: HttpErrorResponse) => {
                 console.error(res.message)
                 if (res.status === 0) {
@@ -108,24 +101,14 @@ export class NewJobComponent extends InfoMessage implements OnInit {
                 } else if (res.status === 400) {
                     this.showWarnMsg(res.error.error);
                     // Point user to field to fix
-                    this.changeStep(1);
                     this.descriptionOptions.reset();
                 } else if (res.status === 404) {
                     this.showWarnMsg(res.error.error);
                     // Point user to field to fix
-                    this.changeStep(0);
                     this.dataOptions.reset();
                 } else {
                     this.showErrorMsg(res.statusText);
                 }
             });
-    }
-
-    /**
-     * Changes the step to the index specified
-     * @param {number} index The index of the step
-     */
-    changeStep(index: number) {
-        this.stepper.selectedIndex = index;
     }
 }

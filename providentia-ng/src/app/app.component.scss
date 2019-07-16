@@ -2,13 +2,16 @@
   margin-top: 45pt;
   display: flex;
   flex-flow: column;
+  position: relative;
   flex: 1 1 auto;
+  z-index: 9999;
 }
 
 .drawer {
-  margin-top: 45pt;
+  // margin-top: 55pt;
   width: 150px;
   position: fixed;
+  
 }
 
 .side-content {

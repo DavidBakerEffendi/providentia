@@ -12,7 +12,6 @@ import {
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
-    MatStepperModule,
     MatExpansionModule,
 } from '@angular/material';
 import {
@@ -42,7 +41,6 @@ import { NgModule } from '@angular/core';
         MatFormFieldModule,
         MatSelectModule,
         MatInputModule,
-        MatStepperModule,
         MatExpansionModule,
     ],
     exports: [
@@ -63,7 +61,6 @@ import { NgModule } from '@angular/core';
         MatFormFieldModule,
         MatSelectModule,
         MatInputModule,
-        MatStepperModule,
         MatExpansionModule,
     ],
 })

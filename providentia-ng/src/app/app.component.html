@@ -5,6 +5,13 @@
 
 <mat-sidenav-container class="sidenav">
     <mat-sidenav [fixedInViewport]="true" class="drawer" mode="side" opened>
+        <!-- Brand -->
+        <a routerLink="/">
+            <img src="../../../assets/providentia-lady-indigo.png" class="p-3 d-inline-block" width="150px">
+            <p class="text-uppercase headline indigo-text text-center"><strong>Providentia</strong></p>
+        </a>
+        <mat-divider></mat-divider>
+        <!-- Links -->
         <prv-sidenav></prv-sidenav>
     </mat-sidenav>
 

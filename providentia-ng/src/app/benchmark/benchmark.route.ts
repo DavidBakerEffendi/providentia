@@ -7,6 +7,6 @@ export const BENCHMARK_ROUTE: Route = {
   component: BenchmarkComponent,
   data: {
     authorities: [],
-    pageTitle: 'Benchmark - Providentia'
+    pageTitle: 'Benchmark | Providentia'
   }
 };

@@ -1,6 +1,7 @@
 <mat-card>
-    <h1 class="display-4">New Job</h1>
-    <p class="lead">Add a new benchmark job to the pipeline</p>
+    <mat-card-title>
+        <mat-toolbar>Add a new benchmark job to the pipeline</mat-toolbar>
+    </mat-card-title>
 
     <!-- Error messages-->
     <div *ngIf="showError" class="alert alert-danger" role="alert">
@@ -20,83 +21,42 @@
         <mat-list-item>{{ successMsg }}</mat-list-item>
     </div>
 
-    <mat-content *ngIf="!showError" >
-        <mat-vertical-stepper linear #stepper>
-            <!-- Step 1 -->
-            <mat-step [stepControl]="dataOptions">
-                <form [formGroup]="dataOptions" *ngIf="databases && datasets && analysis">
-                    <ng-template matStepLabel>Select a data processing solution</ng-template>
-                    <p class="mat-content">Choose a backend storage solution and dataset:</p>
-                    <!-- Database -->
-                    <mat-form-field [hideRequiredMarker]="dataOptions.value.hideRequired"
-                        [floatLabel]="dataOptions.value.floatLabel" style="margin-right: 2pt">
-                        <mat-select formControlName="dbCtrl" required>
-                            <mat-option *ngFor="let database of databases" value="{{ database.name }}">
-                                {{ database.name }}</mat-option>
-                        </mat-select>
-                        <mat-label>
-                            <mat-icon class="tab-icon">storage</mat-icon> Database
-                        </mat-label>
-                    </mat-form-field>
-                    <!-- Dataset -->
-                    <mat-form-field [hideRequiredMarker]="dataOptions.value.hideRequired"
-                        [floatLabel]="dataOptions.value.floatLabel">
-                        <mat-select formControlName="dsCtrl" required>
-                            <mat-option *ngFor="let dataset of datasets" value="{{ dataset.name }}">{{ dataset.name }}
-                            </mat-option>
-                        </mat-select>
-                        <mat-label>
-                            <mat-icon class="tab-icon">bubble_chart</mat-icon> Dataset
-                        </mat-label>
-                    </mat-form-field>
-                    <!-- Analysis -->
-                    <mat-form-field [hideRequiredMarker]="dataOptions.value.hideRequired"
-                        [floatLabel]="dataOptions.value.floatLabel">
-                        <mat-select formControlName="anCtrl" required>
-                            <mat-option *ngFor="let analys of analysis" value="{{ analys.name }}">{{ analys.name }}
-                            </mat-option>
-                        </mat-select>
-                        <mat-label>
-                            <mat-icon class="tab-icon">bubble_chart</mat-icon> Analysis
-                        </mat-label>
-                    </mat-form-field>
-
-                    <div>
-                        <button mat-button matStepperPrevious>Back</button>
-                        <button mat-button matStepperNext>Next</button>
-                    </div>
-                </form>
-            </mat-step>
-            <!-- Step 3 -->
-            <mat-step [stepControl]="descriptionOptions">
-                <form [formGroup]="descriptionOptions">
-                    <ng-template matStepLabel>Describe job</ng-template>
-                    <p class="mat-content">Give a unique title and description to the benchmark/analysis you'd like to
-                        perform:</p>
-                    <!-- Description -->
-                    <mat-form-field [hideRequiredMarker]="descriptionOptions.value.hideRequired"
-                        [floatLabel]="descriptionOptions.value.floatLabel">
-                        <input matInput formControlName="titleCtrl" placeholder="Title" required>
-                    </mat-form-field>
-                    <br />
-                    <mat-form-field [hideRequiredMarker]="descriptionOptions.value.hideRequired"
-                        [floatLabel]="descriptionOptions.value.floatLabel">
-                        <textarea matInput formControlName="descriptCtrl" placeholder="Description"></textarea>
-                    </mat-form-field>
-                    <div>
-                        <button mat-button matStepperPrevious>Back</button>
-                        <button mat-button matStepperNext>Next</button>
-                    </div>
-                </form>
-            </mat-step>
-            <!-- Final Step -->
-            <mat-step>
-                <ng-template matStepLabel>Confirm</ng-template>
-                <p class="mat-content">You are now done. Are you ready to submit the job to the pipeline?</p>
-                <div>
-                    <button mat-button (click)="postNewJob()">Yes</button>
-                </div>
-            </mat-step>
-        </mat-vertical-stepper>
+    <mat-content *ngIf="!showError">
+        <form [formGroup]="dataOptions" *ngIf="databases && datasets && analysis" class="row px-3">
+            <p class="lead col-12">Choose a backend storage solution, dataset and analysis to perform:</p>
+            <!-- Database -->
+            <mat-form-field [floatLabel]="dataOptions.value.floatLabel" class="col-sm-12 col-md-4">
+                <select matNativeControl formControlName="dbCtrl" required>
+                    <option *ngFor="let database of databases" [value]="database.name">
+                        {{ database.name }}</option>
+                </select>
+                <mat-label>
+                    <mat-icon class="tab-icon">storage</mat-icon> Database
+                </mat-label>
+            </mat-form-field>
+            <!-- Dataset -->
+            <mat-form-field [hideRequiredMarker]="dataOptions.value.hideRequired"
+                [floatLabel]="dataOptions.value.floatLabel" class="col-sm-12 col-md-4">
+                <select matNativeControl formControlName="dsCtrl" required>
+                    <option *ngFor="let dataset of datasets" [value]="dataset.name">{{ dataset.name }}
+                    </option>
+                </select>
+                <mat-label>
+                    <mat-icon class="tab-icon">bubble_chart</mat-icon> Dataset
+                </mat-label>
+            </mat-form-field>
+            <!-- Analysis -->
+            <mat-form-field [hideRequiredMarker]="dataOptions.value.hideRequired"
+                [floatLabel]="dataOptions.value.floatLabel" class="col-sm-12 col-md-4">
+                <select matNativeControl formControlName="anCtrl" required>
+                    <option *ngFor="let analys of analysis" [value]="analys.name">{{ analys.name }}
+                    </option>
+                </select>
+                <mat-label>
+                    <mat-icon class="tab-icon">bubble_chart</mat-icon> Analysis
+                </mat-label>
+            </mat-form-field>
+        </form>
+        <button mat-button (click)="postNewJob()">Submit</button>
     </mat-content>
 </mat-card>
