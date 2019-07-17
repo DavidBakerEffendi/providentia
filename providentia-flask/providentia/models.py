@@ -47,6 +47,24 @@ class Graph(object):
         self.graphson = None
 
 
+class ServerLog(object):
+
+    def __init__(self):
+        self.log_id = None
+        self.captured_at = None
+        self.cpu_logs = None
+        self.memory_perc = None
+
+
+class CPULog(object):
+
+    def __init__(self):
+        self.log_id = None
+        self.core_id = None
+        self.system_log_id = None
+        self.cpu_perc = None
+
+
 def model_encoder(o):
     """
     Encodes the given model object as a JSON string. This function should be passed
@@ -63,6 +81,10 @@ def model_encoder(o):
     elif isinstance(o, Database):
         return o.__dict__
     elif isinstance(o, Graph):
+        return o.__dict__
+    elif isinstance(o, ServerLog):
+        return o.__dict__
+    elif isinstance(o, CPULog):
         return o.__dict__
     else:
         return str(o)
@@ -143,3 +165,34 @@ def graph_decoder(o: dict):
     :return: the respective model object.
     """
     pass
+
+
+def server_log_decoder(o: dict):
+    """
+    Decodes the given JSON string and returns its respective model. This function
+    should be passed into the 'object_hook' parameter in json.load().
+    :param o: JSON string as a dict.
+    :return: the respective model object.
+    """
+    from providentia.repository.this import tbl_cpu_logs
+    log = ServerLog()
+    log.log_id = o['id']
+    log.captured_at = o['captured_at']
+    log.cpu_logs = tbl_cpu_logs.query_log(log.log_id)
+    log.memory_perc = o['memory_perc']
+    return log
+
+
+def cpu_log_decoder(o: dict):
+    """
+    Decodes the given JSON string and returns its respective model. This function
+    should be passed into the 'object_hook' parameter in json.load().
+    :param o: JSON string as a dict.
+    :return: the respective model object.
+    """
+    log = CPULog()
+    log.log_id = o['id']
+    log.system_log_id = o['system_log_id']
+    log.core_id = o['core_id']
+    log.cpu_perc = o['cpu_perc']
+    return log

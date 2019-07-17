@@ -44,7 +44,7 @@ def create_app():
 
     # apply the blueprints to Providentia
     logging.debug('Applying blueprints to routes.')
-    from providentia.views import home, new_job, dataset, database, benchmark, analysis, classifier
+    from providentia.views import home, new_job, dataset, database, benchmark, analysis, classifier, logs
 
     app.register_blueprint(benchmark.bp, url_prefix='/api/benchmark')
     app.register_blueprint(dataset.bp, url_prefix='/api/dataset')
@@ -53,6 +53,7 @@ def create_app():
     app.register_blueprint(home.bp, url_prefix='/api/home')
     app.register_blueprint(new_job.bp, url_prefix='/api/new-job')
     app.register_blueprint(classifier.bp, url_prefix='/api/classifier')
+    app.register_blueprint(logs.bp, url_prefix='/api/logs')
 
     # establish analysis database for this app
     logging.debug('Establishing database connections.')
@@ -68,14 +69,15 @@ def create_app():
     # enable scheduler
     logging.debug('Starting background jobs.')
     from apscheduler.schedulers.background import BackgroundScheduler
-    import providentia.analysis.job_scheduler as job_scheduler
+    from providentia.analysis.periodic_jobs import log_server_state, execute_waiting
     from providentia.classifier import sentiment, fake
     from datetime import datetime, timedelta
 
     classifier_start_train = datetime.now() + timedelta(0, 10)
 
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=job_scheduler.execute_waiting, id='execute_waiting', trigger='interval', seconds=60)
+    # scheduler.add_job(func=execute_waiting, id='execute_waiting', trigger='interval', seconds=60)
+    scheduler.add_job(func=log_server_state, id='log_server_state', trigger='interval', seconds=5)
     # train the classifier models if they are enabled
     if app.config['ENABLE_SENTIMENT'] is True:
         scheduler.add_job(func=sentiment.train_model, id='train_sentiment', trigger='date',
