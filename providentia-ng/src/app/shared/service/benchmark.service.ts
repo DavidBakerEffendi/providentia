@@ -13,7 +13,7 @@ type EntityArrayResponseType = HttpResponse<IBenchmark[]>;
 export class BenchmarkService {
     private resourceUrl = APP_CONFIG.FLASK_API + 'api/benchmark/';
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     create(benchmark: IBenchmark): Observable<EntityResponseType> {
         return this.http.post<IBenchmark>(this.resourceUrl, benchmark, { observe: 'response' });
@@ -24,12 +24,12 @@ export class BenchmarkService {
     }
 
     find(id: string): Observable<EntityResponseType> {
-        return this.http.get<IBenchmark>(`${this.resourceUrl}${id}`, { observe: 'response' });
+        return this.http.get<IBenchmark>(`${this.resourceUrl}find/${id}`, { observe: 'response' });
     }
 
-    query(req?: any): Observable<EntityArrayResponseType> {
-        const options = createRequestOption(req);
-        return this.http.get<IBenchmark[]>(this.resourceUrl, { params: options, observe: 'response' });
+    query(noResults=-1): Observable<EntityArrayResponseType> {
+        if (noResults <= 0) noResults = -1;
+        return this.http.get<IBenchmark[]>(`${this.resourceUrl}${noResults}`, { observe: 'response' });
     }
 
     delete(id: number): Observable<HttpResponse<any>> {

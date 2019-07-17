@@ -30,11 +30,10 @@ export class HomeComponent extends InfoMessage implements OnInit {
     }
 
     getRecentBenchmarks() {
-        this.benchmarkService.query()
+        this.benchmarkService.query(4)
             .subscribe((res: HttpResponse<IBenchmark[]>) => {
                 this.recentBenchmarks = res.body;
-                this.showSuccessMsg('');
-                console.debug(this.recentBenchmarks);
+                this.showError = false;
             },
             (res: HttpErrorResponse) => {
                 console.error(res.statusText)
@@ -61,10 +60,10 @@ export class HomeComponent extends InfoMessage implements OnInit {
         this.springUpdate = Date.now();
     }
 
-    setTileClass(analyisTime, queryTime) {
-        if (analyisTime ==-1 && queryTime == -1) {
+    setTileClass(status) {
+        if (status === 'PROCESSING') {
             return "light-blue  accent-1"
-        } else if (analyisTime == 0 && queryTime == 0) {
+        } else if (status === 'WAITING') {
             return "orange accent-1"
         } else {
             return "indigo accent-1"

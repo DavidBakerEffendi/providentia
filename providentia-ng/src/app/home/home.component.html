@@ -4,9 +4,9 @@
     <!-- Error messages-->
     <div *ngIf="showError" class="alert alert-danger" role="alert">
         Error while communicating to server:
-        <mat-list> 
+        <mat-list>
             <mat-list-item>{{ errorMsg }}</mat-list-item>
-        </mat-list> 
+        </mat-list>
     </div>
 
     <h2 class="py-3" *ngIf="!showError || showInfo">
@@ -20,18 +20,19 @@
 
     <mat-content *ngIf="!showError">
         <mat-grid-list cols="3" rowHeight="150pt">
-            <mat-grid-tile [ngClass]="setTileClass(benchmark.analysis_time, benchmark.query_time)" *ngFor="let benchmark of recentBenchmarks" [colspan]="1" [rowspan]="1">
-                <div style="cursor: pointer" routerLink="benchmark/{{ benchmark.id }}">
-                    <mat-grid-tile-header class="text-uppercase">{{ benchmark.title }}</mat-grid-tile-header>
+            <mat-grid-tile [ngClass]="setTileClass(benchmark.status)" *ngFor="let benchmark of recentBenchmarks"
+                [colspan]="1" [rowspan]="1">
+                <div style="cursor: pointer" routerLink="benchmark/{{ benchmark.benchmark_id }}">
+                    <mat-grid-tile-header class="text-uppercase">{{ benchmark.database.name }} benchmark
+                    </mat-grid-tile-header>
 
-                    <p class="text-left" *ngIf="benchmark.description">
-                        {{ benchmark.description }}
+                    <p class="text-left" *ngIf="benchmark.analysis">
+                        {{ benchmark.analysis.description }}
                     </p>
-                    
+
                     <mat-grid-tile-footer>
-                        <div *ngIf="benchmark.date_executed">{{ benchmark.date_executed }}</div>
-                        <div *ngIf="benchmark.analysis_time == 0 && benchmark.query_time == 0">WAITING</div>
-                        <div *ngIf="benchmark.analysis_time == -1 && benchmark.query_time == -1">PROCESSING</div>
+                        <div *ngIf="benchmark.date_executed" class="text-left">{{ benchmark.date_executed }}</div>
+                        <div *ngElse class="text-right"> {{ benchmark.status }}</div>
                     </mat-grid-tile-footer>
                 </div>
             </mat-grid-tile>

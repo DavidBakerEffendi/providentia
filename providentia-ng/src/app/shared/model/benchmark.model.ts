@@ -8,10 +8,9 @@ export interface IBenchmark {
     dataset?: IDataset;
     analysis?: IAnalysis;
     date_executed?: Date;
-    title?: String;
-    description?: String;
     query_time?: Number;
     analysis_time?: Number;
+    status?: String;
 }
 
 export class Benchmark implements IBenchmark {
@@ -22,10 +21,9 @@ export class Benchmark implements IBenchmark {
         public dataset?: IDataset,
         public analysis?: IAnalysis,
         public date_executed?: Date,
-        public title?: String,
-        public description?: String,
         public query_time?: Number,
-        public analysis_time?: Number
+        public analysis_time?: Number,
+        public status?: String
     ) {}
 
 }

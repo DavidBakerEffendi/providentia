@@ -27,6 +27,7 @@ export class NavbarComponent {
         else if (route === '/history') this.title = "History";
         else if (route === '/classifier') this.title = "Classifiers";
         else if (route === '/databases') this.title = "Databases";
+        else if (route.includes('benchmark')) this.title = "Benchmark";
         else this.title = "Providentia";
     }
 }

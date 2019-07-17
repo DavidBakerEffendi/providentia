@@ -1,10 +1,9 @@
-<mat-card *ngIf="benchmark">
-    <h1 class="display-4">{{ benchmark.title }}</h1>
-    <p class="lead">{{ benchmark.description }}</p>
+<mat-card>
+    <mat-card-title *ngIf="benchmark">
+        <mat-toolbar>{{ benchmark.database.name }} Benchmark Results</mat-toolbar>
+    </mat-card-title>
 
-    <!-- <mat-divider></mat-divider> -->
-
-    <mat-content>
+    <mat-content *ngIf="benchmark">
         <div style="display: block">
             <mat-tab-group>
                 <mat-tab *ngIf="benchmark.database">

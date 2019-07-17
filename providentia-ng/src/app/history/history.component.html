@@ -2,7 +2,66 @@
     <mat-card-title>
         <mat-toolbar>Past jobs run on the pipeline</mat-toolbar>
     </mat-card-title>
+
+    <!-- Error messages-->
+    <div *ngIf="showError" class="alert alert-danger" role="alert">
+        Error while communicating to server:
+        <mat-list>
+            <mat-list-item>{{ errorMsg }}</mat-list-item>
+        </mat-list>
+    </div>
+
     <mat-content>
-        TODO
+        <div class="mat-elevation-z3" *ngIf="dataSource">
+            <table mat-table [dataSource]="dataSource">
+
+                <!-- Database Column -->
+                <ng-container matColumnDef="database">
+                    <th mat-header-cell *matHeaderCellDef> Database </th>
+                    <td mat-cell *matCellDef="let benchmark"> {{benchmark.database.name }} </td>
+                </ng-container>
+
+                <!-- Dataset Column -->
+                <ng-container matColumnDef="dataset">
+                    <th mat-header-cell *matHeaderCellDef> Dataset </th>
+                    <td mat-cell *matCellDef="let benchmark"> {{benchmark.dataset.name}} </td>
+                </ng-container>
+
+                <!-- Analysis Column -->
+                <ng-container matColumnDef="analysis">
+                    <th mat-header-cell *matHeaderCellDef> Analysis </th>
+                    <td mat-cell *matCellDef="let benchmark"> {{benchmark.analysis.name}} </td>
+                </ng-container>
+
+                <!-- Date Executed Column -->
+                <ng-container matColumnDef="date_executed">
+                    <th mat-header-cell *matHeaderCellDef> Date Executed </th>
+                    <td mat-cell *matCellDef="let benchmark"> {{benchmark.date_executed}} </td>
+                </ng-container>
+
+                <!-- Query Time Column -->
+                <ng-container matColumnDef="query_time">
+                    <th mat-header-cell *matHeaderCellDef> Query Time </th>
+                    <td mat-cell *matCellDef="let benchmark"> {{benchmark.query_time}} </td>
+                </ng-container>
+
+                <!-- Analysis Time Column -->
+                <ng-container matColumnDef="analysis_time">
+                    <th mat-header-cell *matHeaderCellDef> Analysis Time </th>
+                    <td mat-cell *matCellDef="let benchmark"> {{benchmark.analysis_time}} </td>
+                </ng-container>
+
+                <!-- Status Column -->
+                <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef> Status </th>
+                    <td mat-cell *matCellDef="let benchmark"> {{benchmark.status}} </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+
+            <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+        </div>
     </mat-content>
 </mat-card>
