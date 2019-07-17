@@ -1,6 +1,3 @@
-import json
-
-
 class Analysis(object):
 
     def __init__(self):
@@ -8,21 +5,6 @@ class Analysis(object):
         self.dataset = None
         self.name = None
         self.description = None
-
-    @property
-    def json(self):
-        out = dict()
-        out['id'] = self.analysis_id
-        out['dataset'] = self.dataset.json
-        out['name'] = self.name
-        out['description'] = self.description
-
-        return out
-
-    def __str__(self):
-        import json
-
-        return json.dumps(self.json, default=str)
 
 
 class Benchmark(object):
@@ -33,28 +15,9 @@ class Benchmark(object):
         self.dataset = None
         self.analysis = None
         self.date_executed = None
-        self.title = None
-        self.description = None
         self.query_time = None
         self.analysis_time = None
-
-    @property
-    def json(self):
-        out = dict()
-        out['id'] = self.benchmark_id
-        out['database'] = self.database.json
-        out['dataset'] = self.dataset.json
-        out['analysis'] = self.analysis.json
-        out['date_executed'] = self.date_executed
-        out['title'] = self.title
-        out['description'] = self.description
-        out['query_time'] = self.query_time
-        out['analysis_time'] = self.analysis_time
-
-        return out
-
-    def __str__(self):
-        return json.dumps(self.json, default=str)
+        self.status = 'WAITING'
 
 
 class Database(object):
@@ -66,22 +29,6 @@ class Database(object):
         self.icon = None
         self.status = 'DOWN'
 
-    @property
-    def json(self):
-        out = dict()
-        out['id'] = self.database_id
-        out['name'] = self.name
-        out['description'] = self.description
-        out['icon'] = self.icon
-        out['status'] = self.status
-
-        return out
-
-    def __str__(self):
-        import json
-
-        return json.dumps(self.json, default=str)
-
 
 class Dataset(object):
 
@@ -90,21 +37,6 @@ class Dataset(object):
         self.name = None
         self.description = None
         self.icon = None
-
-    @property
-    def json(self):
-        out = dict()
-        out['id'] = self.dataset_id
-        out['name'] = self.name
-        out['description'] = self.description
-        out['icon'] = self.icon
-
-        return out
-
-    def __str__(self):
-        import json
-
-        return json.dumps(self.json, default=str)
 
 
 class Graph(object):
@@ -123,15 +55,17 @@ def model_encoder(o):
     :return: JSON format string representation of the model.
     """
     if isinstance(o, Analysis):
-        pass
+        return o.__dict__
     elif isinstance(o, Benchmark):
-        pass
+        return o.__dict__
     elif isinstance(o, Dataset):
-        pass
+        return o.__dict__
     elif isinstance(o, Database):
-        pass
+        return o.__dict__
     elif isinstance(o, Graph):
-        pass
+        return o.__dict__
+    else:
+        return str(o)
 
 
 def analysis_decoder(o: dict):
@@ -164,10 +98,9 @@ def benchmark_decoder(o: dict):
     benchmark.dataset = tbl_datasets.find(o['dataset_id'])
     benchmark.analysis = tbl_analysis.find(o['analysis_id'])
     benchmark.date_executed = o['date_executed']
-    benchmark.title = o['title']
-    benchmark.description = o['description']
     benchmark.query_time = o['query_time']
     benchmark.analysis_time = o['analysis_time']
+    benchmark.status = o['status']
     return benchmark
 
 

@@ -5,6 +5,7 @@ from flask import Blueprint, Response, request
 from flask_cors import cross_origin
 
 from providentia.repository.this import tbl_databases
+from providentia.models import model_encoder
 
 bp = Blueprint('database', __name__, )
 
@@ -22,10 +23,7 @@ def result_get():
     if results is None:
         return Response({"message": "Database empty."}, status=200)
 
-    # Serialize objects
-    results = [result.__dict__ for result in results]
-
-    return Response(json.dumps(results, default=str), status=200, mimetype='application/json')
+    return Response(json.dumps(results, default=model_encoder), status=200, mimetype='application/json')
 
 
 @bp.route("/query/<db_name>", methods=['POST'])

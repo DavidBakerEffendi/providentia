@@ -22,7 +22,7 @@ def train_model(train_dir, app):
 
     with app.app_context():
         try:
-            perc_data = app.config['CLASSIFIER_PERC_DATA']
+            perc_data = app.config['SENTIMENT_PERC_DATA']
         except Exception:
             perc_data = 1
 
@@ -50,7 +50,7 @@ def train_model(train_dir, app):
     word_features = list(all_words.keys())[:5000]
 
     logging.debug('[SENTIMENT] (3/6) Creating features for each review')
-    feature_sets = [(find_features(rev, word_features), category) for (rev, category) in documents]
+    feature_sets = [(find_features(rev), category) for (rev, category) in documents]
 
     logging.debug('[SENTIMENT] (4/6) Shuffling the documents')
     random.shuffle(feature_sets)
@@ -66,10 +66,6 @@ def train_model(train_dir, app):
         (nltk.classify.accuracy(classifier, testing_set)) * 100) + '%')
     # Custom method to see n most informative features as a Python list
     # pos, neg = show_most_informative_features_in_list(classifier, 100)
-    with app.app_context():
-        from flask import g
-        g.sentiment = classifier
-        g.sentiment_features = word_features
 
 
 def load_words(train_dir, perc_data):
@@ -156,7 +152,9 @@ def load_words(train_dir, perc_data):
     return all_words, documents
 
 
-def find_features(document, word_features):
+def find_features(document):
+    global word_features
+
     words = word_tokenize(document)
     features = {}
     for w in word_features:
@@ -190,7 +188,7 @@ def show_most_informative_features_in_list(classifier, n=10):
 
 def classify(text):
     global classifier
-    global word_features
+
     if classifier is not None:
-        features = find_features(text, word_features)
+        features = find_features(text)
         return classifier.classify(features)

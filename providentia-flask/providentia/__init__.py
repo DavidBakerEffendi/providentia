@@ -18,9 +18,9 @@ def test_database_connections(app):
         tbl_databases.set_status('JanusGraph', status='DOWN', app=app)
 
     if postgres.test_connection(app):
-        tbl_databases.set_status('Postgres', status='UP', app=app)
+        tbl_databases.set_status('PostgreSQL', status='UP', app=app)
     else:
-        tbl_databases.set_status('Postgres', status='DOWN', app=app)
+        tbl_databases.set_status('PostgreSQL', status='DOWN', app=app)
 
 
 def create_app():
@@ -69,15 +69,20 @@ def create_app():
     logging.debug('Starting background jobs.')
     from apscheduler.schedulers.background import BackgroundScheduler
     import providentia.analysis.job_scheduler as job_scheduler
-    from providentia.classifier import sentiment
+    from providentia.classifier import sentiment, fake
     from datetime import datetime, timedelta
 
-    classifier_start_train = datetime.now() + + timedelta(0, 10)
+    classifier_start_train = datetime.now() + timedelta(0, 10)
 
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=job_scheduler.execute_waiting, id='execute_waiting', trigger='interval', seconds=60)
-    scheduler.add_job(func=sentiment.train_model, id='train_sentiment', trigger='date',
-                      next_run_time=classifier_start_train, args=[app.config['SENTIMENT_DATA'], app])
+    # train the classifier models if they are enabled
+    if app.config['ENABLE_SENTIMENT'] is True:
+        scheduler.add_job(func=sentiment.train_model, id='train_sentiment', trigger='date',
+                          next_run_time=classifier_start_train, args=[app.config['SENTIMENT_DATA'], app])
+    if app.config['ENABLE_FAKE'] is True:
+        scheduler.add_job(func=fake.train_model, id='train_fake', trigger='date',
+                          next_run_time=classifier_start_train, args=[app.config['FAKE_DATA'], app])
     scheduler.start()
     # shut down the scheduler when exiting the app
     atexit.register(lambda: scheduler.shutdown())

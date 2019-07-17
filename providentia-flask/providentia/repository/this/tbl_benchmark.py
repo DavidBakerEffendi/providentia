@@ -6,15 +6,14 @@ from providentia.db.this import get_db
 from providentia.models import benchmark_decoder
 
 TABLE = 'benchmarks'
-COLUMNS = ("id", "database_id", "dataset_id", "analysis_id", "date_executed", "title", "description", "query_time",
-           "analysis_time")
+COLUMNS = ("id", "database_id", "dataset_id", "analysis_id", "date_executed", "query_time", "analysis_time", "status")
 
 
 def query_results(n=None):
     with current_app.app_context():
         cur = get_db().cursor()
-        query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, title, description, query_time, " \
-                "analysis_time FROM {} ORDER BY date_executed DESC, title ASC".format(TABLE)
+        query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, query_time, " \
+                "analysis_time, status FROM {} ORDER BY date_executed DESC".format(TABLE)
 
         if n is None:
             logging.debug("Executing query: %s", query)
@@ -38,8 +37,8 @@ def query_results(n=None):
 def find(row_id):
     with current_app.app_context():
         cur = get_db().cursor()
-        query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, title, description, query_time, " \
-                "analysis_time FROM {} WHERE id = %s".format(TABLE)
+        query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, query_time, " \
+                "analysis_time, status FROM {} WHERE id = %s".format(TABLE)
 
         logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_id))
         cur.execute(query, (row_id,))
@@ -54,25 +53,25 @@ def find(row_id):
         return deserialized
 
 
-def find_title(row_title):
-    with current_app.app_context():
-        cur = get_db().cursor()
-        query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, title, description, query_time, " \
-                "analysis_time FROM {} WHERE title = %s".format(TABLE)
+# def find_title(row_title):
+#     with current_app.app_context():
+#         cur = get_db().cursor()
+#         query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, query_time, " \
+#                 "analysis_time, status FROM {} WHERE title = %s".format(TABLE)
+#
+#         logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_title))
+#         cur.execute(query, (row_title,))
+#
+#         if cur.rowcount > 0:
+#             result = dict(zip(COLUMNS, cur.fetchone()))
+#         else:
+#             return None
+#
+#         deserialized = benchmark_decoder(result)
+#
+#         return deserialized
 
-        logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_title))
-        cur.execute(query, (row_title,))
-
-        if cur.rowcount > 0:
-            result = dict(zip(COLUMNS, cur.fetchone()))
-        else:
-            return None
-
-        deserialized = benchmark_decoder(result)
-
-        return deserialized
-
-
+# TODO: This needs to be modified
 def insert(benchmark):
     with current_app.app_context():
         insert_into = "INSERT INTO {} (".format(TABLE)
@@ -130,8 +129,8 @@ def insert(benchmark):
 def get_unstarted_jobs():
     with current_app.app_context():
         cur = get_db().cursor()
-        query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, title, description, query_time, " \
-                "analysis_time FROM {} WHERE date_executed IS NULL".format(TABLE)
+        query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, query_time, " \
+                "analysis_time, status FROM {} WHERE date_executed IS NULL".format(TABLE)
 
         logging.debug("Executing query: %s", query)
         cur.execute(query)

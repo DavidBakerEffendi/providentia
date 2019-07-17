@@ -5,8 +5,14 @@ DEBUG = False
 TESTING = False
 DATABASE_URI = 'postgres://postgres:docker@127.0.0.1:5432/providentia'
 LOGGING_LEVEL = logging.INFO
-CLASSIFIER_PERC_DATA = 0.25  # Important for development, don't want to have to load all data every reload
+
+ENABLE_SENTIMENT = True
+SENTIMENT_PERC_DATA = 0.15  # Important for development, don't want to have to load all data every reload
 SENTIMENT_DATA = './training-data/sentiment'
+
+ENABLE_FAKE = False
+FAKE_PERC_DATA = 0.4  # Important for development, don't want to have to load all data every reload
+FAKE_DATA = './training-data/fake'
 
 # Example prod
 # DEBUG = False
