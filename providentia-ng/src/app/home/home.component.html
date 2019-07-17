@@ -44,21 +44,14 @@
     </h2>
 
     <mat-content>
-        <mat-grid-list cols="2" rowHeight="300pt">
-            <mat-grid-tile class="indigo accent-1" [colspan]="1" [rowspan]="1">
-                <mat-grid-tile-header class="text-uppercase">Flask Server</mat-grid-tile-header>
-
-                <div class="text-left">
-                    <p>TODO: Low priority | Consider using pandas or numpy to log:</p>
-                    <ul style="color: #FFF">
-                        <li>CPU Usage</li>
-                        <li>System memory usage</li>
-                        <li>REST requests</li>
-                    </ul>
-                </div>
-
-                <mat-grid-tile-footer>Last update: {{flaskUpdate | date:'dd-MM-yyyy hh:mm'}}</mat-grid-tile-footer>
-            </mat-grid-tile>
-        </mat-grid-list>
+        <div style="display: block" *ngIf="chartDatasets">
+            <canvas mdbChart
+                [chartType]="'line'"
+                [datasets]="chartDatasets"
+                [colors]="chartColors"
+                [options]="chartOptions"
+                [legend]="true">
+            </canvas>
+          </div>
     </mat-content>
 </mat-card>
