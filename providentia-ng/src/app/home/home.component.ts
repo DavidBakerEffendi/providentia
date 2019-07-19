@@ -16,9 +16,37 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
     errorMsgBenchmarks: string;
     infoMsgBenchmarks: string;
 
-    public chartDatasets: Array<any>;
+    public chartMemoryData: Array<any>;
+    public chartCPUData: Array<any>;
 
-    public chartColors: Array<any> = [
+    public chartCPUColors: Array<any> = [
+        {
+            backgroundColor: 'rgba(252, 28, 7, .2)',
+            borderColor: 'rgba(184, 18, 3, .7)',
+            borderWidth: 2,
+            fill: false,
+        },
+        {
+            backgroundColor: 'rgba(254, 97, 233, .2)',
+            borderColor: 'rgba(183, 0, 159, .7)',
+            borderWidth: 2,
+            fill: false,
+        },
+        {
+            backgroundColor: 'rgba(71, 255, 86, .2)',
+            borderColor: 'rgba(0, 158, 13, .7)',
+            borderWidth: 2,
+            fill: false,
+        },
+        {
+            backgroundColor: 'rgba(255, 167, 45, .2)',
+            borderColor: 'rgba(209, 121, 0, .7)',
+            borderWidth: 2,
+            fill: false,
+        },
+    ];
+
+    public chartMemoryColors: Array<any> = [
         {
             backgroundColor: 'rgba(105, 0, 132, .2)',
             borderColor: 'rgba(200, 99, 132, .7)',
@@ -27,7 +55,8 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
     ];
 
     public chartOptions: any = {
-        responsive: true
+        responsive: true,
+        spanGaps: true,
     };
 
     constructor(
@@ -40,7 +69,7 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
     ngOnInit() {
         this.getRecentBenchmarks();
         this.getServerMetrics()
-        this.serverPoll = setInterval(() => this.getServerMetrics(), 5000);
+        this.serverPoll = setInterval(() => this.getServerMetrics(), 2500);
     }
 
     ngOnDestroy() {
@@ -75,11 +104,23 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
     getServerMetrics() {
         this.lastServerUpdate = Date.now();
         this.logService.getRecent().subscribe((res: HttpResponse<IServerLog[]>) => {
-            // console.table(res.body);
-            const logs = res.body;
-            const memory = logs.map(a => a.memory_perc);
-            console.log(memory);
-            this.chartDatasets = [{data: memory, label: 'Memory Percentage'}];
+            const cpuLogs = res.body.map(a => a.cpu_logs)
+            // Map CPU data
+            this.chartCPUData = new Array<any>();
+            cpuLogs.forEach(cpuLog => {
+                // This will produce an array of arrays where each element shows the percentage of
+                // each core respectively e.g. [core1, core2] => [40.3, 39.4]
+                const cpuPercentages = cpuLog.map(a => a.cpu_perc);
+                // This loop will transform the rows into a columnwise form for the chart
+                for (let i = 0; i < cpuPercentages.length; i++) {
+                    if (this.chartCPUData[i] === undefined || this.chartCPUData[i] === null) {
+                       this.chartCPUData[i] = {data: [], label: `Core ${i}`};
+                    }
+                    this.chartCPUData[i].data.push(cpuPercentages[i]);
+                }
+            });
+            // Map memory data
+            this.chartMemoryData = [{data: res.body.map(a => a.memory_perc), label: 'Memory Percentage'}];
         },
             (res: HttpErrorResponse) => {
                 console.error(res.statusText)

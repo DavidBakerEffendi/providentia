@@ -7,6 +7,8 @@ DROP TABLE IF EXISTS benchmarks;
 DROP TABLE IF EXISTS analysis;
 DROP TABLE IF EXISTS datasets;
 DROP TABLE IF EXISTS databases;
+DROP TABLE IF EXISTS cpu_logs;
+DROP TABLE IF EXISTS server_logs;
 
 CREATE TABLE databases (
     id uuid DEFAULT uuid_generate_v4(),
@@ -40,11 +42,9 @@ CREATE TABLE benchmarks (
     dataset_id uuid NOT NULL,
     analysis_id uuid NOT NULL,
     date_executed timestamp without time zone,
-    title character varying(255) NOT NULL,
-    description text,
     query_time integer,
     analysis_time integer,
-    status character varying(20) NOT NULL,   -- COMPLETE, WAITING, PROCESSING, UNCONFIRMED
+    status character varying(20) NOT NULL,   -- COMPLETE, WAITING, PROCESSING
     PRIMARY KEY (id),
     FOREIGN KEY (database_id) REFERENCES databases (id),
     FOREIGN KEY (dataset_id) REFERENCES datasets (id),
@@ -57,4 +57,20 @@ CREATE TABLE graphs (
     graphson text NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (result_id) REFERENCES benchmarks (id)
+);
+
+CREATE TABLE server_logs (
+    id SERIAL,
+    captured_at timestamp without time zone,
+    memory_perc float NOT NULL,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE cpu_logs (
+    id SERIAL,
+    system_log_id int NOT NULL,
+    core_id int NOT NULL DEFAULT 0,
+    cpu_perc float NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (system_log_id) REFERENCES server_logs (id)
 );

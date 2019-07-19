@@ -16,7 +16,7 @@ def query_log(system_log_id):
             TABLE)
 
         cur.execute(query, (system_log_id, ))
-        logging.debug("Executed: %s", cur.query)
+        # logging.debug("Executed: %s", cur.query)
 
         rows = []
         if cur.rowcount > 0:

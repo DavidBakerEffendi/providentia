@@ -19,7 +19,7 @@
     </div>
 
     <mat-content *ngIf="!showError">
-        <mat-grid-list cols="3" rowHeight="150pt">
+        <mat-grid-list cols="4" rowHeight="150pt">
             <mat-grid-tile [ngClass]="setTileClass(benchmark.status)" *ngFor="let benchmark of recentBenchmarks"
                 [colspan]="1" [rowspan]="1">
                 <div style="cursor: pointer" routerLink="benchmark/{{ benchmark.benchmark_id }}">
@@ -43,15 +43,18 @@
         Server Metrics
     </h2>
 
-    <mat-content>
-        <div style="display: block" *ngIf="chartDatasets">
-            <canvas mdbChart
-                [chartType]="'line'"
-                [datasets]="chartDatasets"
-                [colors]="chartColors"
-                [options]="chartOptions"
-                [legend]="true">
-            </canvas>
-          </div>
+    <mat-content class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-6" style="display: block;" *ngIf="chartCPUData">
+                <canvas mdbChart [chartType]="'line'" [datasets]="chartCPUData" [colors]="chartCPUColors"
+                    [options]="chartOptions" [legend]="true">
+                </canvas>
+            </div>
+            <div class="col-sm-12 col-md-6" style="display: block; width: 49%;" *ngIf="chartMemoryData">
+                <canvas mdbChart [chartType]="'line'" [datasets]="chartMemoryData" [colors]="chartMemoryColors"
+                    [options]="chartOptions" [legend]="true">
+                </canvas>
+            </div>
+        </div>
     </mat-content>
 </mat-card>

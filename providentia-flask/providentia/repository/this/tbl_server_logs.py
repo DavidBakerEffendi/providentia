@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime, timedelta
 
 from flask import current_app
 
@@ -10,20 +9,26 @@ TABLE = 'server_logs'
 COLUMNS = ("id", "captured_at", "memory_perc")
 
 
-def query_logs(date=None):
-    try:
-        datetime.strptime(date, '%Y-%m-%d %H:%M:%S.%f')
-    except Exception as e:
-        logging.debug('Could not convert given date %s, defaulting to %s. Error %s', date,
-                      datetime.now() - timedelta(0, 60), str(e))
-        date = datetime.now() - timedelta(0, 60)
+def query_logs(from_date=None, to_date=None):
+    where_condition = None
+
+    if from_date is not None and to_date is not None:
+        where_condition = "WHERE captured_at >= '{}'::timestamp AND captured_at <= '{}'::timestamp".format(from_date,
+                                                                                                           to_date)
+    elif from_date is not None:
+        where_condition = "WHERE captured_at >= '{}'::timestamp".format(from_date)
+    elif to_date is not None:
+        where_condition = "WHERE captured_at <= '{}'::timestamp".format(to_date)
 
     with current_app.app_context():
         cur = get_db().cursor()
-        query = "SELECT id, captured_at, memory_perc FROM {} WHERE captured_at >= %s ORDER BY captured_at ASC".format(
-            TABLE)
+        if where_condition is not None:
+            query = "SELECT id, captured_at, memory_perc FROM {} {} ORDER BY captured_at ASC".format(TABLE,
+                                                                                                     where_condition)
+        else:
+            query = "SELECT id, captured_at, memory_perc FROM {} ORDER BY captured_at ASC".format(TABLE)
 
-        cur.execute(query, (date, ))
+        cur.execute(query)
         logging.debug("Executed: %s", cur.query)
 
         rows = []
@@ -42,6 +47,6 @@ def insert_log(server_log: ServerLog):
         cur = conn.cursor()
         query = "INSERT INTO {} (captured_at, memory_perc) VALUES (%s, %s) RETURNING id".format(TABLE)
 
-        cur.execute(query, (server_log.captured_at, server_log.memory_perc, ))
+        cur.execute(query, (server_log.captured_at, server_log.memory_perc,))
         server_log.log_id = cur.fetchone()[0]
         conn.commit()
