@@ -6,44 +6,57 @@
     <mat-content *ngIf="benchmark">
         <div style="display: block">
             <mat-tab-group>
-                <mat-tab *ngIf="benchmark.database">
+                <!-- Details tab-->
+                <mat-tab>
+                    <!-- Header -->
                     <ng-template mat-tab-label>
-                        <mat-icon class="tab-icon">storage</mat-icon>
-                        Backend Storage
+                        <mat-icon class="tab-icon">assignment</mat-icon>
+                        Details
                     </ng-template>
+                    <!-- Database info -->
+                    <h3 class="text-center pt-2"><strong>Database</strong></h3>
                     <div class="tab-box row">
-                        <div class="col-2">
-                            <img alt="{{ benchmark.database.name }}"
-                                src="data:image/png;base64,{{ benchmark.database.icon }}" />
-                        </div>
-
                         <div class="col-10">
                             <h4 class="mat-header">{{ benchmark.database.name }}</h4>
                             <p class="mat-content">{{ benchmark.database.description }}</p>
                         </div>
-
+                        <div class="col-2">
+                            <img alt="{{ benchmark.database.name }}"
+                                src="data:image/png;base64,{{ benchmark.database.icon }}" />
+                        </div>
+                    </div>
+                    <!-- Dataset info -->
+                    <h3 class="text-center"><strong>Dataset</strong></h3>
+                    <div class="tab-box row">
+                        <div class="col-10">
+                            <h4 class="mat-header">{{ benchmark.dataset.name }}</h4>
+                            <p class="mat-content">{{ benchmark.dataset.description }}</p>
+                        </div>
+                        <div class="col-2">
+                            <img alt="{{ benchmark.dataset.name }}"
+                                src="data:image/png;base64,{{ benchmark.dataset.icon }}" />
+                        </div>
+                    </div>
+                    <!-- Analysis info -->
+                    <h3 class="text-center"><strong>Analysis</strong></h3>
+                    <div class="tab-box row">
+                        <div class="col-12">
+                            <h4 class="mat-header">{{ benchmark.analysis.name }}</h4>
+                            <p class="mat-content">{{ benchmark.analysis.description }}</p>
+                        </div>
                     </div>
                 </mat-tab>
 
-                <mat-tab *ngIf="benchmark.dataset">
+                <!-- Performance tab -->
+                <mat-tab>
+                    <!-- Header -->
                     <ng-template mat-tab-label>
-                        <mat-icon class="tab-icon">bubble_chart</mat-icon>
-                        Dataset & Analysis
+                        <mat-icon class="tab-icon">timeline</mat-icon>
+                        Performance
                     </ng-template>
+                    <!-- Graph -->
                     <div class="tab-box">
-                        <div class="row">
-                            <div class="col-2">
-                                <img alt="{{ benchmark.dataset.name }}"
-                                    src="data:image/png;base64,{{ benchmark.dataset.icon }}" />
-                            </div>
 
-                            <div class="col-10">
-                                <h4 class="mat-header">{{ benchmark.dataset.name }}</h4>
-                                <p class="mat-content">{{ benchmark.dataset.description }}</p>
-                                <h4 class="mat-header">{{ benchmark.analysis.name }}</h4>
-                                <p class="mat-content">{{ benchmark.analysis.description }}</p>
-                            </div>
-                        </div>
                     </div>
                 </mat-tab>
 

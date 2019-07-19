@@ -1,3 +1,8 @@
 table {
     width: 100%;
 }
+
+tr.history-row:hover {
+    background: #F48FB1; // Accent
+    cursor: pointer;
+}

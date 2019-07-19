@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
-import { IBenchmark, BenchmarkService } from '../shared';
+import { IBenchmark, BenchmarkService, IServerLog, LogService } from '../shared';
 import { ActivatedRoute, Router } from "@angular/router";
 import { MAT_STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'prv-benchmark',
@@ -16,6 +17,7 @@ import { MAT_STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 export class BenchmarkComponent implements OnInit {
 
     benchmark: IBenchmark;
+    performance: IServerLog[];
     id: string;
 
     public chartColors: Array<any> = [{
@@ -28,6 +30,7 @@ export class BenchmarkComponent implements OnInit {
         private route: Router,
         private router: ActivatedRoute,
         private benchmarkService: BenchmarkService,
+        private logService: LogService,
         private _sanitizer: DomSanitizer
     ) {
         this.router.params.subscribe(params => this.id = params['id']);
@@ -41,17 +44,31 @@ export class BenchmarkComponent implements OnInit {
         this.benchmarkService.find(id)
             .subscribe((res: HttpResponse<IBenchmark>) => {
                 this.benchmark = res.body;
-                console.debug(this.benchmark);
+                // Get the performance of the server during the time executed
+                this.getPerformance(new Date(this.benchmark.date_executed),
+                    this.benchmark.query_time.valueOf() + this.benchmark.analysis_time.valueOf());
+                // Authorize the BASE64 encoding of the icons
                 this._sanitizer.bypassSecurityTrustResourceUrl('data:image/png;base64,' + this.benchmark.database.icon);
                 this._sanitizer.bypassSecurityTrustResourceUrl('data:image/png;base64,' + this.benchmark.dataset.icon);
             },
+                (res: HttpErrorResponse) => {
+                    console.error(res.message)
+                    if (res.status == 404) {
+                        this.route.navigate(['/404']);
+                    }
+                }
+            );
+    }
+
+    getPerformance(fromDate: Date, duration: number) {
+        const toDate = new Date(fromDate.getTime() + duration);
+        this.logService.getFromTo(fromDate, toDate).subscribe((res: HttpResponse<IServerLog[]>) => {
+        // this.logService.getRecent().subscribe((res: HttpResponse<IServerLog[]>) => {
+            this.performance = res.body;
+        },
             (res: HttpErrorResponse) => {
                 console.error(res.message)
-                if (res.status == 404) {
-                    this.route.navigate(['/404']);
-                }
-            }
-        );
+            });
     }
 
 }

@@ -11,9 +11,14 @@ type EntityArrayResponseType = HttpResponse<IServerLog[]>;
 export class LogService {
     private resourceUrl = APP_CONFIG.FLASK_API + 'api/logs/';
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     getRecent(): Observable<EntityArrayResponseType> {
         return this.http.get<IServerLog[]>(this.resourceUrl, { observe: 'response' });
     }
+
+    getFromTo(dateFrom: Date, dateTo: Date): Observable<EntityArrayResponseType> {
+        return this.http.post<IServerLog[]>(this.resourceUrl, { 'from': dateFrom, 'to': dateTo }, { observe: 'response' });
+    }
+
 }
