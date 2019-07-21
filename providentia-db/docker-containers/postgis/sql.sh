@@ -1,4 +1,4 @@
 #!/bin/sh
 
-docker exec -tiu postgres prv-docker psql
+docker exec -tiu postgres prv-postgis psql
 

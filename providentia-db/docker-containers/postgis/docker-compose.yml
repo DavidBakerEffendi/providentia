@@ -1,0 +1,14 @@
+version: '3'
+services:
+    postgis:
+        container_name: prv-postgis
+        image: "mdillon/postgis"
+        ports:
+            - "127.0.0.1:5432:5432"
+        volumes:
+            - prv-postgis:/var/lib/postgresql/data
+        environment:
+            POSTGRES_PASSWORD: docker
+volumes:
+    prv-postgis:
+
