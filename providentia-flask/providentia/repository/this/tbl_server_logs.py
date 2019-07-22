@@ -12,13 +12,16 @@ COLUMNS = ("id", "captured_at", "memory_perc")
 def query_logs(from_date=None, to_date=None):
     where_condition = None
 
+    sql_args = ()
     if from_date is not None and to_date is not None:
-        where_condition = "WHERE captured_at >= '{}'::timestamp AND captured_at <= '{}'::timestamp".format(from_date,
-                                                                                                           to_date)
+        where_condition = "WHERE captured_at >= %s AND captured_at <= %s"
+        sql_args = (from_date, to_date, )
     elif from_date is not None:
-        where_condition = "WHERE captured_at >= '{}'::timestamp".format(from_date)
+        where_condition = "WHERE captured_at >= %s".format(from_date)
+        sql_args = (from_date, )
     elif to_date is not None:
-        where_condition = "WHERE captured_at <= '{}'::timestamp".format(to_date)
+        where_condition = "WHERE captured_at <= %s".format(to_date)
+        sql_args = (to_date,)
 
     with current_app.app_context():
         cur = get_db().cursor()
@@ -28,7 +31,7 @@ def query_logs(from_date=None, to_date=None):
         else:
             query = "SELECT id, captured_at, memory_perc FROM {} ORDER BY captured_at ASC".format(TABLE)
 
-        cur.execute(query)
+        cur.execute(query, sql_args)
         logging.debug("Executed: %s", cur.query)
 
         rows = []

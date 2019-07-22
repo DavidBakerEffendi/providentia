@@ -16,14 +16,14 @@ bp = Blueprint('logs', __name__, )
 def get_logs():
     """Get recent logs."""
     try:
-        # Get results from 1 minute ago till now
-        results = tbl_server_logs.query_logs(from_date=datetime.now() - timedelta(0, 60))
+        # Get results from 2 minutes ago till now
+        results = tbl_server_logs.query_logs(from_date=datetime.utcnow() - timedelta(0, 120))
     except Exception as e:
         logging.error('Failed to retrieve logs from database: ', str(e))
-        return Response({"message": "Unexpected error while querying database!"}, status=500)
+        return Response(json.dumps({"message": "Unexpected error while querying database!"}), status=500)
 
     if results is None:
-        return Response({"message": "Database empty."}, status=200)
+        return Response(json.dumps({"message": "Database empty."}), status=200)
 
     return Response(json.dumps(results, default=model_encoder), status=200, mimetype='application/json')
 
@@ -41,7 +41,7 @@ def get_logs_from_to():
         results = tbl_server_logs.query_logs(from_date, to_date)
     except Exception as e:
         logging.error('Failed to retrieve logs from database: ', str(e))
-        return Response({"message": "Unexpected error while querying database!"}, status=500)
+        return Response(json.dumps({"message": "Unexpected error while querying database!"}), status=500)
 
     if results is None:
         return Response(json.dumps({"message": "Database empty."}), status=503)

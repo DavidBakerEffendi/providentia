@@ -1,14 +1,10 @@
 import logging
 from datetime import datetime
-from threading import Lock
 
 import psutil
 
 from providentia.models import ServerLog, CPULog
 from providentia.repository.this import tbl_benchmark, tbl_server_logs, tbl_cpu_logs
-
-lock = Lock()
-analysis_running = False
 
 
 def execute_waiting():
@@ -16,18 +12,13 @@ def execute_waiting():
     Looks for jobs not currently being executed in the pipeline and processes one if the pipeline is
     currently empty.
     """
-    global analysis_running
-    global lock
+    from providentia import app
 
-    if analysis_running is True:
-        return
-
-    with lock:
-        analysis_running = True
-        from providentia import app
-
-        with app.app_context():
-            logging.debug('Looking for benchmark jobs to execute...')
+    with app.app_context():
+        if tbl_benchmark.is_job_being_processed():
+            logging.debug('A job is being processed, going back to sleep')
+        else:
+            logging.debug('No job being processed, looking for jobs to execute')
             # TODO: Need to look for jobs which were starts but unfinished first
             unstarted_jobs = tbl_benchmark.get_unstarted_jobs()
             if unstarted_jobs is None:
@@ -35,7 +26,6 @@ def execute_waiting():
             else:
                 logging.debug('Found unstarted jobs!')
 
-        analysis_running = False
 
 
 def log_server_state():
@@ -44,7 +34,7 @@ def log_server_state():
     # Create system log
     system_log = ServerLog()
     system_log.memory_perc = dict(psutil.virtual_memory()._asdict())['percent']
-    system_log.captured_at = datetime.now()
+    system_log.captured_at = datetime.utcnow()
 
     with app.app_context():
         tbl_server_logs.insert_log(system_log)

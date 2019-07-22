@@ -1,4 +1,5 @@
--- CREATE DATABASE providentia;
+CREATE DATABASE providentia;
+\c providentia;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
@@ -41,7 +42,7 @@ CREATE TABLE benchmarks (
     database_id uuid NOT NULL,
     dataset_id uuid NOT NULL,
     analysis_id uuid NOT NULL,
-    date_executed timestamp without time zone,
+    date_executed timestamp,
     query_time integer,
     analysis_time integer,
     status character varying(20) NOT NULL,   -- COMPLETE, WAITING, PROCESSING
@@ -61,7 +62,7 @@ CREATE TABLE graphs (
 
 CREATE TABLE server_logs (
     id SERIAL,
-    captured_at timestamp without time zone,
+    captured_at timestamp,
     memory_perc float NOT NULL,
     PRIMARY KEY (id)
 );

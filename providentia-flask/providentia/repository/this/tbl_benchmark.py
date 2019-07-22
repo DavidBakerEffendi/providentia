@@ -126,6 +126,19 @@ def insert(benchmark):
         db.commit()
 
 
+def is_job_being_processed():
+    with current_app.app_context():
+        cur = get_db().cursor()
+        query = "SELECT id FROM {} WHERE status = 'PROCESSING'".format(TABLE)
+        logging.debug("Executing query: %s", query)
+        cur.execute(query)
+
+        if cur.rowcount > 0:
+            return True
+        else:
+            return False
+
+
 def get_unstarted_jobs():
     with current_app.app_context():
         cur = get_db().cursor()
