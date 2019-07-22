@@ -7,16 +7,14 @@ The following directory contains example scripts (especially useful for developm
 ### JanusGraph
 
 The JanusGraph docker image is built from a 3 stage docker-compose; JanusGraph, Cassandra and ElasticSearch.
-* `janusgraph/pull.sh`: Pulls necessary images and builds the docker-compose services.
-* `janusgraph/start.sh`: Composes and runs the JanusGraph docker services.
+* `janusgraph/docker-compose.yml`: The docker-compose for the JanusGraph/Cassandra/ElasticSearch container.
 * `janusgraph/gremlin.sh`: Grants access to the Gremlin shell in the JanusGraph container.
 * `janusgraph/cql.sh`: Grants access to the CQL shell in the Cassandra container.
 
 ### PostgreSQL 
 
-The Postgres docker container is built from the official PostgreSQL image. TODO: This will be changed to the PostGis image.
-* `postgis/pull.sh`: Pulls the PostgreSQL image.
-* `postgis/start.sh`: Creates and runs a PostgreSQL container from the image. See the script for configurations to edit.
+The Postgres docker container is built from the official PostgreSQL image with PostGIS extension (`mdillon/postgist`).
+* `postgis/docker-compose.yml`: The docker-compose for the PostGIS container.
 * `postgis/sql.sh`: Grants access to the SQL shell in the Postgres container.
 
 ### Elassandra 
