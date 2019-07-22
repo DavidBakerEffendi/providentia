@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
-import { IBenchmark, BenchmarkService, IServerLog, LogService } from '../shared';
+import { InfoMessage, IBenchmark, BenchmarkService, IServerLog, LogService } from '../shared';
 import { ActivatedRoute, Router } from "@angular/router";
 import { MAT_STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
-import { Observable } from 'rxjs';
 
 @Component({
     selector: 'prv-benchmark',
@@ -14,10 +13,9 @@ import { Observable } from 'rxjs';
         provide: MAT_STEPPER_GLOBAL_OPTIONS, useValue: { displayDefaultIndicatorType: false }
     }]
 })
-export class BenchmarkComponent implements OnInit {
+export class BenchmarkComponent extends InfoMessage implements OnInit {
 
     benchmark: IBenchmark;
-    performance: IServerLog[];
     id: string;
 
     public chartColors: Array<any> = [{
@@ -26,6 +24,61 @@ export class BenchmarkComponent implements OnInit {
         borderWidth: 1,
     }];
 
+    public perfMemoryData: Array<any>;
+    public perfCPUData: Array<any>;
+
+    public perfCPUColors: Array<any> = [
+        {
+            backgroundColor: 'rgba(252, 28, 7, .2)',
+            borderColor: 'rgba(184, 18, 3, .7)',
+            borderWidth: 2,
+            fill: false,
+        },
+        {
+            backgroundColor: 'rgba(254, 97, 233, .2)',
+            borderColor: 'rgba(183, 0, 159, .7)',
+            borderWidth: 2,
+            fill: false,
+        },
+        {
+            backgroundColor: 'rgba(71, 255, 86, .2)',
+            borderColor: 'rgba(0, 158, 13, .7)',
+            borderWidth: 2,
+            fill: false,
+        },
+        {
+            backgroundColor: 'rgba(255, 167, 45, .2)',
+            borderColor: 'rgba(209, 121, 0, .7)',
+            borderWidth: 2,
+            fill: false,
+        },
+        {
+            backgroundColor: 'rgba(255, 8, 94, .2)',
+            borderColor: 'rgba(143, 0, 50, .7)',
+            borderWidth: 2,
+            fill: false,
+        },
+        {
+            backgroundColor: 'rgba(4, 0, 255, .2)',
+            borderColor: 'rgba(2, 0, 135, .7)',
+            borderWidth: 2,
+            fill: false,
+        },
+    ];
+
+    public perfMemoryColors: Array<any> = [
+        {
+            backgroundColor: 'rgba(105, 0, 132, .2)',
+            borderColor: 'rgba(200, 99, 132, .7)',
+            borderWidth: 2,
+        },
+    ];
+
+    public perfOptions: any = {
+        responsive: true,
+        spanGaps: true,
+    };
+
     constructor(
         private route: Router,
         private router: ActivatedRoute,
@@ -33,6 +86,7 @@ export class BenchmarkComponent implements OnInit {
         private logService: LogService,
         private _sanitizer: DomSanitizer
     ) {
+        super();
         this.router.params.subscribe(params => this.id = params['id']);
     }
 
@@ -40,6 +94,10 @@ export class BenchmarkComponent implements OnInit {
         this.getResult(this.id);
     }
 
+    /**
+     * Obtains the information about this benchmark.
+     * @param id the UUID of this benchmark.
+     */
     getResult(id: string) {
         this.benchmarkService.find(id)
             .subscribe((res: HttpResponse<IBenchmark>) => {
@@ -60,14 +118,43 @@ export class BenchmarkComponent implements OnInit {
             );
     }
 
+    /**
+     * Obtains the system logs during the time this analysis was run.
+     * @param fromDate the from date.
+     * @param duration the duration of the analysis.
+     */
     getPerformance(fromDate: Date, duration: number) {
+        console.log(`what I have ${fromDate.toString()}`);
         const toDate = new Date(fromDate.getTime() + duration);
         this.logService.getFromTo(fromDate, toDate).subscribe((res: HttpResponse<IServerLog[]>) => {
-        // this.logService.getRecent().subscribe((res: HttpResponse<IServerLog[]>) => {
-            this.performance = res.body;
+            if (res.body.map) {
+                const cpuLogs = res.body.map(a => a.cpu_logs)
+                // Map CPU data
+                this.perfCPUData = new Array<any>();
+                cpuLogs.forEach(cpuLog => {
+                    // This will produce an array of arrays where each element shows the percentage of
+                    // each core respectively e.g. [core1, core2] => [40.3, 39.4]
+                    const cpuPercentages = cpuLog.map(a => a.cpu_perc);
+                    // This loop will transform the rows into a columnwise form for the chart
+                    for (let i = 0; i < cpuPercentages.length; i++) {
+                        if (this.perfCPUData[i] === undefined || this.perfCPUData[i] === null) {
+                            this.perfCPUData[i] = { data: [], label: `Core ${i}` };
+                        }
+                        this.perfCPUData[i].data.push(cpuPercentages[i]);
+                    }
+
+                });
+                // Map memory data
+                this.perfMemoryData = [{ data: res.body.map(a => a.memory_perc), label: 'Memory Percentage' }];
+            } else {
+                this.showWarnMsg(res.body['message']);
+            }
         },
             (res: HttpErrorResponse) => {
-                console.error(res.message)
+                console.error(res.message);
+                if (res.status == 503) {
+                    this.showWarnMsg('No system information was logged during this analysis.');
+                }
             });
     }
 

@@ -44,13 +44,21 @@
     </h2>
 
     <mat-content class="container">
+        <!-- Warn message -->
+        <div *ngIf="showWarn" class="alert alert-warning" role="alert">
+            Warning while communicating to server:
+            <mat-list>
+                <mat-list-item>{{ warnMsg }}</mat-list-item>
+            </mat-list>
+        </div>
+        <!-- Graph -->
         <div class="row">
             <div class="col-sm-12 col-md-6" style="display: block;" *ngIf="chartCPUData">
                 <canvas mdbChart [chartType]="'line'" [datasets]="chartCPUData" [colors]="chartCPUColors"
                     [options]="chartOptions" [legend]="true">
                 </canvas>
             </div>
-            <div class="col-sm-12 col-md-6" style="display: block; width: 49%;" *ngIf="chartMemoryData">
+            <div class="col-sm-12 col-md-6" style="display: block;" *ngIf="chartMemoryData">
                 <canvas mdbChart [chartType]="'line'" [datasets]="chartMemoryData" [colors]="chartMemoryColors"
                     [options]="chartOptions" [legend]="true">
                 </canvas>

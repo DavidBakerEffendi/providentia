@@ -44,6 +44,18 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
             borderWidth: 2,
             fill: false,
         },
+        {
+            backgroundColor: 'rgba(255, 8, 94, .2)',
+            borderColor: 'rgba(143, 0, 50, .7)',
+            borderWidth: 2,
+            fill: false,
+        },
+        {
+            backgroundColor: 'rgba(4, 0, 255, .2)',
+            borderColor: 'rgba(2, 0, 135, .7)',
+            borderWidth: 2,
+            fill: false,
+        },
     ];
 
     public chartMemoryColors: Array<any> = [
@@ -85,7 +97,6 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
                 this.showError = false;
             },
                 (res: HttpErrorResponse) => {
-                    console.error(res.statusText)
                     if (res.status === 0) {
                         this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
                     } else if (res.status == 500) {
@@ -104,23 +115,28 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
     getServerMetrics() {
         this.lastServerUpdate = Date.now();
         this.logService.getRecent().subscribe((res: HttpResponse<IServerLog[]>) => {
-            const cpuLogs = res.body.map(a => a.cpu_logs)
-            // Map CPU data
-            this.chartCPUData = new Array<any>();
-            cpuLogs.forEach(cpuLog => {
-                // This will produce an array of arrays where each element shows the percentage of
-                // each core respectively e.g. [core1, core2] => [40.3, 39.4]
-                const cpuPercentages = cpuLog.map(a => a.cpu_perc);
-                // This loop will transform the rows into a columnwise form for the chart
-                for (let i = 0; i < cpuPercentages.length; i++) {
-                    if (this.chartCPUData[i] === undefined || this.chartCPUData[i] === null) {
-                       this.chartCPUData[i] = {data: [], label: `Core ${i}`};
+            if (res.body.map) {
+                const cpuLogs = res.body.map(a => a.cpu_logs)
+                // Map CPU data
+                this.chartCPUData = new Array<any>();
+                cpuLogs.forEach(cpuLog => {
+                    // This will produce an array of arrays where each element shows the percentage of
+                    // each core respectively e.g. [core1, core2] => [40.3, 39.4]
+                    const cpuPercentages = cpuLog.map(a => a.cpu_perc);
+                    // This loop will transform the rows into a columnwise form for the chart
+                    for (let i = 0; i < cpuPercentages.length; i++) {
+                        if (this.chartCPUData[i] === undefined || this.chartCPUData[i] === null) {
+                            this.chartCPUData[i] = { data: [], label: `Core ${i}` };
+                        }
+                        this.chartCPUData[i].data.push(cpuPercentages[i]);
                     }
-                    this.chartCPUData[i].data.push(cpuPercentages[i]);
-                }
-            });
-            // Map memory data
-            this.chartMemoryData = [{data: res.body.map(a => a.memory_perc), label: 'Memory Percentage'}];
+
+                });
+                // Map memory data
+                this.chartMemoryData = [{ data: res.body.map(a => a.memory_perc), label: 'Memory Percentage' }];
+            } else {
+                this.showWarnMsg(res.body['message']);
+            }
         },
             (res: HttpErrorResponse) => {
                 console.error(res.statusText)
