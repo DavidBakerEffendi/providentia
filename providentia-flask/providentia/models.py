@@ -196,3 +196,35 @@ def cpu_log_decoder(o: dict):
     log.core_id = o['core_id']
     log.cpu_perc = o['cpu_perc']
     return log
+
+
+def new_benchmark_decoder(o: dict):
+    """
+    Decodes the given JSON string and returns its respective model. This function
+    should be passed into the 'object_hook' parameter in json.load().
+    :param o: JSON string as a dict.
+    :return: the respective model object.
+    """
+    from providentia.repository.this import tbl_databases
+    from providentia.repository.this import tbl_datasets
+    from providentia.repository.this import tbl_analysis
+    benchmark = Benchmark()
+
+    database = tbl_databases.find_name(o['database'])
+    dataset = tbl_datasets.find_name(o['dataset'])
+    analysis = tbl_analysis.find_name(o['analysis'])
+
+    if database is None:
+        raise KeyError('Database "{}" is not supported!'.format(o['database']))
+    if dataset is None:
+        raise KeyError('Dataset "{}" is not supported!'.format(o['dataset']))
+    if analysis is None:
+        raise KeyError('Analysis "{}" is not supported!'.format(o['analysis']))
+
+    benchmark.database = database.database_id
+    benchmark.dataset = dataset.dataset_id
+    benchmark.analysis = analysis.analysis_id
+    benchmark.query_time = 0
+    benchmark.analysis_time = 0
+
+    return benchmark

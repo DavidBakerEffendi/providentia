@@ -27,7 +27,6 @@ def execute_waiting():
                 logging.debug('Found unstarted jobs!')
 
 
-
 def log_server_state():
     from providentia import app
 

@@ -16,11 +16,11 @@ def query_results(n=None):
                 "analysis_time, status FROM {} ORDER BY date_executed DESC".format(TABLE)
 
         if n is None:
-            logging.debug("Executing query: %s", query)
             cur.execute(query)
         else:
-            logging.debug("Executing query: %s LIMIT %d", query, n)
             cur.execute(query + " LIMIT %s", (str(n),))
+
+        logging.debug("Executed: %s", cur.query)
 
         rows = []
         if cur.rowcount > 0:
@@ -98,22 +98,18 @@ def insert(benchmark):
             insert_into += "{}, ".format(COLUMNS[4])
             values += "%s::timestamp, "
             values_arr.append(benchmark.date_executed)
-        if benchmark.title is not None:
-            insert_into += "{}, ".format(COLUMNS[5])
-            values += "%s, "
-            values_arr.append(benchmark.title)
-        if benchmark.description is not None and len(benchmark.description) > 0:
-            insert_into += "{}, ".format(COLUMNS[6])
-            values += "%s, "
-            values_arr.append(benchmark.description)
         if benchmark.query_time is not None:
-            insert_into += "{}, ".format(COLUMNS[7])
+            insert_into += "{}, ".format(COLUMNS[5])
             values += "%s, "
             values_arr.append(benchmark.query_time)
         if benchmark.analysis_time is not None:
-            insert_into += "{}, ".format(COLUMNS[8])
+            insert_into += "{}, ".format(COLUMNS[6])
             values += "%s, "
             values_arr.append(benchmark.analysis_time)
+        if benchmark.status is not None:
+            insert_into += "{}, ".format(COLUMNS[7])
+            values += "%s, "
+            values_arr.append(benchmark.status)
 
         insert_into = insert_into[:-2] + ") "
         values = values[:-2] + ");"

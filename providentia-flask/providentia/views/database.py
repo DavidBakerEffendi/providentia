@@ -46,7 +46,7 @@ def query_db(db_name):
     start = perf_counter_ns()
     if db_name == "JanusGraph":
         result = str(janus_graph.execute_query(query))
-    elif db_name == "Postgres":
+    elif db_name == "PostgreSQL":
         result = str(postgres.execute_query(query))
     elif db_name == "Cassandra":
         pass

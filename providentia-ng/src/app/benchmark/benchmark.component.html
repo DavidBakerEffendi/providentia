@@ -75,7 +75,7 @@
                     </div>
                 </mat-tab>
 
-                <mat-tab>
+                <mat-tab *ngIf="benchmark.status !== 'WAITING'">
                     <ng-template mat-tab-label>
                         <mat-icon class="tab-icon">pie_chart</mat-icon>
                         Results

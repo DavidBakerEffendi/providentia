@@ -14,7 +14,10 @@ bp = Blueprint('benchmark', __name__, )
 @cross_origin()
 def result_get(no_results=None):
     """Show all the posts, most recent first."""
-    if type(no_results) is not int:
+    print('no results', no_results)
+    try:
+        no_results = int(no_results)
+    except Exception:
         no_results = 10
 
     try:

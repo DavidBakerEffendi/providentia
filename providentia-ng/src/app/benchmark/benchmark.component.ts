@@ -124,7 +124,6 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
      * @param duration the duration of the analysis.
      */
     getPerformance(fromDate: Date, duration: number) {
-        console.log(`what I have ${fromDate.toString()}`);
         const toDate = new Date(fromDate.getTime() + duration);
         this.logService.getFromTo(fromDate, toDate).subscribe((res: HttpResponse<IServerLog[]>) => {
             if (res.body.map) {

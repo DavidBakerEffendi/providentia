@@ -52,7 +52,7 @@
             </mat-list>
         </div>
         <!-- Graph -->
-        <div class="row">
+        <div class="row" style="pointer-events: none; z-index: 1072;">
             <div class="col-sm-12 col-md-6" style="display: block;" *ngIf="chartCPUData">
                 <canvas mdbChart [chartType]="'line'" [datasets]="chartCPUData" [colors]="chartCPUColors"
                     [options]="chartOptions" [legend]="true">

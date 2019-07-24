@@ -76,7 +76,7 @@ def create_app():
     classifier_start_train = datetime.now() + timedelta(0, 10)
 
     scheduler = BackgroundScheduler()
-    # scheduler.add_job(func=execute_waiting, id='execute_waiting', trigger='interval', seconds=60)
+    scheduler.add_job(func=execute_waiting, id='execute_waiting', trigger='interval', seconds=60)
     scheduler.add_job(func=log_server_state, id='log_server_state', trigger='interval', seconds=2.5)
     # train the classifier models if they are enabled
     if app.config['ENABLE_SENTIMENT'] is True:

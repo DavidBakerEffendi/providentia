@@ -23,7 +23,7 @@
 
     <mat-content>
         <mat-accordion *ngIf="databases" class="example-headers-align">
-            <mat-expansion-panel *ngFor="let database of databases">
+            <mat-expansion-panel *ngFor="let database of databases; let i = index">
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         {{ database.name }}
@@ -39,7 +39,10 @@
                 </mat-expansion-panel-header>
 
                 <p>{{ database.description }}</p>
-                <div *ngIf="queryResponses.has(database.name)">
+                <div [hidden]="showSpinner[i] !== true">
+                    <mat-spinner [diameter]="50" style="margin-left:auto;margin-right:auto;"></mat-spinner>
+                </div>
+                <div *ngIf="queryResponses.has(database.name)" [hidden]="showSpinner[i] === true">
                     <p class="code elegant-color-dark text-white p-3">{{ queryResponses.get(database.name).result }}</p>
                     <p>Query took: {{ queryResponses.get(database.name).time / 1000000 | number:'.1-6' }} ms</p>
                 </div>

@@ -1,27 +1,32 @@
-import { Component, OnInit } from '@angular/core';
-
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { IDatabase, DatabaseService, InfoMessage } from '../shared';
 
 @Component({
     selector: 'prv-databases',
     templateUrl: './databases.component.html',
-    styleUrls: ['databases.scss']
+    styleUrls: ['databases.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DatabasesComponent extends InfoMessage implements OnInit {
 
     databases: IDatabase[];
+    showSpinner: Array<boolean>;
     queryResponses = new Map();
 
     constructor(
-        private databaseService: DatabaseService
+        private databaseService: DatabaseService,
+        private ref: ChangeDetectorRef
     ) {
         super();
     }
 
     ngOnInit() {
+        this.showSpinner = [];
         this.databaseService.query().subscribe((res: HttpResponse<IDatabase[]>) => {
             this.databases = res.body;
+            this.databases.forEach(() => this.showSpinner.push(false));
+            this.ref.markForCheck();
         },
             (res: HttpErrorResponse) => {
                 console.error(res.statusText);
@@ -32,6 +37,7 @@ export class DatabasesComponent extends InfoMessage implements OnInit {
                 } else {
                     this.showErrorMsg(res.statusText);
                 }
+                this.ref.markForCheck();
             });
     }
 
@@ -39,13 +45,17 @@ export class DatabasesComponent extends InfoMessage implements OnInit {
      * Submits a given query to the given database to be executed on the server. The response is then relayed to the client.
      */
     submitQuery(databaseName: string, query: string) {
-        this.databases.forEach(db => {
+        this.databases.forEach((db, i) => {
             if (db.name === databaseName) {
+                this.showSpinner[i] = true;
                 this.databaseService.submitQuery(db.name, query).subscribe((res: HttpResponse<any>) => {
                     this.queryResponses.set(db.name, res.body);
+                    this.showSpinner[i] = false;
                     this.showError = false;
+                    this.ref.markForCheck();
                 },
                     (res: HttpErrorResponse) => {
+                        this.showSpinner[i] = false;
                         if (res.status === 0) {
                             this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
                         } else if (res.status == 500) {
@@ -53,9 +63,11 @@ export class DatabasesComponent extends InfoMessage implements OnInit {
                         } else {
                             this.showErrorMsg(res.statusText);
                         }
+                        this.ref.markForCheck();
                     });
+                this.ref.markForCheck();
+                return;
             }
-            return;
         })
     }
 }

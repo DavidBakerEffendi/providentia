@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { createRequestOption } from '../util/request-util';
 
 import APP_CONFIG from '../../app.config';
 import { IBenchmark } from '../model/benchmark.model';
