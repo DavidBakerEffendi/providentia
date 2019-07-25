@@ -157,8 +157,8 @@ public class PostgresTransactionManager {
                 p.setString(3, b.getAddress());
                 p.setObject(4, b.getCity());
                 p.setString(5, b.getPostalCode());
-                p.setDouble(6, b.getLatitude());
-                p.setDouble(7, b.getLongitude());
+                p.setDouble(6, b.getLongitude());
+                p.setDouble(7, b.getLatitude());
                 p.setDouble(8, b.getStars());
                 p.setInt(9, b.getReviewCount());
                 p.setBoolean(10, b.isOpen());
