@@ -3,8 +3,8 @@ from datetime import datetime
 
 import psutil
 
-from providentia.models import ServerLog, CPULog
-from providentia.repository.this import tbl_benchmark, tbl_server_logs, tbl_cpu_logs
+from providentia.models import ServerLog, CPULog, Benchmark
+from providentia.repository import tbl_benchmark, tbl_server_logs, tbl_cpu_logs
 
 
 def execute_waiting():
@@ -13,18 +13,37 @@ def execute_waiting():
     currently empty.
     """
     from providentia import app
+    from providentia.classifier import sentiment
 
+    # only run analysis if classifier is ready
+    if sentiment.classify("test") is None:
+        logging.debug('Classifier not ready, going back to sleep.')
+        return
+
+    # look to process a job
     with app.app_context():
         if tbl_benchmark.is_job_being_processed():
             logging.debug('A job is being processed, going back to sleep')
         else:
             logging.debug('No job being processed, looking for jobs to execute')
-            # TODO: Need to look for jobs which were starts but unfinished first
+
             unstarted_jobs = tbl_benchmark.get_unstarted_jobs()
             if unstarted_jobs is None:
                 logging.debug('No jobs available, going back to sleep.')
             else:
                 logging.debug('Found unstarted jobs!')
+                start_job(unstarted_jobs.pop())
+
+
+def start_job(benchmark: Benchmark):
+    """Updates the status of benchmarks and decides which analysis to run"""
+    from providentia.analysis import kate
+
+    tbl_benchmark.set_as(benchmark.benchmark_id, 'PROCESSING')
+    if benchmark.analysis.analysis_id == kate.kate_id:
+        kate.run(benchmark.database.name)
+
+    tbl_benchmark.set_as(benchmark.benchmark_id, 'COMPLETE')
 
 
 def log_server_state():

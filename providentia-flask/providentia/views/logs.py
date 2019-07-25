@@ -6,7 +6,7 @@ from flask import Blueprint, Response, request
 from flask_cors import cross_origin
 
 from providentia.models import model_encoder
-from providentia.repository.this import tbl_server_logs
+from providentia.repository import tbl_server_logs
 
 bp = Blueprint('logs', __name__, )
 

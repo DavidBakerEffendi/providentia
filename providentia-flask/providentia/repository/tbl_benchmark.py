@@ -3,7 +3,7 @@ import logging
 from flask import current_app
 
 from providentia.db.this import get_db
-from providentia.models import benchmark_decoder
+from providentia.models import benchmark_decoder, Benchmark
 
 TABLE = 'benchmarks'
 COLUMNS = ("id", "database_id", "dataset_id", "analysis_id", "date_executed", "query_time", "analysis_time", "status")
@@ -53,25 +53,6 @@ def find(row_id):
         return deserialized
 
 
-# def find_title(row_title):
-#     with current_app.app_context():
-#         cur = get_db().cursor()
-#         query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, query_time, " \
-#                 "analysis_time, status FROM {} WHERE title = %s".format(TABLE)
-#
-#         logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_title))
-#         cur.execute(query, (row_title,))
-#
-#         if cur.rowcount > 0:
-#             result = dict(zip(COLUMNS, cur.fetchone()))
-#         else:
-#             return None
-#
-#         deserialized = benchmark_decoder(result)
-#
-#         return deserialized
-
-# TODO: This needs to be modified
 def insert(benchmark):
     with current_app.app_context():
         insert_into = "INSERT INTO {} (".format(TABLE)
@@ -139,7 +120,7 @@ def get_unstarted_jobs():
     with current_app.app_context():
         cur = get_db().cursor()
         query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, query_time, " \
-                "analysis_time, status FROM {} WHERE date_executed IS NULL".format(TABLE)
+                "analysis_time, status FROM {} WHERE status = 'WAITING'".format(TABLE)
 
         logging.debug("Executing query: %s", query)
         cur.execute(query)
@@ -151,9 +132,18 @@ def get_unstarted_jobs():
         else:
             return None
 
-        deserialized = []
+        return [benchmark_decoder(row) for row in rows]
 
-        for row in rows:
-            deserialized.append(benchmark_decoder(row))
 
-        return deserialized
+def set_as(benchmark_id, status):
+    if status != 'WAITING' or status != 'PROCESSING' or status != 'COMPLETE':
+        raise Exception('Status must be either WAITING, PROCESSING, or COMPLETE. Your input was "{}"', status)
+    with current_app.app_context():
+        conn = get_db()
+        cur = conn.cursor()
+        query = "UPDATE {} SET status = %s WHERE id = %s".format(TABLE)
+
+        cur.execute(query, (status, benchmark_id,))
+        logging.debug("Executed query: %s", cur.query)
+
+        conn.commit()

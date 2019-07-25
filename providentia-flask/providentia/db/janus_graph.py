@@ -29,7 +29,12 @@ def execute_query(query):
 
     try:
         gremlin_client = client.Client(conn_string, 'g')
-        return gremlin_client.submit(query).next()
+        # this method blocks until the request is written to the server
+        result_set = gremlin_client.submit(query)
+        # the all method returns a concurrent.futures.Future
+        future_results = result_set.all()
+        # block until the script is evaluated and results are sent back by the server
+        return future_results.result()
     except Exception as e:
         logging.warn('Error while executing query! %s', str(e))
         return str(e)

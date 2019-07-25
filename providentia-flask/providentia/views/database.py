@@ -4,7 +4,7 @@ import logging
 from flask import Blueprint, Response, request
 from flask_cors import cross_origin
 
-from providentia.repository.this import tbl_databases
+from providentia.repository import tbl_databases
 from providentia.models import model_encoder
 
 bp = Blueprint('database', __name__, )
@@ -50,7 +50,7 @@ def query_db(db_name):
         result = str(postgres.execute_query(query))
     elif db_name == "Cassandra":
         pass
-    time_elapsed = (perf_counter_ns() - start) / 1000
+    time_elapsed = (perf_counter_ns() - start) / 1000000
 
     logging.debug('Query response: {}'.format(result))
     return Response(json.dumps({'result': result, 'time': time_elapsed}), status=200, mimetype='application/json')

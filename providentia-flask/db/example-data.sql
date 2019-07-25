@@ -52,13 +52,13 @@ values
     (
         '81c1ab05-bb06-47ab-8a37-b9aeee625d0f',
         'c2a361d5-9451-4222-b5f7-7696f5f2284d',
-        'Review star vs characteristic',
-        'In this analysis we look at the reviews in a handful of states and how their reviews correspond to their funny, cool, useful rating and string length.'
+        'Kate\'s Restaurant Recommendations',
+        'In this analysis we look at a user called Kate who frequents Las Vegas and Phoenix restaurants. Using this information we can gather similar restaurants to suggest she goes to by looking at other users who share the same rating about restaurants she\'s been to. To make this more interesting we run our sentiment classifier on the reviews to see if our recommendations are accurate.
     ),
     (
         'b540a4dd-f010-423b-9644-aef4e9b754a9',
         'c2a361d5-9451-4222-b5f7-7696f5f2284d',
-        'Fake review detection',
+        'Review trends per state',
         'In this analysis we look at how fake reviews correlate to other factors such as geographic location, time of year and review characteristics.'
     );
 

@@ -10,7 +10,7 @@ import config
 
 def test_database_connections(app):
     from providentia.db import janus_graph, postgres
-    from providentia.repository.this import tbl_databases
+    from providentia.repository import tbl_databases
 
     if janus_graph.test_connection(app):
         tbl_databases.set_status('JanusGraph', status='UP', app=app)
@@ -76,7 +76,12 @@ def create_app():
     classifier_start_train = datetime.now() + timedelta(0, 10)
 
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=execute_waiting, id='execute_waiting', trigger='interval', seconds=60)
+    scheduler.add_job(func=execute_waiting, id='execute_waiting', trigger='interval', seconds=10)
+
+    # Test for analysis
+    # test_analysis = datetime.now() + timedelta(0, 5)
+    # scheduler.add_job(func=execute_waiting, id='execute_waiting', trigger='date',next_run_time=test_analysis)
+
     scheduler.add_job(func=log_server_state, id='log_server_state', trigger='interval', seconds=2.5)
     # train the classifier models if they are enabled
     if app.config['ENABLE_SENTIMENT'] is True:

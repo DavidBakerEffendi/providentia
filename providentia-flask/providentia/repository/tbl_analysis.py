@@ -29,9 +29,7 @@ def query_results(n=None):
         else:
             return None
 
-        deserialized = [analysis_decoder(row) for row in rows]
-
-        return deserialized
+        return [analysis_decoder(row) for row in rows]
 
 
 def find(row_id):

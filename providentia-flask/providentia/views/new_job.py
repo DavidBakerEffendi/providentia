@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
 
 from providentia.models import new_benchmark_decoder
-from providentia.repository.this import tbl_benchmark
+from providentia.repository import tbl_benchmark
 
 bp = Blueprint('new-job', __name__, )
 

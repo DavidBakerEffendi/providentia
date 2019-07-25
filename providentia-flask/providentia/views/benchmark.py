@@ -4,7 +4,7 @@ import logging
 from flask import Blueprint, Response, jsonify
 from flask_cors import cross_origin
 
-from providentia.repository.this import tbl_benchmark
+from providentia.repository import tbl_benchmark
 from providentia.models import model_encoder
 
 bp = Blueprint('benchmark', __name__, )

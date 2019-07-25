@@ -32,7 +32,6 @@ def execute_query(query):
         cur = sql_conn.cursor()
         cur.execute(query)
         rows = cur.fetchall()
-        print(rows)
         return rows
     except Exception as e:
         logging.warn('Error while executing query! %s', str(e))

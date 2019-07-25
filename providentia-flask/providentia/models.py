@@ -97,7 +97,7 @@ def analysis_decoder(o: dict):
     :param o: JSON string as a dict.
     :return: the respective model object.
     """
-    from providentia.repository.this import tbl_datasets
+    from providentia.repository import tbl_datasets
     analysis = Analysis()
     analysis.analysis_id = o['id']
     analysis.dataset = tbl_datasets.find(o['dataset_id'])
@@ -113,7 +113,7 @@ def benchmark_decoder(o: dict):
     :param o: JSON string as a dict.
     :return: the respective model object.
     """
-    from providentia.repository.this import tbl_analysis, tbl_databases, tbl_datasets
+    from providentia.repository import tbl_analysis, tbl_databases, tbl_datasets
     benchmark = Benchmark()
     benchmark.benchmark_id = o['id']
     benchmark.database = tbl_databases.find(o['database_id'])
@@ -174,7 +174,7 @@ def server_log_decoder(o: dict):
     :param o: JSON string as a dict.
     :return: the respective model object.
     """
-    from providentia.repository.this import tbl_cpu_logs
+    from providentia.repository import tbl_cpu_logs
     log = ServerLog()
     log.log_id = o['id']
     log.captured_at = o['captured_at']
@@ -205,9 +205,9 @@ def new_benchmark_decoder(o: dict):
     :param o: JSON string as a dict.
     :return: the respective model object.
     """
-    from providentia.repository.this import tbl_databases
-    from providentia.repository.this import tbl_datasets
-    from providentia.repository.this import tbl_analysis
+    from providentia.repository import tbl_databases
+    from providentia.repository import tbl_datasets
+    from providentia.repository import tbl_analysis
     benchmark = Benchmark()
 
     database = tbl_databases.find_name(o['database'])
