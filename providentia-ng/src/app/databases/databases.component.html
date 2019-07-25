@@ -44,7 +44,7 @@
                 </div>
                 <div *ngIf="queryResponses.has(database.name)" [hidden]="showSpinner[i] === true">
                     <p class="code elegant-color-dark text-white p-3">{{ queryResponses.get(database.name).result }}</p>
-                    <p>Query took: {{ queryResponses.get(database.name).time / 1000000 | number:'.1-6' }} ms</p>
+                    <p>Query took: {{ queryResponses.get(database.name).time | number:'.1-6' }} ms</p>
                 </div>
 
                 <mat-action-row *ngIf="database.status !== 'DOWN'">
