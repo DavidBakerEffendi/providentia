@@ -62,29 +62,53 @@
                     </div>
                     <!-- Graph -->
                     <div class="row">
-                        <div class="col-12" style="display: block;" *ngIf="perfCPUData">
+                        <div class="col-10" style="display: block;" *ngIf="perfCPUData">
                             <canvas mdbChart [chartType]="'line'" [datasets]="perfCPUData" [colors]="perfCPUColors"
                                 [options]="perfOptions" [legend]="true">
                             </canvas>
                         </div>
-                        <div class="col-12" style="display: block;" *ngIf="perfMemoryData">
+                        <div class="col-2">
+                            <p>Average CPU usage: ...</p>
+                            <p>Average per core usage: ...</p>
+                            <p>Min </p>
+                            <p>max</p>
+                        </div>
+                        <div class="col-10" style="display: block;" *ngIf="perfMemoryData">
                             <canvas mdbChart [chartType]="'line'" [datasets]="perfMemoryData"
                                 [colors]="perfMemoryColors" [options]="perfOptions" [legend]="true">
                             </canvas>
                         </div>
+                        <div class="col-2">
+                            <p>Average Memory usage: ...</p>
+                            <p>Min </p>
+                            <p>max</p>
+                        </div>
+                        <!-- Spinner -->
+                        <div class="col-12" *ngIf="(!perfCPUData || !perfMemoryData) && !showWarn">
+                            <mat-spinner [diameter]="50" style="margin-left:auto;margin-right:auto;"></mat-spinner>
+                        </div>
                     </div>
                 </mat-tab>
 
+                <!-- Results tab -->
                 <mat-tab *ngIf="benchmark.status !== 'WAITING'">
                     <ng-template mat-tab-label>
                         <mat-icon class="tab-icon">pie_chart</mat-icon>
                         Results
                     </ng-template>
-                    <canvas mdbChart [chartType]="'pie'"
-                        [datasets]="[{ data: [benchmark.query_time, benchmark.analysis_time], label: 'Time' }]"
-                        [labels]="['Querying', 'Analysis']" [colors]="chartColors" [legend]="true"
-                        [options]="{ responsive: true }">
-                    </canvas>
+                    <div class="row" style="margin-right: 0; margin-left: 0;">
+                        <div class="col-sm-12 col-md-6">
+                            <canvas mdbChart [chartType]="'pie'"
+                                [datasets]="[{ data: [benchmark.query_time, benchmark.analysis_time], label: 'Time' }]"
+                                [labels]="['Querying', 'Analysis']" [colors]="chartColors" [legend]="true"
+                                [options]="{ responsive: true }">
+                            </canvas>
+                        </div>
+                        <div class="col-sm-12 col-md-6">
+                            <p>Queries:</p>
+                            <p>...</p>
+                        </div>
+                    </div>
                 </mat-tab>
             </mat-tab-group>
         </div>

@@ -18,21 +18,20 @@
         {{ infoMsg }}
     </div>
 
-    <mat-content *ngIf="!showError">
+    <mat-content *ngIf="!showError && !showInfo">
         <mat-grid-list cols="4" rowHeight="150pt">
             <mat-grid-tile [ngClass]="setTileClass(benchmark.status)" *ngFor="let benchmark of recentBenchmarks"
-                [colspan]="1" [rowspan]="1">
-                <div style="cursor: pointer" routerLink="benchmark/{{ benchmark.benchmark_id }}">
+                [colspan]="1" [rowspan]="1"  routerLink="benchmark/{{ benchmark.benchmark_id }}">
+                <div style="cursor: pointer">
                     <mat-grid-tile-header class="text-uppercase">{{ benchmark.database.name }} benchmark
                     </mat-grid-tile-header>
 
-                    <p class="text-left" *ngIf="benchmark.analysis">
-                        {{ benchmark.analysis.description }}
+                    <p class="text-left" *ngIf="benchmark.status">
+                        {{ benchmark.status }}
                     </p>
 
-                    <mat-grid-tile-footer>
+                    <mat-grid-tile-footer *ngIf="benchmark.date_executed">
                         <div *ngIf="benchmark.date_executed" class="text-left">{{ benchmark.date_executed }}</div>
-                        <div *ngElse class="text-right"> {{ benchmark.status }}</div>
                     </mat-grid-tile-footer>
                 </div>
             </mat-grid-tile>
@@ -62,6 +61,10 @@
                 <canvas mdbChart [chartType]="'line'" [datasets]="chartMemoryData" [colors]="chartMemoryColors"
                     [options]="chartOptions" [legend]="true">
                 </canvas>
+            </div>
+            <!-- Spinner -->
+            <div class="col-md-12" [hidden]="chartCPUData && chartMemoryData">
+                <mat-spinner [diameter]="50" style="margin-left:auto;margin-right:auto;"></mat-spinner>
             </div>
         </div>
     </mat-content>

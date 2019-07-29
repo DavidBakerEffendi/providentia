@@ -12,6 +12,7 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
     recentBenchmarks: IBenchmark[];
     lastServerUpdate: number;
     serverPoll;
+    benchmarkPoll;
 
     errorMsgBenchmarks: string;
     infoMsgBenchmarks: string;
@@ -69,6 +70,7 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
     public chartOptions: any = {
         responsive: true,
         spanGaps: true,
+        lineTension: 100,
     };
 
     constructor(
@@ -82,6 +84,7 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
         this.getRecentBenchmarks();
         this.getServerMetrics()
         this.serverPoll = setInterval(() => this.getServerMetrics(), 2500);
+        this.benchmarkPoll = setInterval(() => this.getRecentBenchmarks(), 5000);
     }
 
     ngOnDestroy() {
@@ -154,11 +157,11 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
 
     setTileClass(status) {
         if (status === 'PROCESSING') {
-            return "light-blue  accent-1"
+            return "light-blue  accent-4"
         } else if (status === 'WAITING') {
-            return "orange accent-1"
+            return "amber accent-4"
         } else {
-            return "indigo accent-1"
+            return "indigo accent-4"
         }
     }
 }

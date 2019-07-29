@@ -52,50 +52,49 @@ values
     (
         '81c1ab05-bb06-47ab-8a37-b9aeee625d0f',
         'c2a361d5-9451-4222-b5f7-7696f5f2284d',
-        'Kate\'s Restaurant Recommendations',
-        'In this analysis we look at a user called Kate who frequents Las Vegas and Phoenix restaurants. Using this information we can gather similar restaurants to suggest she goes to by looking at other users who share the same rating about restaurants she\'s been to. To make this more interesting we run our sentiment classifier on the reviews to see if our recommendations are accurate.
+        $$Kate's Restaurant Recommendations$$,
+        $$In this analysis we look at a user called Kate who frequents Las Vegas and Phoenix restaurants. Using this information we can gather similar restaurants to suggest she goes to by looking at other users who share the same rating about restaurants she's been to. To make this more interesting we run our sentiment classifier on the reviews to see if our recommendations are accurate.$$
     ),
     (
         'b540a4dd-f010-423b-9644-aef4e9b754a9',
         'c2a361d5-9451-4222-b5f7-7696f5f2284d',
-        'Review trends per state',
-        'In this analysis we look at how fake reviews correlate to other factors such as geographic location, time of year and review characteristics.'
+        $$Review trends per state$$,
+        $$In this analysis we look at how various characteristics in reviews trend over time and within certain geographical areas.$$
     );
 
-insert into benchmarks (
-    database_id,
-    dataset_id,
+insert into queries (
+    id,
     analysis_id,
-    date_executed,
-    query_time,
-    analysis_time,
-    status
+    database_id,
+    query,
+    language
 )
 values
     (
+        'c4ec05a7-faa9-4bdd-90ae-280a40917406',
+        '81c1ab05-bb06-47ab-8a37-b9aeee625d0f',
         'bfd2ae61-700f-4f52-b928-a6e27f0b4e11',
-        'c2a361d5-9451-4222-b5f7-7696f5f2284d',
-        '81c1ab05-bb06-47ab-8a37-b9aeee625d0f',
-        NOW(),
-	    504320,
-        1104650,
-        'COMPLETE'
+        $$g.V().has("User", "user_id", "qUL3CdRRF1vedNvaq06rIA").as("kate").outE("REVIEWS").has("stars", gt(3)).inV().in("REVIEWS").where(neq("kate")).as("users").out("REVIEWS").out("IN_CATEGORY").has("name", "Restaurants").select("users").dedup().values("user_id").fold()$$,
+        'Gremlin'
     ),
     (
-        'd3dd123d-5f55-4d82-abb2-648a06211beb',
-        'c2a361d5-9451-4222-b5f7-7696f5f2284d',
+        '1881dd76-82db-4073-97f9-5d9019d1ab99',
         '81c1ab05-bb06-47ab-8a37-b9aeee625d0f',
-        NOW(),
-	    704320,
-        1102650,
-        'COMPLETE'
+        'bfd2ae61-700f-4f52-b928-a6e27f0b4e11',
+        $$g.V().has("User", "user_id", "...").outE("REVIEWS").has("stars", gt(3)).order().by("date", desc).as("stars", "text").inV().has("location", geoWithin(Geoshape.circle(35.15,-80.79, 5))).as("business_id").select("stars", "text", "business_id").by("stars").by("text").by("business_id")$$,
+        'Gremlin'
     ),
     (
+        'a1028b83-f522-448b-9856-8d48e14b6928',
+        '81c1ab05-bb06-47ab-8a37-b9aeee625d0f',
         '291a3c67-7838-40e4-ab4a-677200bc4743',
-        'c2a361d5-9451-4222-b5f7-7696f5f2284d',
-        'b540a4dd-f010-423b-9644-aef4e9b754a9',
-        NOW(),
-	    724320,
-        1103650,
-        'COMPLETE'
+        $$SELECT DISTINCT OtherReviews.user_id FROM users JOIN review KateReviews ON users.id = KateReviews.user_id AND users.id = 'qUL3CdRRF1vedNvaq06rIA' AND KateReviews.stars > 3 JOIN business KateBus ON KateReviews.business_id = KateBus.id JOIN review OtherReviews ON OtherReviews.user_id != KateReviews.user_id AND OtherReviews.business_id = KateReviews.business_id JOIN bus_by_cat Categories ON OtherReviews.business_id = Categories.business_id AND Categories.category = 'Restaurants'$$,
+        'SQL'
+    ),
+    (
+        '8afb2d30-a152-4a1c-81ee-6fed84cfb968',
+        '81c1ab05-bb06-47ab-8a37-b9aeee625d0f',
+        '291a3c67-7838-40e4-ab4a-677200bc4743',
+        $$SELECT review.stars, review.text, review.business_id FROM review JOIN business ON review.business_id = business.id AND review.user_id = '...' AND ST_DWithin(location, ST_MakePoint(-80.79, 35.15)::geography, 5000) AND review.stars > 3 ORDER BY review.date DESC$$,
+        'SQL'
     );

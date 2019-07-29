@@ -1,17 +1,20 @@
-import json
 import logging
-
-from providentia.db import janus_graph, postgres
+from datetime import datetime
 from time import perf_counter_ns
+
 from providentia.classifier import sentiment
+from providentia.db import janus_graph, postgres
+from providentia.models import Benchmark
 
 kate_id = "qUL3CdRRF1vedNvaq06rIA"
 analysis_id = "81c1ab05-bb06-47ab-8a37-b9aeee625d0f"
 
 
-def run(database):
+def run(benchmark: Benchmark):
+    database = benchmark.database.name
     logging.debug("Starting Kate analysis using %s", database)
     # initialize timers
+    benchmark.date_executed = datetime.utcnow()
     q1_total_time, q2_total_time, deserialize_time, analysis_time, total_time = 0, 0, 0, 0, 0
     # get similar users
     similar_users, q1_total_time = get_users_who_like_same_restaurants_as_kate(database)
@@ -37,7 +40,9 @@ def run(database):
                  'Total time:\t\t%.2f ms\n',
                  database, q1_total_time, q2_total_time, q1_total_time + q2_total_time, analysis_time,
                  total_time)
-    # TODO: Store results in db and mark benchmark as complete
+    # Update benchmark object values
+    benchmark.query_time = q1_total_time + q2_total_time
+    benchmark.analysis_time = analysis_time
 
 
 def update_business_reviews(database, user_id, recent_reviews, business_reviews):

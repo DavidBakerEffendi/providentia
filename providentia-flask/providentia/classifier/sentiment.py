@@ -11,11 +11,6 @@ classifier = None
 word_features = None
 
 
-def get_classifier():
-    global classifier
-    return classifier
-
-
 def train_model(train_dir, app):
     global classifier
     global word_features

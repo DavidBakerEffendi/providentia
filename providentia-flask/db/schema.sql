@@ -60,6 +60,16 @@ CREATE TABLE graphs (
     FOREIGN KEY (result_id) REFERENCES benchmarks (id)
 );
 
+CREATE TABLE queries (
+    id uuid DEFAULT uuid_generate_v4(),
+    analysis_id uuid NOT NULL,
+    database_id uuid NOT NULL,
+    query text NOT NULL,
+    language text NOT NULL,
+    FOREIGN KEY (analysis_id) REFERENCES analysis (id),
+    FOREIGN KEY (database_id) REFERENCES databases (id)
+);
+
 CREATE TABLE server_logs (
     id SERIAL,
     captured_at timestamp,

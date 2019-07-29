@@ -20,8 +20,6 @@ def query_results(n=None):
         else:
             cur.execute(query + " LIMIT %s", (str(n),))
 
-        logging.debug("Executed: %s", cur.query)
-
         rows = []
         if cur.rowcount > 0:
             for row in cur.fetchall():
@@ -40,7 +38,6 @@ def find(row_id):
         query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, query_time, " \
                 "analysis_time, status FROM {} WHERE id = %s".format(TABLE)
 
-        logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_id))
         cur.execute(query, (row_id,))
 
         if cur.rowcount > 0:
@@ -77,7 +74,7 @@ def insert(benchmark):
             values_arr.append(benchmark.analysis)
         if benchmark.date_executed is not None:
             insert_into += "{}, ".format(COLUMNS[4])
-            values += "%s::timestamp, "
+            values += "%s, "
             values_arr.append(benchmark.date_executed)
         if benchmark.query_time is not None:
             insert_into += "{}, ".format(COLUMNS[5])
@@ -136,7 +133,7 @@ def get_unstarted_jobs():
 
 
 def set_as(benchmark_id, status):
-    if status != 'WAITING' or status != 'PROCESSING' or status != 'COMPLETE':
+    if status != 'WAITING' and status != 'PROCESSING' and status != 'COMPLETE':
         raise Exception('Status must be either WAITING, PROCESSING, or COMPLETE. Your input was "{}"', status)
     with current_app.app_context():
         conn = get_db()
@@ -147,3 +144,49 @@ def set_as(benchmark_id, status):
         logging.debug("Executed query: %s", cur.query)
 
         conn.commit()
+
+
+def update(benchmark: Benchmark):
+    with current_app.app_context():
+        insert_into = "UPDATE {} SET ".format(TABLE)
+        values_arr = []
+
+        if benchmark.database is not None:
+            insert_into += "{} = ".format(COLUMNS[1])
+            insert_into += "%s::uuid, "
+            values_arr.append(benchmark.database.database_id)
+        if benchmark.dataset is not None:
+            insert_into += "{} = ".format(COLUMNS[2])
+            insert_into += "%s::uuid, "
+            values_arr.append(benchmark.dataset.dataset_id)
+        if benchmark.analysis is not None:
+            insert_into += "{} = ".format(COLUMNS[3])
+            insert_into += "%s::uuid, "
+            values_arr.append(benchmark.analysis.analysis_id)
+        if benchmark.date_executed is not None:
+            insert_into += "{} = ".format(COLUMNS[4])
+            insert_into += "%s, "
+            values_arr.append(benchmark.date_executed)
+        if benchmark.query_time is not None:
+            insert_into += "{} = ".format(COLUMNS[5])
+            insert_into += "%s, "
+            values_arr.append(benchmark.query_time)
+        if benchmark.analysis_time is not None:
+            insert_into += "{} = ".format(COLUMNS[6])
+            insert_into += "%s, "
+            values_arr.append(benchmark.analysis_time)
+        if benchmark.status is not None:
+            insert_into += "{} = ".format(COLUMNS[7])
+            insert_into += "%s, "
+            values_arr.append(benchmark.status)
+
+        # add where clause
+        insert_into = insert_into[:-2] + " WHERE id = %s::uuid"
+        values_arr.append(benchmark.benchmark_id)
+
+        # execute and commit to reflect immediately for the job scheduler to see
+        db = get_db()
+        query = db.cursor().mogrify(insert_into, values_arr)
+        logging.debug("Executing query: %s with %s", query, values_arr)
+        db.cursor().execute(query, values_arr)
+        db.commit()

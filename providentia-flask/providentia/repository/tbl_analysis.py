@@ -16,10 +16,8 @@ def query_results(n=None):
                 "FROM {} ORDER BY name DESC".format(TABLE)
 
         if n is None:
-            logging.debug("Executing query: %s", query)
             cur.execute(query)
         else:
-            logging.debug("Executing query: %s LIMIT %d", query, n)
             cur.execute(query + " LIMIT %s", (str(n),))
 
         rows = []
@@ -37,7 +35,6 @@ def find(row_id):
         cur = get_db().cursor()
         query = "SELECT id, dataset_id, name, description FROM {} WHERE id = %s".format(TABLE)
 
-        logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_id))
         cur.execute(query, (row_id,))
 
         if cur.rowcount > 0:
@@ -53,7 +50,6 @@ def find_name(row_name):
         cur = get_db().cursor()
         query = "SELECT id, dataset_id, name, description FROM {} WHERE name = %s".format(TABLE)
 
-        logging.debug("Executing query: %s", query.replace('%s', '{}').format(row_name))
         cur.execute(query, (row_name,))
 
         if cur.rowcount > 0:

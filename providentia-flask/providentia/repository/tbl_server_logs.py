@@ -32,7 +32,6 @@ def query_logs(from_date=None, to_date=None):
             query = "SELECT id, captured_at, memory_perc FROM {} ORDER BY captured_at ASC".format(TABLE)
 
         cur.execute(query, sql_args)
-        logging.debug("Executed: %s", cur.query)
 
         rows = []
         if cur.rowcount > 0:
