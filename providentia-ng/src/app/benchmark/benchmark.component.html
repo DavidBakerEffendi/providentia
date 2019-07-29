@@ -14,10 +14,9 @@
                         Details
                     </ng-template>
                     <!-- Database info -->
-                    <h3 class="text-center pt-2"><strong>Database</strong></h3>
                     <div class="tab-box row">
                         <div class="col-10">
-                            <h4 class="mat-header">{{ benchmark.database.name }}</h4>
+                            <h4 class="mat-header"><strong>Database: </strong>{{ benchmark.database.name }}</h4>
                             <p class="mat-content">{{ benchmark.database.description }}</p>
                         </div>
                         <div class="col-2">
@@ -26,10 +25,9 @@
                         </div>
                     </div>
                     <!-- Dataset info -->
-                    <h3 class="text-center"><strong>Dataset</strong></h3>
                     <div class="tab-box row">
                         <div class="col-10">
-                            <h4 class="mat-header">{{ benchmark.dataset.name }}</h4>
+                            <h4 class="mat-header"><strong>Dataset: </strong>{{ benchmark.dataset.name }}</h4>
                             <p class="mat-content">{{ benchmark.dataset.description }}</p>
                         </div>
                         <div class="col-2">
@@ -38,10 +36,9 @@
                         </div>
                     </div>
                     <!-- Analysis info -->
-                    <h3 class="text-center"><strong>Analysis</strong></h3>
                     <div class="tab-box row">
                         <div class="col-12">
-                            <h4 class="mat-header">{{ benchmark.analysis.name }}</h4>
+                            <h4 class="mat-header"><strong>Analysis: </strong>{{ benchmark.analysis.name }}</h4>
                             <p class="mat-content">{{ benchmark.analysis.description }}</p>
                         </div>
                     </div>
@@ -61,27 +58,36 @@
                         </div>
                     </div>
                     <!-- Graph -->
-                    <div class="row">
-                        <div class="col-10" style="display: block;" *ngIf="perfCPUData">
-                            <canvas mdbChart [chartType]="'line'" [datasets]="perfCPUData" [colors]="perfCPUColors"
-                                [options]="perfOptions" [legend]="true">
-                            </canvas>
+                    <div class="row" style="margin-right: 0; margin-left: 0;">
+                        <div class="col-12 row" style="margin-right: 0; margin-left: 0;">
+                            <h4 class="col-12">CPU Performance</h4>
+                            <div class="col-10" style="display: block;" *ngIf="perfCPUData">
+                                <canvas mdbChart [chartType]="'line'" [datasets]="perfCPUData" [colors]="perfCPUColors"
+                                    [options]="perfOptions" [legend]="true">
+                                </canvas>
+                            </div>
+
+                            <div class="col-2" *ngIf="cpuStats">
+                                <p>Mean: {{ cpuStats.mean | number:'.1-4' }}%</p>
+                                <p>Median: {{ cpuStats.median | number:'.1-4' }}%</p>
+                                <p>Min: {{ cpuStats.min }}%</p>
+                                <p>Max: {{ cpuStats.max }}%</p>
+                            </div>
                         </div>
-                        <div class="col-2">
-                            <p>Average CPU usage: ...</p>
-                            <p>Average per core usage: ...</p>
-                            <p>Min </p>
-                            <p>max</p>
-                        </div>
-                        <div class="col-10" style="display: block;" *ngIf="perfMemoryData">
-                            <canvas mdbChart [chartType]="'line'" [datasets]="perfMemoryData"
-                                [colors]="perfMemoryColors" [options]="perfOptions" [legend]="true">
-                            </canvas>
-                        </div>
-                        <div class="col-2">
-                            <p>Average Memory usage: ...</p>
-                            <p>Min </p>
-                            <p>max</p>
+                        <div class="col-12 row" style="margin-right: 0; margin-left: 0;">
+                            <h4 class="col-12">Memory Performance</h4>
+                            <div class="col-10" style="display: block;" *ngIf="perfMemoryData">
+                                <canvas mdbChart [chartType]="'line'" [datasets]="perfMemoryData"
+                                    [colors]="perfMemoryColors" [options]="perfOptions" [legend]="true">
+                                </canvas>
+                            </div>
+
+                            <div class="col-2">
+                                <p>Mean: {{ memoryStats.mean | number:'.1-4' }}%</p>
+                                <p>Median: {{ memoryStats.median | number:'.1-4' }}%</p>
+                                <p>Min: {{ memoryStats.min }}%</p>
+                                <p>Max: {{ memoryStats.max }}%</p>
+                            </div>
                         </div>
                         <!-- Spinner -->
                         <div class="col-12" *ngIf="(!perfCPUData || !perfMemoryData) && !showWarn">
@@ -96,17 +102,20 @@
                         <mat-icon class="tab-icon">pie_chart</mat-icon>
                         Results
                     </ng-template>
-                    <div class="row" style="margin-right: 0; margin-left: 0;">
+                    <div class="row" style="margin-right: 0; margin-left: 0; padding-top: 5pt;">
                         <div class="col-sm-12 col-md-6">
+                            <h4>Time Split:</h4>
                             <canvas mdbChart [chartType]="'pie'"
                                 [datasets]="[{ data: [benchmark.query_time, benchmark.analysis_time], label: 'Time' }]"
                                 [labels]="['Querying', 'Analysis']" [colors]="chartColors" [legend]="true"
                                 [options]="{ responsive: true }">
                             </canvas>
                         </div>
-                        <div class="col-sm-12 col-md-6">
-                            <p>Queries:</p>
-                            <p>...</p>
+                        <div class="col-sm-12 col-md-12" *ngIf="queries">
+                            <h4>Queries:</h4>
+                            <div *ngFor="let query of queries">
+                                <p class="code elegant-color-dark text-white p-3">{{ query.query }}</p>
+                            </div>
                         </div>
                     </div>
                 </mat-tab>

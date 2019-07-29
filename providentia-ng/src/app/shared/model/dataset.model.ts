@@ -1,5 +1,5 @@
 export interface IDataset {
-    id?: String;
+    dataset_id?: String;
     name?: String;
     description?: String;
     icon?: String;
@@ -8,7 +8,7 @@ export interface IDataset {
 export class Dataset implements IDataset {
 
     constructor(
-        public id?: String,
+        public dataset_id?: String,
         public name?: String,
         public description?: String,
         public icon?: String,

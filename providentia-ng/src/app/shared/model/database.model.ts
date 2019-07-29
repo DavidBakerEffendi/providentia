@@ -1,5 +1,5 @@
 export interface IDatabase {
-    id?: String;
+    database_id?: String;
     name?: String;
     description?: String;
     icon?: String;
@@ -9,7 +9,7 @@ export interface IDatabase {
 export class Database implements IDatabase {
 
     constructor(
-        public id?: String,
+        public database_id?: String,
         public name?: String,
         public description?: String,
         public icon?: String,

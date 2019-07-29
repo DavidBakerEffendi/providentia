@@ -7,5 +7,6 @@ from providentia.repository import tbl_analysis
 from providentia.repository import tbl_benchmark
 from providentia.repository import tbl_databases
 from providentia.repository import tbl_datasets
+from providentia.repository import tbl_queries
 
-__all__ = ['tbl_analysis', 'tbl_benchmark', 'tbl_databases', 'tbl_datasets']
+__all__ = ['tbl_analysis', 'tbl_benchmark', 'tbl_databases', 'tbl_datasets', 'tbl_queries']

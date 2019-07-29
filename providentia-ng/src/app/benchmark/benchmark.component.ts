@@ -1,9 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
-import { InfoMessage, IBenchmark, BenchmarkService, IServerLog, LogService } from '../shared';
+import { InfoMessage, IBenchmark, BenchmarkService, IServerLog, LogService, IQuery, QueryService } from '../shared';
 import { ActivatedRoute, Router } from "@angular/router";
 import { MAT_STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+
+export class Stats {
+    mean?: Number;
+    median?: Number;
+    max?: Number;
+    min?: Number;
+}
 
 @Component({
     selector: 'prv-benchmark',
@@ -16,7 +23,11 @@ import { MAT_STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 export class BenchmarkComponent extends InfoMessage implements OnInit {
 
     benchmark: IBenchmark;
+    queries: IQuery[];
     id: string;
+
+    cpuStats = new Stats();
+    memoryStats = new Stats();
 
     public chartColors: Array<any> = [{
         backgroundColor: ['#FF4081', '#455A64'],
@@ -84,6 +95,7 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
         private router: ActivatedRoute,
         private benchmarkService: BenchmarkService,
         private logService: LogService,
+        private queryService: QueryService,
         private _sanitizer: DomSanitizer
     ) {
         super();
@@ -108,6 +120,8 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
                 // Authorize the BASE64 encoding of the icons
                 this._sanitizer.bypassSecurityTrustResourceUrl('data:image/png;base64,' + this.benchmark.database.icon);
                 this._sanitizer.bypassSecurityTrustResourceUrl('data:image/png;base64,' + this.benchmark.dataset.icon);
+                // Get the queries used from this analysis
+                this.getQueries(this.benchmark.analysis.analysis_id, this.benchmark.database.database_id);
             },
                 (res: HttpErrorResponse) => {
                     console.error(res.message)
@@ -143,8 +157,10 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
                     }
 
                 });
+                this.setStats(this.perfCPUData, this.cpuStats);
                 // Map memory data
                 this.perfMemoryData = [{ data: res.body.map(a => a.memory_perc), label: 'Memory Percentage' }];
+                this.setStats(this.perfMemoryData, this.memoryStats);
             } else {
                 this.showWarnMsg(res.body['message']);
             }
@@ -155,6 +171,47 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
                     this.showWarnMsg('No system information was logged during this analysis.');
                 }
             });
+    }
+
+    /**
+     * Using the given data, extract basic statistics from it.
+     * @param data the data to analyse.
+     * @param stats the stats object to set found information to.
+     */
+    setStats(data: Array<any>, stats: Stats) {
+        let totalPercentage = 0;
+        let totalEntries = 0;
+        let max = Number.MIN_SAFE_INTEGER;
+        let min = Number.MAX_SAFE_INTEGER;
+        const flattened = [].concat.apply([], data.map(a => a.data)).sort();
+        flattened.forEach((e: number, i: number) => {
+            // Mean
+            totalPercentage += e;
+            totalEntries++;
+            // Min/Max
+            if (e > max) max = e;
+            if (e < min) min = e;
+            // Median
+            if (i == Math.floor(flattened.length / 2)) {
+                if (flattened.length % 2 == 0) stats.median = (flattened[i] + flattened[i + 1]) / 2
+                else stats.median = flattened[i];
+            }
+        });
+        // Finalize
+        stats.mean = totalPercentage / totalEntries;
+        stats.max = max;
+        stats.min = min;
+    }
+
+    getQueries(analysisId, databaseId) {
+        this.queryService.getQueries(analysisId, databaseId).subscribe((res: HttpResponse<IQuery[]>) => {
+            this.queries = res.body;
+        }, (res: HttpErrorResponse) => {
+            console.error(res.message);
+            if (res.status == 503) {
+                this.showWarnMsg('No system information was logged during this analysis.');
+            }
+        });
     }
 
 }

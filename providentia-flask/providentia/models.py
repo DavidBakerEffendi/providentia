@@ -65,6 +65,16 @@ class CPULog(object):
         self.cpu_perc = None
 
 
+class Query(object):
+
+    def __init__(self):
+        self.query_id = None
+        self.analysis_id = None
+        self.database_id = None
+        self.query = None
+        self.language = None
+
+
 def model_encoder(o):
     """
     Encodes the given model object as a JSON string. This function should be passed
@@ -85,6 +95,8 @@ def model_encoder(o):
     elif isinstance(o, ServerLog):
         return o.__dict__
     elif isinstance(o, CPULog):
+        return o.__dict__
+    elif isinstance(o, Query):
         return o.__dict__
     else:
         return str(o)
@@ -196,6 +208,23 @@ def cpu_log_decoder(o: dict):
     log.core_id = o['core_id']
     log.cpu_perc = o['cpu_perc']
     return log
+
+
+def query_decoder(o: dict):
+    """
+    Decodes the given JSON string and returns its respective model. This function
+    should be passed into the 'object_hook' parameter in json.load().
+    :param o: JSON string as a dict.
+    :return: the respective model object.
+    """
+    from providentia.repository import tbl_analysis, tbl_databases
+    query = Query()
+    query.query_id = o['id']
+    query.analysis_id = tbl_analysis.find(o['analysis_id'])
+    query.database_id = tbl_databases.find(o['database_id'])
+    query.query = o['query']
+    query.language = o['language']
+    return query
 
 
 def new_benchmark_decoder(o: dict):

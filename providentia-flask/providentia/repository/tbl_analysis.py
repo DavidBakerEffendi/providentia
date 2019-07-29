@@ -1,5 +1,3 @@
-import logging
-
 from flask import current_app
 
 from providentia.db.this import get_db

@@ -104,7 +104,6 @@ def is_job_being_processed():
     with current_app.app_context():
         cur = get_db().cursor()
         query = "SELECT id FROM {} WHERE status = 'PROCESSING'".format(TABLE)
-        logging.debug("Executing query: %s", query)
         cur.execute(query)
 
         if cur.rowcount > 0:
@@ -119,7 +118,6 @@ def get_unstarted_jobs():
         query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, query_time, " \
                 "analysis_time, status FROM {} WHERE status = 'WAITING'".format(TABLE)
 
-        logging.debug("Executing query: %s", query)
         cur.execute(query)
 
         rows = []

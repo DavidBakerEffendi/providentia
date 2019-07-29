@@ -1,7 +1,7 @@
 import { IDataset } from './dataset.model';
 
 export interface IAnalysis {
-    id?: String;
+    analysis_id?: String;
     dataset?: IDataset;
     name?: String;
     description?: String;
@@ -10,7 +10,7 @@ export interface IAnalysis {
 export class Analysis implements IAnalysis {
 
     constructor(
-        public id?: String,
+        public analysis_id?: String,
         public dataset?: IDataset,
         public name?: String,
         public description?: String
