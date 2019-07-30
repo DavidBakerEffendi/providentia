@@ -21,42 +21,12 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
     public chartCPUData: Array<any>;
 
     public chartCPUColors: Array<any> = [
-        {
-            backgroundColor: 'rgba(252, 28, 7, .2)',
-            borderColor: 'rgba(184, 18, 3, .7)',
-            borderWidth: 2,
-            fill: false,
-        },
-        {
-            backgroundColor: 'rgba(254, 97, 233, .2)',
-            borderColor: 'rgba(183, 0, 159, .7)',
-            borderWidth: 2,
-            fill: false,
-        },
-        {
-            backgroundColor: 'rgba(71, 255, 86, .2)',
-            borderColor: 'rgba(0, 158, 13, .7)',
-            borderWidth: 2,
-            fill: false,
-        },
-        {
-            backgroundColor: 'rgba(255, 167, 45, .2)',
-            borderColor: 'rgba(209, 121, 0, .7)',
-            borderWidth: 2,
-            fill: false,
-        },
-        {
-            backgroundColor: 'rgba(255, 8, 94, .2)',
-            borderColor: 'rgba(143, 0, 50, .7)',
-            borderWidth: 2,
-            fill: false,
-        },
-        {
-            backgroundColor: 'rgba(4, 0, 255, .2)',
-            borderColor: 'rgba(2, 0, 135, .7)',
-            borderWidth: 2,
-            fill: false,
-        },
+        { backgroundColor: 'rgba(252, 28, 7, .2)', borderColor: 'rgba(184, 18, 3, .7)' },
+        { backgroundColor: 'rgba(254, 97, 233, .2)', borderColor: 'rgba(183, 0, 159, .7)' },
+        { backgroundColor: 'rgba(71, 255, 86, .2)', borderColor: 'rgba(0, 158, 13, .7)' },
+        { backgroundColor: 'rgba(255, 167, 45, .2)', borderColor: 'rgba(209, 121, 0, .7)' },
+        { backgroundColor: 'rgba(255, 8, 94, .2)', borderColor: 'rgba(143, 0, 50, .7)' },
+        { backgroundColor: 'rgba(4, 0, 255, .2)', borderColor: 'rgba(2, 0, 135, .7)' }
     ];
 
     public chartMemoryColors: Array<any> = [
@@ -78,6 +48,10 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
         private logService: LogService
     ) {
         super();
+        this.chartCPUColors.forEach(option => {
+            option.fill = false;
+            option.borderWidth = 2;
+        })
     }
 
     ngOnInit() {
@@ -155,7 +129,7 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
             });
     }
 
-    setTileClass(status) {
+    setTileClass(status: string) {
         if (status === 'PROCESSING') {
             return "light-blue  accent-4"
         } else if (status === 'WAITING') {

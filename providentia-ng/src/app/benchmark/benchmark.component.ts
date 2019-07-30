@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
-import { InfoMessage, IBenchmark, BenchmarkService, IServerLog, LogService, IQuery, QueryService } from '../shared';
+import { InfoMessage, IBenchmark, BenchmarkService, IServerLog, LogService } from '../shared';
 import { ActivatedRoute, Router } from "@angular/router";
 import { MAT_STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
@@ -23,11 +23,13 @@ export class Stats {
 export class BenchmarkComponent extends InfoMessage implements OnInit {
 
     benchmark: IBenchmark;
-    queries: IQuery[];
     id: string;
 
     cpuStats = new Stats();
     memoryStats = new Stats();
+
+    public perfMemoryData: Array<any>;
+    public perfCPUData: Array<any>;
 
     public chartColors: Array<any> = [{
         backgroundColor: ['#FF4081', '#455A64'],
@@ -35,46 +37,13 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
         borderWidth: 1,
     }];
 
-    public perfMemoryData: Array<any>;
-    public perfCPUData: Array<any>;
-
     public perfCPUColors: Array<any> = [
-        {
-            backgroundColor: 'rgba(252, 28, 7, .2)',
-            borderColor: 'rgba(184, 18, 3, .7)',
-            borderWidth: 2,
-            fill: false,
-        },
-        {
-            backgroundColor: 'rgba(254, 97, 233, .2)',
-            borderColor: 'rgba(183, 0, 159, .7)',
-            borderWidth: 2,
-            fill: false,
-        },
-        {
-            backgroundColor: 'rgba(71, 255, 86, .2)',
-            borderColor: 'rgba(0, 158, 13, .7)',
-            borderWidth: 2,
-            fill: false,
-        },
-        {
-            backgroundColor: 'rgba(255, 167, 45, .2)',
-            borderColor: 'rgba(209, 121, 0, .7)',
-            borderWidth: 2,
-            fill: false,
-        },
-        {
-            backgroundColor: 'rgba(255, 8, 94, .2)',
-            borderColor: 'rgba(143, 0, 50, .7)',
-            borderWidth: 2,
-            fill: false,
-        },
-        {
-            backgroundColor: 'rgba(4, 0, 255, .2)',
-            borderColor: 'rgba(2, 0, 135, .7)',
-            borderWidth: 2,
-            fill: false,
-        },
+        { backgroundColor: 'rgba(252, 28, 7, .2)', borderColor: 'rgba(184, 18, 3, .7)'},
+        { backgroundColor: 'rgba(254, 97, 233, .2)', borderColor: 'rgba(183, 0, 159, .7)'},
+        { backgroundColor: 'rgba(71, 255, 86, .2)', borderColor: 'rgba(0, 158, 13, .7)'},
+        { backgroundColor: 'rgba(255, 167, 45, .2)', borderColor: 'rgba(209, 121, 0, .7)'},
+        { backgroundColor: 'rgba(255, 8, 94, .2)', borderColor: 'rgba(143, 0, 50, .7)'},
+        { backgroundColor: 'rgba(4, 0, 255, .2)', borderColor: 'rgba(2, 0, 135, .7)'}
     ];
 
     public perfMemoryColors: Array<any> = [
@@ -95,10 +64,13 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
         private router: ActivatedRoute,
         private benchmarkService: BenchmarkService,
         private logService: LogService,
-        private queryService: QueryService,
         private _sanitizer: DomSanitizer
     ) {
         super();
+        this.perfCPUColors.forEach(option => {
+            option.fill = false;
+            option.borderWidth= 2;
+        })
         this.router.params.subscribe(params => this.id = params['id']);
     }
 
@@ -120,8 +92,6 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
                 // Authorize the BASE64 encoding of the icons
                 this._sanitizer.bypassSecurityTrustResourceUrl('data:image/png;base64,' + this.benchmark.database.icon);
                 this._sanitizer.bypassSecurityTrustResourceUrl('data:image/png;base64,' + this.benchmark.dataset.icon);
-                // Get the queries used from this analysis
-                this.getQueries(this.benchmark.analysis.analysis_id, this.benchmark.database.database_id);
             },
                 (res: HttpErrorResponse) => {
                     console.error(res.message)
@@ -201,17 +171,6 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
         stats.mean = totalPercentage / totalEntries;
         stats.max = max;
         stats.min = min;
-    }
-
-    getQueries(analysisId, databaseId) {
-        this.queryService.getQueries(analysisId, databaseId).subscribe((res: HttpResponse<IQuery[]>) => {
-            this.queries = res.body;
-        }, (res: HttpErrorResponse) => {
-            console.error(res.message);
-            if (res.status == 503) {
-                this.showWarnMsg('No system information was logged during this analysis.');
-            }
-        });
     }
 
 }

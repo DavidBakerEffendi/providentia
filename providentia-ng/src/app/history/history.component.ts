@@ -1,5 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { Component, OnInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 
@@ -13,9 +12,7 @@ import { InfoMessage, BenchmarkService, IBenchmark } from '../shared';
 export class HistoryComponent extends InfoMessage implements OnInit {
 
     displayedColumns: string[] = ['database', 'dataset', 'analysis', 'date_executed', 'query_time', 'analysis_time', 'status'];
-    dataSource = null;
-
-    @ViewChild(MatPaginator) paginator: MatPaginator;
+    dataSource: MatTableDataSource<IBenchmark>;
 
     constructor(
         private benchmarkService: BenchmarkService

@@ -87,7 +87,6 @@ export class NewJobComponent extends InfoMessage implements OnInit {
             analysis: this.dataOptions.value.anCtrl,
             status: 'WAITING'
         }
-        console.debug(newJob);
         this.newJobService.create(newJob)
             .subscribe((res: HttpResponse<IBenchmark>) => {
                 this.showSuccessMsg('New job successfully added to the pipeline!');

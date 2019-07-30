@@ -5,10 +5,19 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BenchmarkComponent } from './benchmark.component';
 import { BENCHMARK_ROUTE } from './benchmark.route';
 import { AngularMaterialModule } from '../material.module';
+import { KateResultComponent, QueryResultComponent } from './result-tab';
 
 @NgModule({
-  imports: [RouterModule.forChild([BENCHMARK_ROUTE]), AngularMaterialModule, BrowserModule],
-  declarations: [BenchmarkComponent],
+  imports: [
+    RouterModule.forChild([BENCHMARK_ROUTE]),
+    AngularMaterialModule,
+    BrowserModule,
+  ],
+  declarations: [
+    BenchmarkComponent,
+    KateResultComponent,
+    QueryResultComponent,
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ProvidentiaBenchmarkModule { }

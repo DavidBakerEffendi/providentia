@@ -1,0 +1,26 @@
+<div class="mat-elevation-z3 table-container"
+    *ngIf="benchmark.analysis.analysis_id === kateService.analysisId && analysisResults !== null"
+    style="max-height: 340pt;">
+    <table mat-table [dataSource]="analysisResults">
+        <!-- Business Column -->
+        <ng-container matColumnDef="business">
+            <th mat-header-cell *matHeaderCellDef> Business </th>
+            <td mat-cell *matCellDef="let result"> {{result.business }} </td>
+        </ng-container>
+        <!-- Star Average Column -->
+        <ng-container matColumnDef="star_average">
+            <th mat-header-cell *matHeaderCellDef> Star Average </th>
+            <td mat-cell *matCellDef="let result"> {{result.star_average | number:'.1-4'}}
+            </td>
+        </ng-container>
+        <!-- Sentiment Column -->
+        <ng-container matColumnDef="sentiment_average">
+            <th mat-header-cell *matHeaderCellDef> Sentiment </th>
+            <td mat-cell *matCellDef="let result">
+                {{result.sentiment_average | number:'.1-4'}}%</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let result; columns: displayedColumns;"></tr>
+    </table>
+</div>

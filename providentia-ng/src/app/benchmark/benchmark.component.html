@@ -102,20 +102,31 @@
                         <mat-icon class="tab-icon">pie_chart</mat-icon>
                         Results
                     </ng-template>
-                    <div class="row" style="margin-right: 0; margin-left: 0; padding-top: 5pt;">
-                        <div class="col-sm-12 col-md-6">
+                    <div class="row" style="margin-right: 0; margin-left: 0; padding-top: 5pt;" *ngIf="benchmark">
+                        <div class="col-sm-12 col-md-6" style="max-height: 400pt;">
                             <h4>Time Split:</h4>
-                            <canvas mdbChart [chartType]="'pie'"
+                            <canvas *ngIf="benchmark" mdbChart [chartType]="'pie'"
                                 [datasets]="[{ data: [benchmark.query_time, benchmark.analysis_time], label: 'Time' }]"
                                 [labels]="['Querying', 'Analysis']" [colors]="chartColors" [legend]="true"
-                                [options]="{ responsive: true }">
+                                [options]="{ responsive: true }" style="pointer-events: none; z-index: 1072;">
                             </canvas>
-                        </div>
-                        <div class="col-sm-12 col-md-12" *ngIf="queries">
-                            <h4>Queries:</h4>
-                            <div *ngFor="let query of queries">
-                                <p class="code elegant-color-dark text-white p-3">{{ query.query }}</p>
+                            <div class="row">
+                                <p class="text-left col-8">Time spent querying:</p>
+                                <p class="text-right col-4">{{ benchmark.query_time / 1000 | number:'.1-4'}} seconds</p>
+                                <p class="text-left col-8">Time spent analysing data:</p>
+                                <p class="text-right col-4">{{ benchmark.analysis_time / 1000 | number:'.1-4'}} seconds
+                                </p>
                             </div>
+                        </div>
+                        <!-- Analysis Results -->
+                        <div class="col-sm-12 col-md-6">
+                            <h4>Analysis Results:</h4>
+                            <prv-kate [benchmark]="benchmark"></prv-kate>
+                        </div>
+                        <!-- Query -->
+                        <div class="col-sm-12 col-md-12">
+                            <prv-query [databaseId]="benchmark.database.database_id.valueOf()"
+                                [analysisId]="benchmark.analysis.analysis_id.valueOf()"></prv-query>
                         </div>
                     </div>
                 </mat-tab>

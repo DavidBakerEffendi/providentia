@@ -61,8 +61,6 @@
                 <tr mat-row *matRowDef="let benchmark; columns: displayedColumns;" class="history-row"
                     routerLink="/benchmark/{{benchmark.benchmark_id}}"></tr>
             </table>
-
-            <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
         </div>
     </mat-content>
 </mat-card>

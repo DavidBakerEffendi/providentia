@@ -3,7 +3,7 @@ import { IDatabase } from 'src/app/shared/model//database.model';
 import { IAnalysis } from 'src/app/shared/model//analysis.model';
 
 export interface IBenchmark {
-    id?: String;
+    benchmark_id?: String;
     database?: IDatabase;
     dataset?: IDataset;
     analysis?: IAnalysis;
@@ -16,7 +16,7 @@ export interface IBenchmark {
 export class Benchmark implements IBenchmark {
 
     constructor(
-        public id?: String,
+        public benchmark_id?: String,
         public database?: IDatabase,
         public dataset?: IDataset,
         public analysis?: IAnalysis,
