@@ -66,8 +66,19 @@ CREATE TABLE queries (
     database_id uuid NOT NULL,
     query text NOT NULL,
     language text NOT NULL,
+    PRIMARY KEY (id),
     FOREIGN KEY (analysis_id) REFERENCES analysis (id),
     FOREIGN KEY (database_id) REFERENCES databases (id)
+);
+
+CREATE TABLE kate_analysis (
+    id uuid DEFAULT uuid_generate_v4(),
+    benchmark_id uuid NOT NULL,
+    business text NOT NULL,
+    sentiment_average FLOAT NOT NULL,
+    star_average FLOAT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (benchmark_id) REFERENCES benchmarks (id)
 );
 
 CREATE TABLE server_logs (

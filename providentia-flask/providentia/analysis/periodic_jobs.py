@@ -1,4 +1,5 @@
 import logging
+import random
 from datetime import datetime
 
 import psutil
@@ -26,12 +27,13 @@ def execute_waiting():
             logging.debug('A job is being processed, going back to sleep')
         else:
             logging.debug('No job being processed, looking for jobs to execute')
-
             unstarted_jobs = tbl_benchmark.get_unstarted_jobs()
+
             if unstarted_jobs is None:
                 logging.debug('No jobs available, going back to sleep.')
             else:
                 logging.debug('Found unstarted jobs!')
+                random.shuffle(unstarted_jobs)
                 start_job(unstarted_jobs.pop())
 
 
@@ -48,7 +50,6 @@ def start_job(benchmark: Benchmark):
 
     benchmark.status = 'COMPLETE'
     tbl_benchmark.update(benchmark)
-
 
 
 def log_server_state():

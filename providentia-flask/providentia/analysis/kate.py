@@ -4,7 +4,8 @@ from time import perf_counter_ns
 
 from providentia.classifier import sentiment
 from providentia.db import janus_graph, postgres
-from providentia.models import Benchmark
+from providentia.models import Benchmark, KateResult
+from providentia.repository import tbl_kate
 
 kate_id = "qUL3CdRRF1vedNvaq06rIA"
 analysis_id = "81c1ab05-bb06-47ab-8a37-b9aeee625d0f"
@@ -24,7 +25,7 @@ def run(benchmark: Benchmark):
         recent_reviews, q2_time = get_recent_reviews_for_user_near_kate(database, user_id)
         # now add each user's rating and sentiment to a list of BusinessReview objects. the adding and classification
         # is handled in the constructor
-        analysis_time += update_business_reviews(database, user_id, recent_reviews, business_reviews)
+        analysis_time += update_business_reviews(database, recent_reviews, business_reviews)
 
         # add up timers
         q2_total_time += q2_time
@@ -43,9 +44,26 @@ def run(benchmark: Benchmark):
     # Update benchmark object values
     benchmark.query_time = q1_total_time + q2_total_time
     benchmark.analysis_time = analysis_time
+    # Insert results into database
+    for bus_rev in business_reviews:
+        kate_row = KateResult()
+        kate_row.business = get_business_name(database, bus_rev.business_id)
+        kate_row.star_average = bus_rev.get_star_avg()
+        kate_row.sentiment_average = bus_rev.get_sentiment()
+        kate_row.benchmark = benchmark
+        tbl_kate.insert(kate_row)
 
 
-def update_business_reviews(database, user_id, recent_reviews, business_reviews):
+def get_business_name(database, business_id):
+    """Returns the name of a business given its ID"""
+    if database == 'JanusGraph':
+        return janus_graph.execute_query(
+            'g.V().has("Business", "business_id", "{}").next().values("name")'.format(business_id))[0]
+    elif database == "PostgreSQL":
+        return postgres.execute_query('SELECT name FROM business WHERE id = \'{}\''.format(business_id))[0][0]
+
+
+def update_business_reviews(database, recent_reviews, business_reviews):
     """Adds the review to object and classifies sentiment for each review"""
     start = perf_counter_ns()
     if database == 'JanusGraph':
@@ -54,7 +72,6 @@ def update_business_reviews(database, user_id, recent_reviews, business_reviews)
             if business_review is None:
                 business_reviews.append(BusinessReview(
                     business_id=review["business_id"],
-                    user_id=user_id,
                     text=review["text"],
                     stars=review["stars"]))
             else:
@@ -66,7 +83,6 @@ def update_business_reviews(database, user_id, recent_reviews, business_reviews)
             if business_review is None:
                 business_reviews.append(BusinessReview(
                     business_id=business_id,
-                    user_id=user_id,
                     text=text,
                     stars=stars))
             else:
@@ -125,9 +141,8 @@ def get_users_who_like_same_restaurants_as_kate(database):
 
 class BusinessReview(object):
 
-    def __init__(self, business_id, user_id, text, stars):
+    def __init__(self, business_id, text, stars):
         self.business_id = business_id
-        self.user_id = user_id
         self.total_stars = stars
         self.positive_count = 0
         self.negative_count = 0
@@ -160,6 +175,6 @@ class BusinessReview(object):
         return hash(self.business_id)
 
     def __str__(self):
-        return "{{'business_id': '{}', 'user_id': '{}', 'positive_count': {}, 'negative_count': {}, " \
+        return "{{'business_id': '{}', 'positive_count': {}, 'negative_count': {}, " \
                "'total_stars': {}}}" \
-            .format(self.business_id, self.user_id, self.positive_count, self.negative_count, self.total_stars)
+            .format(self.business_id, self.positive_count, self.negative_count, self.total_stars)

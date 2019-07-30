@@ -69,10 +69,20 @@ class Query(object):
 
     def __init__(self):
         self.query_id = None
-        self.analysis_id = None
-        self.database_id = None
+        self.analysis = None
+        self.database = None
         self.query = None
         self.language = None
+
+
+class KateResult(object):
+
+    def __init__(self):
+        self.id = None
+        self.benchmark = None
+        self.business = None
+        self.sentiment_average = None
+        self.star_average = None
 
 
 def model_encoder(o):
@@ -97,6 +107,8 @@ def model_encoder(o):
     elif isinstance(o, CPULog):
         return o.__dict__
     elif isinstance(o, Query):
+        return o.__dict__
+    elif isinstance(o, KateResult):
         return o.__dict__
     else:
         return str(o)
@@ -220,11 +232,28 @@ def query_decoder(o: dict):
     from providentia.repository import tbl_analysis, tbl_databases
     query = Query()
     query.query_id = o['id']
-    query.analysis_id = tbl_analysis.find(o['analysis_id'])
-    query.database_id = tbl_databases.find(o['database_id'])
+    query.analysis = tbl_analysis.find(o['analysis_id'])
+    query.database = tbl_databases.find(o['database_id'])
     query.query = o['query']
     query.language = o['language']
     return query
+
+
+def kate_decoder(o: dict):
+    """
+    Decodes the given JSON string and returns its respective model. This function
+    should be passed into the 'object_hook' parameter in json.load().
+    :param o: JSON string as a dict.
+    :return: the respective model object.
+    """
+    from providentia.repository import tbl_benchmark
+    kate = KateResult()
+    kate.id = o['id']
+    kate.business = o['business']
+    kate.benchmark = tbl_benchmark.find(o['benchmark_id'])
+    kate.sentiment_average = o['sentiment_average']
+    kate.star_average = o['star_average']
+    return kate
 
 
 def new_benchmark_decoder(o: dict):
