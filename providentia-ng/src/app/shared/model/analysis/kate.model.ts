@@ -6,6 +6,7 @@ export interface IKate {
     business?: String;
     sentiment_average?: Number;
     star_average?: Number;
+    total_reviews?: Number;
 }
 
 export class Kate implements IKate {
@@ -15,7 +16,8 @@ export class Kate implements IKate {
         public benchmark?: IBenchmark,
         public business?: String,
         public sentiment_average?: Number,
-        public star_average?: Number
+        public star_average?: Number,
+        public total_reviews?: Number
     ) {}
 
 }

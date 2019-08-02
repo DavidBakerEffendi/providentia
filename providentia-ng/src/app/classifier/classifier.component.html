@@ -1,6 +1,9 @@
 <mat-card>
     <mat-card-title>
-        <mat-toolbar>See the status of and test the text classifiers</mat-toolbar>
+        <mat-toolbar>Sentiment Classifier <mat-icon class="col-1" *ngIf="!sentimentReady"
+                title="Classifer is not ready!">
+                warning</mat-icon>
+        </mat-toolbar>
     </mat-card-title>
 
     <!-- Error messages-->
@@ -22,42 +25,26 @@
     </div>
 
     <mat-content>
-        <mat-accordion class="headers-align">
-            <mat-expansion-panel>
-                <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        Sentiment Classifier
-                    </mat-panel-title>
-                    <mat-panel-description class="row">
-                        <div class="col-11"></div><!-- Placeholder to force icons to align-right -->
-                        <mat-icon class="col-1" *ngIf="sentimentReady" title="Classifier is up.">done
-                        </mat-icon>
-                        <mat-icon class="col-1" *ngIf="!sentimentReady" title="Classifer is not ready!">
-                            warning</mat-icon>
-                    </mat-panel-description>
-                </mat-expansion-panel-header>
+        <p>Classifies whether the given text suggests a positive or negative sentiment. The classifier was
+            trained on 20,000 restaurant reviews from the Yelp dataset.</p>
+        <div *ngIf="sentimentClassifierResult">
+            <p class="code elegant-color-dark text-white p-3">{{ sentimentClassifierResult }}</p>
+        </div>
 
-                <p>Classifies whether the given text suggests a positive or negative sentiment. The classifier was
-                    trained on 20,000 restaurant reviews from the Yelp dataset.</p>
-                <div *ngIf="sentimentClassifierResult">
-                    <p class="code elegant-color-dark text-white p-3">{{ sentimentClassifierResult }}</p>
+        <div *ngIf="sentimentReady" class="container">
+            <div class="row">
+                <div class="col-10 row no-gutters">
+                    <p class="col-sm-12 m-0" style="padding: 0">Submit text:</p>
+                    <mat-form-field class="code col-sm-12">
+                        <textarea matInput #queryInput
+                            (keydown.enter)="classifySentiment(queryInput.value); false"></textarea>
+                    </mat-form-field>
                 </div>
+                <button class="col-2" color="primary" (click)="classifySentiment(queryInput.value)" mat-icon-button>
+                    <mat-icon>send</mat-icon>
+                </button>
+            </div>
 
-                <mat-action-row *ngIf="sentimentReady">
-                    <div class="container">
-                        <div class="row no-gutters">
-                            <p class="col-sm-12 m-0" style="padding: 0">Submit text:</p>
-                            <mat-form-field class="code col-sm-12">
-                                <textarea matInput #queryInput
-                                    (keydown.enter)="classifySentiment(queryInput.value); false"></textarea>
-                            </mat-form-field>
-                        </div>
-                    </div>
-                    <button color="primary" (click)="classifySentiment(queryInput.value)" mat-icon-button>
-                        <mat-icon>send</mat-icon>
-                    </button>
-                </mat-action-row>
-            </mat-expansion-panel>
-        </mat-accordion>
+        </div>
     </mat-content>
 </mat-card>

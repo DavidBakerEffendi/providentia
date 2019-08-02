@@ -19,8 +19,18 @@
             <td mat-cell *matCellDef="let result">
                 {{result.sentiment_average | number:'.1-4'}}%</td>
         </ng-container>
+        <!-- Total reviews Column -->
+        <ng-container matColumnDef="total_reviews">
+            <th mat-header-cell *matHeaderCellDef> Reviews </th>
+            <td mat-cell *matCellDef="let result">
+                {{result.total_reviews}}</td>
+        </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let result; columns: displayedColumns;"></tr>
     </table>
+    <!-- Spinner -->
+    <div class="col-12" [hidden]="analysisResults !== undefined">
+        <mat-spinner [diameter]="50" style="margin: 10pt auto;"></mat-spinner>
+    </div>
 </div>

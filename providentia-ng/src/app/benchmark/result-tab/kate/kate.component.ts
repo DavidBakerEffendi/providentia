@@ -13,7 +13,7 @@ export class KateResultComponent implements OnInit {
     benchmark: IBenchmark;
     
     analysisResults: MatTableDataSource<IKate>;
-    displayedColumns: string[] = ['business', 'sentiment_average', 'star_average'];
+    displayedColumns: string[] = ['business', 'sentiment_average', 'star_average', 'total_reviews'];
 
     constructor(
         private kateService: KateService

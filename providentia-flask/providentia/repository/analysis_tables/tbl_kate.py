@@ -4,13 +4,13 @@ from providentia.db.this import get_db
 from providentia.models import kate_decoder, KateResult
 
 TABLE = 'kate_analysis'
-COLUMNS = ("id", "benchmark_id", "business", "sentiment_average", "star_average")
+COLUMNS = ("id", "benchmark_id", "business", "sentiment_average", "star_average", "total_reviews")
 
 
 def get_results(benchmark_id):
     with current_app.app_context():
         cur = get_db().cursor()
-        query = "SELECT id, benchmark_id, business, sentiment_average, star_average " \
+        query = "SELECT id, benchmark_id, business, sentiment_average, star_average, total_reviews " \
                 "FROM {} WHERE benchmark_id = %s::uuid".format(TABLE)
 
         cur.execute(query, (benchmark_id,))
@@ -51,6 +51,10 @@ def insert(kate: KateResult):
             insert_into += "{}, ".format(COLUMNS[4])
             values += "%s, "
             values_arr.append(kate.star_average)
+        if kate.total_reviews is not None:
+            insert_into += "{}, ".format(COLUMNS[5])
+            values += "%s, "
+            values_arr.append(kate.total_reviews)
 
         insert_into = insert_into[:-2] + ") "
         values = values[:-2] + ");"

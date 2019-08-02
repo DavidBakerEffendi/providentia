@@ -38,13 +38,14 @@ public class ImportTool {
     private void importYelpData() {
         ImportConfig.DataConfig dataConfig = config.dataConfig;
         if (dataConfig.importJanusGraph) {
+            // JanusGraph import speed is enhanced if vertices are inserted before edges
             LOG.info("Importing Yelp data into JanusGraph.");
             // Adds all business, city, categories, and states
             importJanusData(Business.class, JanusTransactionManager.INSERT_MODE.VERTEX);
-            // Add all edges IN_CITY, IN_STATE, IN_CATEGORY
-            importJanusData(Business.class, JanusTransactionManager.INSERT_MODE.EDGE);
             // Add all users
             importJanusData(User.class, JanusTransactionManager.INSERT_MODE.VERTEX);
+            // Add all edges IN_CITY, IN_STATE, IN_CATEGORY
+            importJanusData(Business.class, JanusTransactionManager.INSERT_MODE.EDGE);
             // Add all FRIENDS edge
             importJanusData(User.class, JanusTransactionManager.INSERT_MODE.EDGE);
             // Adds REVIEWS edges between users who wrote the review and the businesses reviewed

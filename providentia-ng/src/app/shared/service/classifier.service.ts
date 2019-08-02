@@ -8,16 +8,13 @@ import APP_CONFIG from '../../app.config';
 export class ClassifierService {
     private resourceUrl = APP_CONFIG.FLASK_API + 'api/classifier/';
 
-    public SENTIMENT_MODE = 'sentiment';
-    public FAKE_MODE = 'fake';
-
     constructor(private http: HttpClient) { }
 
-    testReady(mode: string): Observable<HttpResponse<any>> {
-        return this.http.get<any>(`${this.resourceUrl}${mode}`, { observe: 'response' });
+    testReady(): Observable<HttpResponse<any>> {
+        return this.http.get<any>(`${this.resourceUrl}`, { observe: 'response' });
     }
 
-    submitText(text: string, mode: string): Observable<HttpResponse<any>> {
-        return this.http.post<any>(`${this.resourceUrl}${mode}`, { 'text': text }, { observe: 'response' });
+    submitText(text: string): Observable<HttpResponse<any>> {
+        return this.http.post<any>(`${this.resourceUrl}`, { 'text': text }, { observe: 'response' });
     }
 }

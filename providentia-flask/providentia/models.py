@@ -83,6 +83,7 @@ class KateResult(object):
         self.business = None
         self.sentiment_average = None
         self.star_average = None
+        self.total_reviews = None
 
 
 def model_encoder(o):
@@ -253,6 +254,7 @@ def kate_decoder(o: dict):
     kate.benchmark = tbl_benchmark.find(o['benchmark_id'])
     kate.sentiment_average = o['sentiment_average']
     kate.star_average = o['star_average']
+    kate.total_reviews = o['total_reviews']
     return kate
 
 

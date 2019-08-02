@@ -26,7 +26,7 @@ export class ClassifierComponent extends InfoMessage implements OnInit {
      * Checks the status of the sentiment classifier.
      */
     testSentimentClassifier() {
-        this.classifierService.testReady(this.classifierService.SENTIMENT_MODE).subscribe((res: HttpResponse<any>) => {
+        this.classifierService.testReady().subscribe((res: HttpResponse<any>) => {
             this.sentimentReady = true;
             this.showError = false;
         }, (res: HttpErrorResponse) => {
@@ -41,7 +41,7 @@ export class ClassifierComponent extends InfoMessage implements OnInit {
      * Sends the given text to be classified by the sentiment classifier on the server.
      */
     classifySentiment(text: string) {
-        this.classifierService.submitText(text, this.classifierService.SENTIMENT_MODE)
+        this.classifierService.submitText(text)
             .subscribe((res: HttpResponse<any>) => {
                 this.showError = false;
                 this.sentimentClassifierResult = res.body.result;

@@ -51,6 +51,7 @@ def run(benchmark: Benchmark):
         kate_row.star_average = bus_rev.get_star_avg()
         kate_row.sentiment_average = bus_rev.get_sentiment()
         kate_row.benchmark = benchmark
+        kate_row.total_reviews = bus_rev.positive_count + bus_rev.negative_count
         tbl_kate.insert(kate_row)
 
 

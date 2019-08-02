@@ -9,6 +9,7 @@ import config
 
 
 def test_database_connections(app):
+    """Tests if a connection to databases can be established."""
     from providentia.db import janus_graph, postgres
     from providentia.repository import tbl_databases
 
@@ -79,19 +80,11 @@ def create_app():
 
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=execute_waiting, id='execute_waiting', trigger='interval', seconds=10)
-
-    # Test for analysis
-    # test_analysis = datetime.now() + timedelta(0, 5)
-    # scheduler.add_job(func=execute_waiting, id='execute_waiting', trigger='date',next_run_time=test_analysis)
-
     scheduler.add_job(func=log_server_state, id='log_server_state', trigger='interval', seconds=2.5)
-    # train the classifier models if they are enabled
+    # train the classifier model if it is enabled
     if app.config['ENABLE_SENTIMENT'] is True:
         scheduler.add_job(func=sentiment.train_model, id='train_sentiment', trigger='date',
                           next_run_time=classifier_start_train, args=[app.config['SENTIMENT_DATA'], app])
-    if app.config['ENABLE_FAKE'] is True:
-        scheduler.add_job(func=fake.train_model, id='train_fake', trigger='date',
-                          next_run_time=classifier_start_train, args=[app.config['FAKE_DATA'], app])
     scheduler.start()
     # shut down the scheduler when exiting the app
     atexit.register(lambda: scheduler.shutdown())
