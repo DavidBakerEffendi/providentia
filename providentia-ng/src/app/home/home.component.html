@@ -21,14 +21,17 @@
     <mat-content *ngIf="!showError && !showInfo">
         <mat-grid-list cols="4" rowHeight="150pt">
             <mat-grid-tile [ngClass]="setTileClass(benchmark.status)" *ngFor="let benchmark of recentBenchmarks"
-                [colspan]="1" [rowspan]="1"  routerLink="benchmark/{{ benchmark.benchmark_id }}">
+                [colspan]="1" [rowspan]="1" routerLink="benchmark/{{ benchmark.benchmark_id }}">
                 <div style="cursor: pointer">
                     <mat-grid-tile-header class="text-uppercase">{{ benchmark.database.name }} benchmark
                     </mat-grid-tile-header>
 
                     <p class="text-left" *ngIf="benchmark.status">
-                        {{ benchmark.status }}
+                        {{ benchmark.status }} <span *ngIf="benchmark.status === 'COMPLETE'"> in 
+                            {{ (benchmark.analysis_time + benchmark.query_time) / 1000 | number:'.1-4' }} seconds
+                        </span>
                     </p>
+
 
                     <mat-grid-tile-footer *ngIf="benchmark.date_executed">
                         <div *ngIf="benchmark.date_executed" class="text-left">{{ benchmark.date_executed }}</div>
@@ -51,7 +54,7 @@
             </mat-list>
         </div>
         <!-- Graph -->
-        <div class="row" style="pointer-events: none; z-index: 1072;">
+        <div class="row" style="z-index: 1072;">
             <div class="col-md-12 col-lg-6" style="display: block;" *ngIf="chartCPUData">
                 <canvas mdbChart [chartType]="'line'" [datasets]="chartCPUData" [colors]="chartCPUColors"
                     [options]="chartOptions" [legend]="true">

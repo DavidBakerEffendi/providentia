@@ -40,7 +40,12 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
     public chartOptions: any = {
         responsive: true,
         spanGaps: true,
-        lineTension: 100,
+        lineTension: 0,
+        scales: {
+            xAxes: [{
+                type: 'linear'
+            }]
+        }
     };
 
     constructor(
@@ -96,7 +101,7 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
                 const cpuLogs = res.body.map(a => a.cpu_logs)
                 // Map CPU data
                 this.chartCPUData = new Array<any>();
-                cpuLogs.forEach(cpuLog => {
+                cpuLogs.forEach((cpuLog, j) => {
                     // This will produce an array of arrays where each element shows the percentage of
                     // each core respectively e.g. [core1, core2] => [40.3, 39.4]
                     const cpuPercentages = cpuLog.map(a => a.cpu_perc);
@@ -105,12 +110,17 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
                         if (this.chartCPUData[i] === undefined || this.chartCPUData[i] === null) {
                             this.chartCPUData[i] = { data: [], label: `Core ${i}` };
                         }
-                        this.chartCPUData[i].data.push(cpuPercentages[i]);
+                        this.chartCPUData[i].data.push({x:j, y:cpuPercentages[i]});
                     }
-
+                });
+                const memoryDataFlat = res.body.map(a => a.memory_perc);
+                const perfMemoryD = []
+                // Map memory data
+                memoryDataFlat.forEach((d, i) => {
+                    perfMemoryD.push({x: i, y:d})
                 });
                 // Map memory data
-                this.chartMemoryData = [{ data: res.body.map(a => a.memory_perc), label: 'Memory Percentage' }];
+                this.chartMemoryData = [{ data: perfMemoryD, label: 'Memory Percentage' }];
             } else {
                 this.showWarnMsg(res.body['message']);
             }

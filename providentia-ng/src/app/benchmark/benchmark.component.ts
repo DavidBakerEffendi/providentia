@@ -38,12 +38,12 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
     }];
 
     public perfCPUColors: Array<any> = [
-        { backgroundColor: 'rgba(252, 28, 7, .2)', borderColor: 'rgba(184, 18, 3, .7)'},
-        { backgroundColor: 'rgba(254, 97, 233, .2)', borderColor: 'rgba(183, 0, 159, .7)'},
-        { backgroundColor: 'rgba(71, 255, 86, .2)', borderColor: 'rgba(0, 158, 13, .7)'},
-        { backgroundColor: 'rgba(255, 167, 45, .2)', borderColor: 'rgba(209, 121, 0, .7)'},
-        { backgroundColor: 'rgba(255, 8, 94, .2)', borderColor: 'rgba(143, 0, 50, .7)'},
-        { backgroundColor: 'rgba(4, 0, 255, .2)', borderColor: 'rgba(2, 0, 135, .7)'}
+        { backgroundColor: 'rgba(252, 28, 7, .2)', borderColor: 'rgba(184, 18, 3, .7)' },
+        { backgroundColor: 'rgba(254, 97, 233, .2)', borderColor: 'rgba(183, 0, 159, .7)' },
+        { backgroundColor: 'rgba(71, 255, 86, .2)', borderColor: 'rgba(0, 158, 13, .7)' },
+        { backgroundColor: 'rgba(255, 167, 45, .2)', borderColor: 'rgba(209, 121, 0, .7)' },
+        { backgroundColor: 'rgba(255, 8, 94, .2)', borderColor: 'rgba(143, 0, 50, .7)' },
+        { backgroundColor: 'rgba(4, 0, 255, .2)', borderColor: 'rgba(2, 0, 135, .7)' }
     ];
 
     public perfMemoryColors: Array<any> = [
@@ -57,6 +57,11 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
     public perfOptions: any = {
         responsive: true,
         spanGaps: true,
+        scales: {
+            xAxes: [{
+                type: 'linear'
+            }]
+        }
     };
 
     constructor(
@@ -69,7 +74,7 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
         super();
         this.perfCPUColors.forEach(option => {
             option.fill = false;
-            option.borderWidth= 2;
+            option.borderWidth = 2;
         })
         this.router.params.subscribe(params => this.id = params['id']);
     }
@@ -114,22 +119,33 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
                 const cpuLogs = res.body.map(a => a.cpu_logs)
                 // Map CPU data
                 this.perfCPUData = new Array<any>();
-                cpuLogs.forEach(cpuLog => {
+                cpuLogs.forEach((cpuLog, j) => {
                     // This will produce an array of arrays where each element shows the percentage of
                     // each core respectively e.g. [core1, core2] => [40.3, 39.4]
                     const cpuPercentages = cpuLog.map(a => a.cpu_perc);
                     // This loop will transform the rows into a columnwise form for the chart
                     for (let i = 0; i < cpuPercentages.length; i++) {
                         if (this.perfCPUData[i] === undefined || this.perfCPUData[i] === null) {
-                            this.perfCPUData[i] = { data: [], label: `Core ${i}` };
+                            this.perfCPUData[i] = {
+                                data: [],
+                                label: `Core ${i}`
+                            };
                         }
-                        this.perfCPUData[i].data.push(cpuPercentages[i]);
+                        this.perfCPUData[i].data.push({x:j, y:cpuPercentages[i]});
                     }
-
                 });
                 this.setStats(this.perfCPUData, this.cpuStats);
+                const memoryDataFlat = res.body.map(a => a.memory_perc);
+                const perfMemoryD = []
                 // Map memory data
-                this.perfMemoryData = [{ data: res.body.map(a => a.memory_perc), label: 'Memory Percentage' }];
+                memoryDataFlat.forEach((d, i) => {
+                    perfMemoryD.push({x: i, y:d})
+                });
+                this.perfMemoryData = [{
+                    data: perfMemoryD,
+                    label: 'Memory Percentage'
+                }];
+                console.log(this.perfMemoryData);
                 this.setStats(this.perfMemoryData, this.memoryStats);
             } else {
                 this.showWarnMsg(res.body['message']);
@@ -154,17 +170,17 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
         let max = Number.MIN_SAFE_INTEGER;
         let min = Number.MAX_SAFE_INTEGER;
         const flattened = [].concat.apply([], data.map(a => a.data)).sort();
-        flattened.forEach((e: number, i: number) => {
+        flattened.forEach((e, i: number) => {
             // Mean
-            totalPercentage += e;
+            totalPercentage += e.y;
             totalEntries++;
             // Min/Max
-            if (e > max) max = e;
-            if (e < min) min = e;
+            if (e.y > max) max = e.y;
+            if (e.y < min) min = e.y;
             // Median
             if (i == Math.floor(flattened.length / 2)) {
-                if (flattened.length % 2 == 0) stats.median = (flattened[i] + flattened[i + 1]) / 2
-                else stats.median = flattened[i];
+                if (flattened.length % 2 == 0) stats.median = (flattened[i].y + flattened[i + 1].y) / 2
+                else stats.median = flattened[i].y;
             }
         });
         // Finalize
