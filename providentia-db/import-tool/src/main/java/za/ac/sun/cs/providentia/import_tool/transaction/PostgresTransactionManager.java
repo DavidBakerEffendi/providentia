@@ -103,34 +103,68 @@ public class PostgresTransactionManager {
     /**
      * Inserts the link between a business and category into the database.
      *
-     * @param businessName the name of the business to link.
+     * @param businessId   the ID of the business to link.
      * @param categoryName the name of the category which this business falls under.
      */
-    private void insertBusinessByCategory(String businessName, String categoryName) {
+    private void insertBusinessByCategory(String businessId, String categoryName) {
+        // Check if category exists
+        long categoryId = 0;
         try {
-            String sql = "SELECT business_id FROM bus_by_cat WHERE business_id = ? AND category = ?";
+            String sql = "SELECT id FROM category WHERE category.name = ?";
             PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            p.setString(1, businessName);
-            p.setObject(2, categoryName);
+            p.setString(1, categoryName);
             ResultSet rs = p.executeQuery();
+            // If category exists, obtain ID, else create one and obtain ID.
+            if (rs.first()) {
+                categoryId = rs.getInt("id");
+            } else {
+                String insertQuery = "INSERT INTO category (name) VALUES (?)";
+                try (
+                        PreparedStatement statement = conn.prepareStatement(insertQuery,
+                                Statement.RETURN_GENERATED_KEYS)) {
+                    statement.setString(1, categoryName);
+                    int affectedRows = statement.executeUpdate();
+
+                    if (affectedRows == 0) {
+                        throw new SQLException("Category creation failed, no rows affected.");
+                    }
+                    try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            categoryId = generatedKeys.getLong(1);
+                        } else {
+                            throw new SQLException("Creating category failed, no ID obtained.");
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            LOG.error("Error while querying category table for category '" + categoryName + "'", e);
+        }
+        try {
+            String sql = "SELECT business_id FROM bus_2_cat WHERE business_id = ? AND category_id = ?";
+            PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            p.setString(1, businessId);
+            p.setObject(2, categoryId);
+            ResultSet rs = p.executeQuery();
+            // If the relationship exists, then return
             if (rs.first()) {
                 return;
             }
         } catch (SQLException e) {
-            LOG.error("Error selecting " + businessName + " from table 'bus_by_cat'.", e);
+            LOG.error("Error selecting " + businessId + " from table 'bus_2_cat'.", e);
         }
 
         try {
-            String sql = "INSERT INTO bus_by_cat (business_id, category) VALUES (?, ?)";
+            String sql = "INSERT INTO bus_2_cat (business_id, category_id) VALUES (?, ?)";
             PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            p.setString(1, businessName);
-            p.setObject(2, categoryName);
+            p.setString(1, businessId);
+            p.setObject(2, categoryId);
 
             if (p.executeUpdate() == 0) {
-                throw new SQLException("Creating a '" + businessName + "' link failed, no rows affected.");
+                throw new SQLException("Creating a '" + businessId + "' link failed, no rows affected.");
             }
         } catch (SQLException e) {
-            LOG.error("Error inserting a " + businessName + " link into table 'bus_by_cat'.", e);
+            LOG.error("Error inserting a " + businessId + " to " + categoryId + " link into table 'bus_2_cat'.", e);
         }
     }
 
@@ -316,8 +350,7 @@ public class PostgresTransactionManager {
             p.setString(1, r.getReviewId());
             ResultSet rs = p.executeQuery();
             if (!rs.first()) {
-                sql = "INSERT INTO review (" +
-                        "id, user_id, business_id, stars, useful, funny, cool, text, date) " +
+                sql = "INSERT INTO review (id, user_id, business_id, stars, useful, funny, cool, text, date) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 p.setString(1, r.getReviewId());
