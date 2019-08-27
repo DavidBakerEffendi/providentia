@@ -5,7 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BenchmarkComponent } from './benchmark.component';
 import { BENCHMARK_ROUTE } from './benchmark.route';
 import { AngularMaterialModule } from '../material.module';
-import { KateResultComponent, QueryResultComponent } from './result-tab';
+import { KateResultComponent, QueryResultComponent, ReviewTrendsComponent } from './result-tab';
 
 @NgModule({
   imports: [
@@ -17,6 +17,7 @@ import { KateResultComponent, QueryResultComponent } from './result-tab';
     BenchmarkComponent,
     KateResultComponent,
     QueryResultComponent,
+    ReviewTrendsComponent,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

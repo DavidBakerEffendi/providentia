@@ -145,7 +145,6 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
                     data: perfMemoryD,
                     label: 'Memory Percentage'
                 }];
-                console.log(this.perfMemoryData);
                 this.setStats(this.perfMemoryData, this.memoryStats);
             } else {
                 this.showWarnMsg(res.body['message']);
