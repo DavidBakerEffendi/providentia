@@ -1,0 +1,8 @@
+<div style="display: block" *ngIf="chartDatasets.length > 0 && analysisResults.length > 0">
+    <canvas mdbChart [chartType]="'radar'" [datasets]="chartDatasets" [labels]="chartLabels" [colors]="chartColors"
+        [options]="chartOptions" [legend]="true" (chartHover)="chartHovered($event)"
+        (chartClick)="chartClicked($event)">
+    </canvas>
+    <br/>
+    <p class="text-center">Review Analysis Results (Min-Max Scaled)</p>
+</div>

@@ -86,6 +86,19 @@ class KateResult(object):
         self.total_reviews = None
 
 
+class ReviewTrendResult(object):
+
+    def __init__(self):
+        self.id = None
+        self.benchmark = None
+        self.stars = None
+        self.length = None
+        self.cool = None
+        self.funny = None
+        self.useful = None
+        self.sentiment = None
+
+
 def model_encoder(o):
     """
     Encodes the given model object as a JSON string. This function should be passed
@@ -110,6 +123,8 @@ def model_encoder(o):
     elif isinstance(o, Query):
         return o.__dict__
     elif isinstance(o, KateResult):
+        return o.__dict__
+    elif isinstance(o, ReviewTrendResult):
         return o.__dict__
     else:
         return str(o)
@@ -256,6 +271,26 @@ def kate_decoder(o: dict):
     kate.star_average = o['star_average']
     kate.total_reviews = o['total_reviews']
     return kate
+
+
+def review_trend_decoder(o: dict):
+    """
+    Decodes the given JSON string and returns its respective model. This function
+    should be passed into the 'object_hook' parameter in json.load().
+    :param o: JSON string as a dict.
+    :return: the respective model object.
+    """
+    from providentia.repository import tbl_benchmark
+    review_trend = ReviewTrendResult()
+    review_trend.id = o['id']
+    review_trend.benchmark = tbl_benchmark.find(o['benchmark_id'])
+    review_trend.stars = o['stars']
+    review_trend.length = o['length']
+    review_trend.cool = o['cool']
+    review_trend.funny = o['funny']
+    review_trend.useful = o['useful']
+    review_trend.sentiment = o['sentiment']
+    return review_trend
 
 
 def new_benchmark_decoder(o: dict):

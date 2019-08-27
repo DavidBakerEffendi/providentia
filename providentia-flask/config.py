@@ -7,7 +7,7 @@ DATABASE_URI = 'postgres://postgres:docker@127.0.0.1:5432/providentia'
 LOGGING_LEVEL = logging.INFO
 
 ENABLE_SENTIMENT = True
-SENTIMENT_PERC_DATA = 1.0  # Important for development, don't want to have to load all data every reload
+SENTIMENT_PERC_DATA = 0.1  # Important for development, don't want to have to load all data every reload
 SENTIMENT_DATA = './training-data/sentiment'
 
 # The following should be added to ./instance/config.py

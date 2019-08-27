@@ -8,6 +8,7 @@ from providentia.repository import tbl_benchmark
 from providentia.repository import tbl_databases
 from providentia.repository import tbl_datasets
 from providentia.repository import tbl_queries
-from providentia.repository.analysis_tables import tbl_kate
+from providentia.repository.analysis_tables import tbl_kate, tbl_review_trends
 
-__all__ = ['tbl_analysis', 'tbl_benchmark', 'tbl_databases', 'tbl_datasets', 'tbl_queries', 'tbl_kate']
+__all__ = ['tbl_analysis', 'tbl_benchmark', 'tbl_databases', 'tbl_datasets', 'tbl_queries', 'tbl_kate',
+           'tbl_review_trends']

@@ -45,7 +45,8 @@ def create_app():
 
     # apply the blueprints to Providentia
     logging.debug('Applying blueprints to routes.')
-    from providentia.views import home, new_job, dataset, database, benchmark, analysis, classifier, logs, queries, kate
+    from providentia.views import home, new_job, dataset, database, benchmark, analysis, classifier, logs, queries, \
+        kate, review_trends
 
     app.register_blueprint(benchmark.bp, url_prefix='/api/benchmark')
     app.register_blueprint(dataset.bp, url_prefix='/api/dataset')
@@ -57,11 +58,18 @@ def create_app():
     app.register_blueprint(logs.bp, url_prefix='/api/logs')
     app.register_blueprint(queries.bp, url_prefix="/api/queries")
     app.register_blueprint(kate.bp, url_prefix="/api/result/kate")
+    app.register_blueprint(review_trends.bp, url_prefix="/api/result/review-trends")
 
     # establish analysis database for this app
     logging.debug('Establishing database connections.')
     from providentia.db import this
     app.teardown_appcontext(this.close_db)
+
+    # restart any incomplete jobs
+    from providentia.repository.tbl_benchmark import reset_processing_jobs
+    with app.app_context():
+        reset_processing_jobs()
+
     # test connections to benchmark databases
     test_database_connections(app)
 
@@ -80,7 +88,7 @@ def create_app():
 
     scheduler = BackgroundScheduler()
     scheduler.add_job(func=execute_waiting, id='execute_waiting', trigger='interval', seconds=10)
-    scheduler.add_job(func=log_server_state, id='log_server_state', trigger='interval', seconds=2.5)
+    scheduler.add_job(func=log_server_state, id='log_server_state', trigger='interval', seconds=1)
     # train the classifier model if it is enabled
     if app.config['ENABLE_SENTIMENT'] is True:
         scheduler.add_job(func=sentiment.train_model, id='train_sentiment', trigger='date',

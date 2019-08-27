@@ -188,3 +188,14 @@ def update(benchmark: Benchmark):
         logging.debug("Executing query: %s with %s", query, values_arr)
         db.cursor().execute(query, values_arr)
         db.commit()
+
+
+def reset_processing_jobs():
+    with current_app.app_context():
+        conn = get_db()
+        cur = conn.cursor()
+        query = "UPDATE {} SET status = \'WAITING\' WHERE status = \'PROCESSING\'".format(TABLE)
+        cur.execute(query)
+        logging.debug("Executed query: %s", cur.query)
+
+        conn.commit()

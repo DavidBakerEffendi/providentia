@@ -9,24 +9,19 @@ Create a virtualenv and activate it:
 python3 -m venv venv
 . venv/bin/activate
 ```
-Install Providentia
+Set up Providentia requirements and environment variables
 ```bash
-pip install -e .
+pip3 install -r requirements.txt
+pip3 install python-dotenv
 ```
 
-### Postgres Docker
-```bash
-docker pull postgres
-mkdir -p $HOME/docker/volumes/postgres
-docker run --rm   --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 127.0.0.1:5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data  postgres
-docker exec -tiu postgres pg-docker psql
-```
+### Database
+See `../providentia-db/docker-containers` for instructions on how to start the PostGIS docker container.
+The analytics are stored in the `providentia` database - details of which can be seen in the `./db` 
+directory. 
 
 ## Run
 ```bash
-export FLASK_APP=flaskr
-export FLASK_ENV=development
 flask init-db 
 flask run --no-reload
 ```
-Open http://127.0.0.1:5000 in a browser.

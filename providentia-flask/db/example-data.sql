@@ -54,13 +54,13 @@ values
         'c2a361d5-9451-4222-b5f7-7696f5f2284d',
         $$Kate's Restaurant Recommendations$$,
         $$In this analysis we look at a user called Kate who frequents Las Vegas and Phoenix restaurants. Using this information we can gather similar restaurants to suggest she goes to by looking at other users who share the same rating about restaurants she's been to. To make this more interesting we run our sentiment classifier on the reviews to see if our recommendations are accurate.$$
-    );
---    (
---        'b540a4dd-f010-423b-9644-aef4e9b754a9',
---        'c2a361d5-9451-4222-b5f7-7696f5f2284d',
---        $$Review trends per state$$,
---        $$In this analysis we look at how various characteristics in reviews trend over time and within certain geographical areas.$$
---    );
+    ),
+   (
+       'b540a4dd-f010-423b-9644-aef4e9b754a9',
+       'c2a361d5-9451-4222-b5f7-7696f5f2284d',
+       $$Review Trends in Phoenix 2018$$,
+       $$In this analysis we look at the correlation between various characteristics in the review data per star for reviews in the Phoenix area during 2018.$$
+   );
 
 insert into queries (
     id,
@@ -88,7 +88,7 @@ values
         'a1028b83-f522-448b-9856-8d48e14b6928',
         '81c1ab05-bb06-47ab-8a37-b9aeee625d0f',
         '291a3c67-7838-40e4-ab4a-677200bc4743',
-        $$SELECT DISTINCT OtherReviews.user_id FROM users JOIN review KateReviews ON users.id = KateReviews.user_id AND users.id = 'qUL3CdRRF1vedNvaq06rIA' AND KateReviews.stars > 3 JOIN business KateBus ON KateReviews.business_id = KateBus.id JOIN review OtherReviews ON OtherReviews.user_id != KateReviews.user_id AND OtherReviews.business_id = KateReviews.business_id JOIN bus_by_cat Categories ON OtherReviews.business_id = Categories.business_id AND Categories.category = 'Restaurants'$$,
+        $$SELECT DISTINCT OtherReviews.user_id FROM users JOIN review KateReviews ON users.id = KateReviews.user_id AND users.id = 'qUL3CdRRF1vedNvaq06rIA' AND KateReviews.stars > 3 JOIN business KateBus ON KateReviews.business_id = KateBus.id JOIN review OtherReviews ON OtherReviews.user_id != KateReviews.user_id AND OtherReviews.business_id = KateReviews.business_id JOIN bus_2_cat Bus2Cat ON OtherReviews.business_id = Bus2Cat.business_id JOIN category Categories ON Bus2Cat.category_id = Categories.id AND Categories.name = 'Restaurants'$$,
         'SQL'
     ),
     (
@@ -97,4 +97,18 @@ values
         '291a3c67-7838-40e4-ab4a-677200bc4743',
         $$SELECT review.stars, review.text, review.business_id FROM review JOIN business ON review.business_id = business.id AND review.user_id = '...' AND ST_DWithin(location, ST_MakePoint(-80.79, 35.15)::geography, 5000) AND review.stars > 3 ORDER BY review.date DESC$$,
         'SQL'
+    ),
+    (
+        'd5d16f45-d1ba-4181-b95c-dfd4e2f16b6f',
+        'b540a4dd-f010-423b-9644-aef4e9b754a9',
+        '291a3c67-7838-40e4-ab4a-677200bc4743',
+        $$SELECT text, review.stars, cool, funny, useful FROM business JOIN review ON business.id = review.business_id\nAND ST_DWithin(location, ST_MakePoint(-112.56, 33.45)::geography, 50000)\nAND date_part('year', date) = 2018$$,
+        'SQL'
+    ),
+    (
+        'cc4b8370-7109-43d2-9389-f19a3e0e6362',
+        'b540a4dd-f010-423b-9644-aef4e9b754a9',
+        'bfd2ae61-700f-4f52-b928-a6e27f0b4e11',
+        $$g.V().has("Business", "location", geoWithin(Geoshape.circle(33.45,-112.56, 50))).inE("REVIEWS")\n.has("date", between(Instant.parse("2018-01-01T00:00:00.00Z"), Instant.parse("2018-12-31T23:59:59.99Z"))).valueMap()$$,
+        'Gremlin'
     );

@@ -16,8 +16,8 @@ bp = Blueprint('logs', __name__, )
 def get_logs():
     """Get recent logs."""
     try:
-        # Get results from 2 minutes ago till now
-        results = tbl_server_logs.query_logs(from_date=datetime.utcnow() - timedelta(0, 120))
+        # Get results from 20 seconds ago till now
+        results = tbl_server_logs.query_logs(from_date=datetime.utcnow() - timedelta(0, 20))
     except Exception as e:
         logging.error('Failed to retrieve logs from database: ', str(e))
         return Response(json.dumps({"message": "Unexpected error while querying database!"}), status=500)

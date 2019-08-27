@@ -46,7 +46,6 @@ def start_job(benchmark: Benchmark):
         kate.run(benchmark)
     elif benchmark.analysis.analysis_id == review_trends.analysis_id:
         review_trends.run(benchmark)
-        print('review trends lol')
 
     benchmark.status = 'COMPLETE'
     tbl_benchmark.update(benchmark)

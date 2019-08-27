@@ -16,7 +16,7 @@ def run(benchmark: Benchmark):
     logging.debug("Starting Kate analysis using %s", database)
     # initialize timers
     benchmark.date_executed = datetime.utcnow()
-    q1_total_time, q2_total_time, deserialize_time, analysis_time, total_time = 0, 0, 0, 0, 0
+    q1_total_time, q2_total_time, analysis_time, total_time = 0, 0, 0, 0
     # get similar users
     similar_users, q1_total_time = get_users_who_like_same_restaurants_as_kate(database)
 
@@ -131,8 +131,9 @@ def get_users_who_like_same_restaurants_as_kate(database):
             'ON users.id = KateReviews.user_id AND users.id = \'{}\' AND KateReviews.stars > 3 JOIN business KateBus '
             'ON KateReviews.business_id = KateBus.id JOIN review OtherReviews '
             'ON OtherReviews.user_id != KateReviews.user_id AND OtherReviews.business_id = KateReviews.business_id '
-            'JOIN bus_by_cat Categories ON OtherReviews.business_id = Categories.business_id '
-            'AND Categories.category = \'Restaurants\''.format(kate_id)
+            'JOIN bus_2_cat Bus2Cat ON OtherReviews.business_id = Bus2Cat.business_id '
+            'JOIN category Categories ON Bus2Cat.category_id = Categories.id '
+            'AND Categories.name = \'Restaurants\''.format(kate_id)
         )
         result = [i[0] for i in result]
     time_elapsed = (perf_counter_ns() - start) / 1000000

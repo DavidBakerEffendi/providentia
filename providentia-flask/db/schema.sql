@@ -4,7 +4,9 @@ CREATE DATABASE providentia;
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 DROP TABLE IF EXISTS graphs;
+DROP TABLE IF EXISTS queries;
 DROP TABLE IF EXISTS kate_analysis;
+DROP TABLE IF EXISTS review_trend_analysis;
 DROP TABLE IF EXISTS benchmarks;
 DROP TABLE IF EXISTS analysis;
 DROP TABLE IF EXISTS datasets;
@@ -79,6 +81,19 @@ CREATE TABLE kate_analysis (
     sentiment_average FLOAT NOT NULL,
     star_average FLOAT NOT NULL,
     total_reviews INTEGER NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (benchmark_id) REFERENCES benchmarks (id)
+);
+
+CREATE TABLE review_trend_analysis (
+    id uuid DEFAULT uuid_generate_v4(),
+    benchmark_id uuid NOT NULL,
+    stars FLOAT NOT NULL,
+    length FLOAT NOT NULL,
+    cool FLOAT NOT NULL,
+    funny FLOAT NOT NULL,
+    useful FLOAT NOT NULL,
+    sentiment FLOAT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (benchmark_id) REFERENCES benchmarks (id)
 );
