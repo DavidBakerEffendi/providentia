@@ -17,6 +17,19 @@ The Postgres docker container is built from the official PostgreSQL image with P
 * `postgis/docker-compose.yml`: The docker-compose for the PostGIS container.
 * `postgis/sql.sh`: Grants access to the SQL shell in the Postgres container.
 
+### TigerGraph 
+
+The TigerGraph docker container is build from the official TigerGraph image. Original instructions can be found [here](https://github.com/tigergraph/ecosys/blob/master/guru_scripts/docker/README.md).
+* `tigergraph/docker-compose.yml`: The docker-compose for the TigerGraph container. This container does not give output.
+TigerGraph is a bit more advanced in terms of accessing GSQL shell and the Graph Studio admin panel. Cheatsheet from the above source is below:
+* Open a shell to the TigerGraph server using the following command: `ssh -p 14022 tigergraph@localhost` with password `tigergraph`.
+* Start the TigerGraph service under bash shell (may take up to 1 minute) using `gadmin start`.
+
+Now one will have access to the following:
+* `gsql`: Grants access to GSQL shell.
+* TigerGraph Visual IDE: Connect to `http://localhost:14240` for TigerGraph's Graph Studio.
+
+
 ### Elassandra 
 
 The Elassandra docker container is build from the official Strapdata Elassandra image.
