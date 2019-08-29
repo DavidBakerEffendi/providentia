@@ -1,7 +1,6 @@
 package za.ac.sun.cs.providentia.import_tool.transaction;
 
 import ch.qos.logback.classic.Logger;
-import me.tongfei.progressbar.ProgressBar;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Direction;
@@ -19,16 +18,38 @@ import za.ac.sun.cs.providentia.domain.User;
 import za.ac.sun.cs.providentia.import_tool.util.FileReaderWrapper;
 
 import java.time.Instant;
-import java.time.ZoneOffset;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Manages transactions to the {@link JanusGraph}.
  */
-public class JanusTransactionManager {
+public class JanusTransactionManager implements TransactionManager {
 
-    public enum INSERT_MODE {
-        VERTEX, EDGE
+    public static final boolean VERTEX_MODE = true;
+    public static final boolean EDGE_MODE = true;
+    private boolean currentMode = VERTEX_MODE;
+    private JanusGraphTransaction currentTx;
+
+    @Override
+    public void insertBusiness(Business obj) {
+        if (currentMode == VERTEX_MODE)
+            addBusinessVertex(currentTx, obj);
+        else if (currentMode == EDGE_MODE)
+            addBusinessEdge(currentTx, obj);
+    }
+
+    @Override
+    public void insertUser(User obj) {
+        if (currentMode == VERTEX_MODE)
+            addUserVertex(currentTx, obj);
+        else if (currentMode == EDGE_MODE)
+            addUserFriends(currentTx, obj);
+    }
+
+    @Override
+    public void insertReview(Review obj) {
+        addReviewEdge(currentTx, obj);
     }
 
     private final JanusGraph janusGraph;
@@ -384,23 +405,21 @@ public class JanusTransactionManager {
      * Depending on data type and insert mode selected, a code identifying the operation is returned.
      *
      * @param classType  the Yelp data being imported.
-     * @param insertMode the insert mode.
      * @return a short code identifying data being imported.
      */
-    public static String getDataDescriptorShort(Class<?> classType, INSERT_MODE insertMode) {
+    @Override
+    public String getDataDescriptorShort(Class<?> classType) {
         if (classType == Business.class) {
-            switch (insertMode) {
-                case VERTEX:
-                    return "BUS_VERT";
-                case EDGE:
-                    return "BUS_EDGE";
+            if (currentMode == VERTEX_MODE) {
+                return "BUS_VERT";
+            } else if (currentMode == EDGE_MODE) {
+                return "BUS_EDGE";
             }
         } else if (classType == User.class) {
-            switch (insertMode) {
-                case VERTEX:
-                    return "USR_VERT";
-                case EDGE:
-                    return "USR_EDGE";
+            if (currentMode == VERTEX_MODE) {
+                return "USR_VERT";
+            } else if (currentMode == EDGE_MODE) {
+                return "USR_EDGE";
             }
         } else if (classType == Review.class) {
             return "REV_EDGE";
@@ -412,23 +431,21 @@ public class JanusTransactionManager {
      * Depending on data type and insert mode selected, a phrase identifying the operation is returned.
      *
      * @param classType  the Yelp data being imported.
-     * @param insertMode the insert mode.
      * @return a short code identifying data being imported.
      */
-    public static String getDataDescriptorLong(Class<?> classType, INSERT_MODE insertMode) {
+    @Override
+    public String getDataDescriptorLong(Class<?> classType) {
         if (classType == Business.class) {
-            switch (insertMode) {
-                case VERTEX:
-                    return "business, attribute, category, city, and state vertices";
-                case EDGE:
-                    return "business to category, city edges and city to state edges";
+            if (currentMode == VERTEX_MODE) {
+                return "business, attribute, category, city, and state vertices";
+            } else if (currentMode == EDGE_MODE) {
+                return "business to category, city edges and city to state edges";
             }
         } else if (classType == User.class) {
-            switch (insertMode) {
-                case VERTEX:
-                    return "user vertices";
-                case EDGE:
-                    return "user to user friend edges";
+            if (currentMode == VERTEX_MODE) {
+                return "user vertices";
+            } else if (currentMode == EDGE_MODE) {
+                return "user to user friend edges";
             }
         } else if (classType == Review.class) {
             return "user to business review edge";
@@ -436,9 +453,10 @@ public class JanusTransactionManager {
         return "unknown";
     }
 
-    public void insertRecords(List<String> records, Class<?>
-            type, ProgressBar pb, INSERT_MODE insertMode) {
-        Transaction tw = new Transaction(records, type, pb, insertMode);
+    @Override
+    public void createTransaction(LinkedList<String> records, Class<?> selectedClass, boolean... optional) {
+        this.currentMode = optional[0];
+        Transaction tw = new Transaction(records, selectedClass);
         tw.commit();
     }
 
@@ -450,18 +468,12 @@ public class JanusTransactionManager {
 
         private final List<String> records;
         private final Class<?> type;
-        private final ProgressBar pb;
-        private final INSERT_MODE insertMode;
 
         Transaction(
                 List<String> records,
-                Class<?> type,
-                ProgressBar pb,
-                INSERT_MODE insertMode) {
+                Class<?> type) {
             this.records = records;
             this.type = type;
-            this.pb = pb;
-            this.insertMode = insertMode;
         }
 
         void commit() {
@@ -491,33 +503,24 @@ public class JanusTransactionManager {
                     }
                 }
             } while (!success);
-            for (int i = 0; i < records.size(); i++) {
-                // Update counters
-                pb.step();
-            }
         }
 
         private void createAndCommitTx(JanusGraphTransaction tx) throws JanusGraphException {
+            currentTx = tx;
             // Process and add batch to a single transaction for bulk-loading
             for (String record : records) {
                 Object obj = FileReaderWrapper.processJSON(record, type);
                 // Send object to correct transaction
                 if (obj instanceof Business) {
-                    if (insertMode == INSERT_MODE.VERTEX)
-                        addBusinessVertex(tx, (Business) obj);
-                    else if (insertMode == INSERT_MODE.EDGE)
-                        addBusinessEdge(tx, (Business) obj);
+                    insertBusiness((Business) obj);
                 } else if (obj instanceof User) {
-                    if (insertMode == INSERT_MODE.VERTEX)
-                        addUserVertex(tx, (User) obj);
-                    else if (insertMode == INSERT_MODE.EDGE)
-                        addUserFriends(tx, (User) obj);
+                    insertUser((User) obj);
                 } else if (obj instanceof Review) {
-                    addReviewEdge(tx, (Review) obj);
+                    insertReview((Review) obj);
                 }
             }
             // Commit all changes
-            tx.commit();
+            currentTx.commit();
         }
 
     }

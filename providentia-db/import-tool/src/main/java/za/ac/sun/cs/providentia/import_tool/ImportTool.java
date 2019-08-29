@@ -6,18 +6,71 @@ import org.slf4j.LoggerFactory;
 import za.ac.sun.cs.providentia.domain.Business;
 import za.ac.sun.cs.providentia.domain.Review;
 import za.ac.sun.cs.providentia.domain.User;
-import za.ac.sun.cs.providentia.import_tool.transaction.CassandraTransactionManager;
-import za.ac.sun.cs.providentia.import_tool.transaction.JanusTransactionManager;
-import za.ac.sun.cs.providentia.import_tool.transaction.PostgresTransactionManager;
+import za.ac.sun.cs.providentia.import_tool.config.ImportConfig;
+import za.ac.sun.cs.providentia.import_tool.transaction.TransactionManager;
 import za.ac.sun.cs.providentia.import_tool.util.FileReaderWrapper;
-import za.ac.sun.cs.providentia.import_tool.util.ImportConfig;
 
 import java.io.File;
 import java.util.LinkedList;
 
+import static za.ac.sun.cs.providentia.import_tool.transaction.JanusTransactionManager.EDGE_MODE;
+import static za.ac.sun.cs.providentia.import_tool.transaction.JanusTransactionManager.VERTEX_MODE;
+import static za.ac.sun.cs.providentia.import_tool.transaction.PostgresTransactionManager.FRIENDS_MODE;
+import static za.ac.sun.cs.providentia.import_tool.transaction.PostgresTransactionManager.USERS_MODE;
+
 public class ImportTool {
 
     private final ImportConfig config;
+
+    /**
+     * Attempts to import_tool Yelp data into database.
+     */
+    private void importYelpData() {
+        ImportConfig.DataConfig dataConfig = config.dataConfig;
+        if (dataConfig.importJanusGraph) {
+            // JanusGraph import speed is enhanced if vertices are inserted before edges
+            LOG.info("Importing Yelp data into JanusGraph.");
+            // Adds all business, city, categories, and states
+            insertDataClass(Business.class, DATABASE.JANUS_GRAPH, VERTEX_MODE);
+            // Add all users
+            insertDataClass(User.class, DATABASE.JANUS_GRAPH, VERTEX_MODE);
+            // Add all edges IN_CITY, IN_STATE, IN_CATEGORY
+            insertDataClass(Business.class, DATABASE.JANUS_GRAPH, EDGE_MODE);
+            // Add all FRIENDS edge
+            insertDataClass(User.class, DATABASE.JANUS_GRAPH, EDGE_MODE);
+            // Adds REVIEWS edges between users who wrote the review and the businesses reviewed
+            insertDataClass(Review.class, DATABASE.JANUS_GRAPH, EDGE_MODE);
+        }
+        if (dataConfig.importPostgres) {
+            LOG.info("Importing Yelp data into PostgreSQL.");
+            // Adds all business, city, categories, and states
+            insertDataClass(Business.class, DATABASE.POSTGRESQL);
+            // Adds all users. The varargs is my cheap way to determine adding friends or users.
+            insertDataClass(User.class, DATABASE.POSTGRESQL, USERS_MODE);
+            // Adds all user's friends
+            insertDataClass(User.class, DATABASE.POSTGRESQL, FRIENDS_MODE);
+            // Adds all reviews
+            insertDataClass(Review.class, DATABASE.POSTGRESQL);
+        }
+        if (dataConfig.importCassandra) {
+            LOG.info("Importing Yelp data into Cassandra.");
+            // Adds all business, city, categories, and states
+            insertDataClass(Business.class, DATABASE.CASSANDRA);
+            // Adds all users.
+            insertDataClass(User.class, DATABASE.CASSANDRA);
+            // Adds all reviews
+            insertDataClass(Review.class, DATABASE.CASSANDRA);
+        }
+        if (dataConfig.importTigerGraph) {
+            LOG.info("Importing Yelp data into TigerGraph.");
+            // Adds all business, city, categories, and states
+            insertDataClass(Business.class, DATABASE.TIGER_GRAPH);
+            // Adds all users.
+            insertDataClass(User.class, DATABASE.TIGER_GRAPH);
+            // Adds all reviews
+            insertDataClass(Review.class, DATABASE.TIGER_GRAPH);
+        }
+    }
 
     private final Logger LOG = (Logger) LoggerFactory.getLogger(ImportTool.class);
 
@@ -32,58 +85,41 @@ public class ImportTool {
         System.exit(0);
     }
 
-    /**
-     * Attempts to import_tool Yelp data into database.
-     */
-    private void importYelpData() {
-        ImportConfig.DataConfig dataConfig = config.dataConfig;
-        if (dataConfig.importJanusGraph) {
-            // JanusGraph import speed is enhanced if vertices are inserted before edges
-            LOG.info("Importing Yelp data into JanusGraph.");
-            // Adds all business, city, categories, and states
-            importJanusData(Business.class, JanusTransactionManager.INSERT_MODE.VERTEX);
-            // Add all users
-            importJanusData(User.class, JanusTransactionManager.INSERT_MODE.VERTEX);
-            // Add all edges IN_CITY, IN_STATE, IN_CATEGORY
-            importJanusData(Business.class, JanusTransactionManager.INSERT_MODE.EDGE);
-            // Add all FRIENDS edge
-            importJanusData(User.class, JanusTransactionManager.INSERT_MODE.EDGE);
-            // Adds REVIEWS edges between users who wrote the review and the businesses reviewed
-            importJanusData(Review.class, JanusTransactionManager.INSERT_MODE.EDGE);
-        }
-        if (dataConfig.importPostgres) {
-            LOG.info("Importing Yelp data into PostgreSQL.");
-            // Adds all business, city, categories, and states
-            importPostgresData(Business.class);
-            // Adds all users. The varargs is my cheap way to determine adding friends or users.
-            importPostgresData(User.class, true);
-            // Adds all user's friends
-            importPostgresData(User.class, false);
-            // Adds all reviews
-            importPostgresData(Review.class);
-        }
-        if (dataConfig.importCassandra) {
-            LOG.info("Importing Yelp data into Cassandra.");
-            // Adds all business, city, categories, and states
-            importCassandraData(Business.class);
-            // Adds all users.
-            importCassandraData(User.class);
-            // Adds all reviews
-            importCassandraData(Review.class);
-        }
-    }
-
-    private void importCassandraData(Class<?> classType) {
-        ImportConfig.CassandraConfig cassandraConfig = config.cassandraConfig;
+    private void insertDataClass(Class<?> classType, DATABASE db, boolean... optional) {
         File f = getYelpFile(classType);
+        TransactionManager tm;
+        ImportConfig.DataConfig dataConfig = this.config.dataConfig;
+
+        switch (db) {
+            case JANUS_GRAPH:
+                tm = this.config.janusGraphConfig.tm;
+                break;
+            case POSTGRESQL:
+                tm = this.config.postgresConfig.tm;
+                break;
+            case CASSANDRA:
+                tm = this.config.cassandraConfig.tm;
+                break;
+            case TIGER_GRAPH:
+                tm = this.config.tigerGraphConfig.tm;
+                break;
+            default:
+                LOG.error("No valid database selected! Dataclass '" + classType + "' will not be inserted.");
+                return;
+        }
+
+        if (tm == null) {
+            LOG.error("Transaction manager for '" + db + "' is not initialized! Dataclass '" + classType + "' will not be inserted.");
+            return;
+        }
 
         if (f.exists()) {
             FileReaderWrapper reader = new FileReaderWrapper(f);
             reader.open();
             boolean completed = false;
-            long totalTransactions = Math.round(FileReaderWrapper.countLines(f) * cassandraConfig.percentageData);
+            long totalTransactions = Math.round(FileReaderWrapper.countLines(f) * dataConfig.percentageData);
 
-            try (final ProgressBar pb = new ProgressBar(CassandraTransactionManager.getDataDescriptorShort(classType), totalTransactions)) {
+            try (final ProgressBar pb = new ProgressBar(tm.getDataDescriptorShort(classType), totalTransactions)) {
                 String line = reader.readLine();
                 int linesRead = 0;
                 int sectorCount = 1;
@@ -91,7 +127,7 @@ public class ImportTool {
                 do {
                     // Create a batch of records
                     LinkedList<String> records = new LinkedList<>();
-                    while (line != null && records.size() < cassandraConfig.queueSize && linesRead < pb.getMax()) {
+                    while (line != null && records.size() < dataConfig.queueSize && linesRead < pb.getMax()) {
                         records.add(line);
                         line = reader.readLine();
                         linesRead++;
@@ -99,17 +135,17 @@ public class ImportTool {
                     }
 
                     // Insert records into DB
-                    cassandraConfig.tm.createESTransaction(records, classType);
+                    tm.createTransaction(records, classType, optional);
 
                     // Waiting for transaction count to catch up to lines read - prevent memory overflow and save
                     // space for cache
-                    if (linesRead > sectorCount * pb.getMax() * cassandraConfig.sectorSize) {
+                    if (linesRead > sectorCount * pb.getMax() * dataConfig.sectorSize) {
                         blockReads(linesRead, pb);
                         sectorCount++;
                     }
                 } while (linesRead < pb.getMax());
                 LOG.info("All records from " + classType + " successfully read. Waiting to process "
-                        + CassandraTransactionManager.getDataDescriptorLong(classType) + ".");
+                        + tm.getDataDescriptorLong(classType) + ".");
 
                 if (pb.getMax() == pb.getCurrent()) {
                     completed = true;
@@ -120,9 +156,9 @@ public class ImportTool {
             }
 
             if (completed) {
-                LOG.info(CassandraTransactionManager.getDataDescriptorLong(classType) + " data imported successfully!");
+                LOG.info(tm.getDataDescriptorLong(classType) + " data imported successfully!");
             } else {
-                LOG.error(CassandraTransactionManager.getDataDescriptorLong(classType) + "  data could not be imported.");
+                LOG.error(tm.getDataDescriptorLong(classType) + "  data could not be imported.");
             }
         } else {
             LOG.error("Could not import " + classType.toString() + " data as JSON file was not found at '"
@@ -130,122 +166,7 @@ public class ImportTool {
         }
     }
 
-    private void importPostgresData(Class<?> classType, boolean... optional) {
-        ImportConfig.PostgresConfig postgresConfig = config.postgresConfig;
-        File f = getYelpFile(classType);
-
-        if (f.exists()) {
-            FileReaderWrapper reader = new FileReaderWrapper(f);
-            reader.open();
-            boolean completed = false;
-            long totalTransactions = Math.round(FileReaderWrapper.countLines(f) * postgresConfig.percentageData);
-
-            try (final ProgressBar pb = new ProgressBar(PostgresTransactionManager.getDataDescriptorShort(classType), totalTransactions)) {
-                String line = reader.readLine();
-                int linesRead = 0;
-                int sectorCount = 1;
-
-                do {
-                    // Create a batch of records
-                    LinkedList<String> records = new LinkedList<>();
-                    while (line != null && records.size() < postgresConfig.queueSize && linesRead < pb.getMax()) {
-                        records.add(line);
-                        line = reader.readLine();
-                        linesRead++;
-                        pb.step();
-                    }
-
-                    // Insert records into DB
-                    postgresConfig.tm.createTransaction(records, classType, optional);
-
-                    // Waiting for transaction count to catch up to lines read - prevent memory overflow and save
-                    // space for cache
-                    if (linesRead > sectorCount * pb.getMax() * postgresConfig.sectorSize) {
-                        blockReads(linesRead, pb);
-                        sectorCount++;
-                    }
-                } while (linesRead < pb.getMax());
-                LOG.info("All records from " + classType + " successfully read. Waiting to process "
-                        + PostgresTransactionManager.getDataDescriptorLong(classType) + ".");
-
-                if (pb.getMax() == pb.getCurrent()) {
-                    completed = true;
-                }
-            } finally {
-                if (!reader.isClosed())
-                    reader.close();
-            }
-
-            if (completed) {
-                LOG.info(PostgresTransactionManager.getDataDescriptorLong(classType) + " data imported successfully!");
-            } else {
-                LOG.error(PostgresTransactionManager.getDataDescriptorLong(classType) + "  data could not be imported.");
-            }
-        } else {
-            LOG.error("Could not import " + classType.toString() + " data as JSON file was not found at '"
-                    + f.getAbsolutePath() + "'!");
-        }
-    }
-
-    /**
-     * Imports the selected Yelp data based on the given data type.
-     *
-     * @param classType the Yelp data type indicating which file to import_tool.
-     */
-    private void importJanusData(Class<?> classType, JanusTransactionManager.INSERT_MODE insertMode) {
-        ImportConfig.JanusGraphConfig janusGraphConfig = config.janusGraphConfig;
-        File f = getYelpFile(classType);
-
-        if (f.exists()) {
-            FileReaderWrapper reader = new FileReaderWrapper(f);
-            reader.open();
-            boolean completed = false;
-            long totalTransactions = Math.round(FileReaderWrapper.countLines(f) * janusGraphConfig.percentageData);
-
-            try (final ProgressBar pb = new ProgressBar(JanusTransactionManager.getDataDescriptorShort(classType, insertMode), totalTransactions)) {
-                // Read objects and insert them into graph
-                String line = reader.readLine();
-                int linesRead = 0;
-                int sectorCount = 1;
-                do {
-                    // Create a batch of records
-                    LinkedList<String> records = new LinkedList<>();
-                    while (line != null && records.size() < janusGraphConfig.queueSize && linesRead < pb.getMax()) {
-                        records.add(line);
-                        line = reader.readLine();
-                        linesRead++;
-                    }
-                    // Process and insert batch into graph
-                    janusGraphConfig.tm.insertRecords(records, classType, pb, insertMode);
-
-                    // Waiting for transaction count to catch up to lines read - prevent memory overflow and save
-                    // space for cache
-                    if (linesRead > sectorCount * pb.getMax() * janusGraphConfig.sectorSize) {
-                        blockReads(linesRead, pb);
-                        sectorCount++;
-                    }
-                } while (linesRead < pb.getMax());
-                LOG.info("All records from " + classType + " successfully read. Waiting for threads to process "
-                        + JanusTransactionManager.getDataDescriptorLong(classType, insertMode) + ".");
-
-                if (pb.getMax() == pb.getCurrent()) {
-                    completed = true;
-                }
-            } finally {
-                if (!reader.isClosed())
-                    reader.close();
-            }
-
-            if (completed) {
-                LOG.info(JanusTransactionManager.getDataDescriptorLong(classType, insertMode) + " data imported successfully!");
-            } else {
-                LOG.error(JanusTransactionManager.getDataDescriptorLong(classType, insertMode) + "  data could not be imported.");
-            }
-        } else {
-            LOG.error("Could not import " + classType.toString() + " data as JSON file was not found at '"
-                    + f.getAbsolutePath() + "'!");
-        }
-    }
+    private enum DATABASE {JANUS_GRAPH, POSTGRESQL, CASSANDRA, TIGER_GRAPH}
 
     private File getYelpFile(Class<?> classType) {
         File f = null;

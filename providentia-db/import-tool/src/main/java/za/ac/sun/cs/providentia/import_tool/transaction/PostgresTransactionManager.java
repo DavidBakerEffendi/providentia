@@ -11,10 +11,12 @@ import za.ac.sun.cs.providentia.import_tool.util.FileReaderWrapper;
 import java.sql.*;
 import java.util.LinkedList;
 
-public class PostgresTransactionManager {
+public class PostgresTransactionManager implements TransactionManager {
 
     private final Connection conn;
     private Statement stmt;
+    public static final boolean USERS_MODE = true;
+    public static final boolean FRIENDS_MODE = false;
 
     private final Logger LOG = (Logger) LoggerFactory.getLogger(PostgresTransactionManager.class);
 
@@ -31,6 +33,7 @@ public class PostgresTransactionManager {
     }
 
     public void createTransaction(LinkedList<String> records, Class<?> selectedClass, boolean... optional) {
+        boolean mode = optional[0];
         try {
             stmt = conn.createStatement();
             for (String row : records) {
@@ -39,9 +42,9 @@ public class PostgresTransactionManager {
                 if (selectedClass == Business.class) {
                     insertBusiness((Business) obj);
                 } else if (selectedClass == User.class) {
-                    if (optional[0])
+                    if (mode == USERS_MODE)
                         insertUser((User) obj);
-                    else
+                    else if (mode == FRIENDS_MODE)
                         insertUserFriends((User) obj);
                 } else if (selectedClass == Review.class) {
                     insertReview((Review) obj);
@@ -173,7 +176,7 @@ public class PostgresTransactionManager {
      *
      * @param b the business POJO containing the data to insert.
      */
-    private void insertBusiness(Business b) {
+    public void insertBusiness(Business b) {
         insertCity(b.getCity(), b.getState());
 
         try {
@@ -275,7 +278,7 @@ public class PostgresTransactionManager {
      *
      * @param u the user POJO containing the data to insert.
      */
-    private void insertUser(User u) {
+    public void insertUser(User u) {
         try {
             String sql = "SELECT id FROM users WHERE id = ?";
             PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
@@ -318,7 +321,7 @@ public class PostgresTransactionManager {
      *
      * @param r the review POJO containing the data to insert.
      */
-    private void insertReview(Review r) {
+    public void insertReview(Review r) {
         // Does user exist?
         try {
             String sql = "SELECT id FROM users WHERE id = ?";
@@ -372,7 +375,8 @@ public class PostgresTransactionManager {
         }
     }
 
-    public static String getDataDescriptorShort(Class<?> classType) {
+    @Override
+    public String getDataDescriptorShort(Class<?> classType) {
         if (classType == Business.class)
             return "BUS";
         else if (classType == User.class)
@@ -383,7 +387,8 @@ public class PostgresTransactionManager {
             return "UNKNWN";
     }
 
-    public static String getDataDescriptorLong(Class<?> classType) {
+    @Override
+    public String getDataDescriptorLong(Class<?> classType) {
         if (classType == Business.class)
             return "business, category, city and tables";
         else if (classType == User.class)
