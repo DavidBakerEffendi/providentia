@@ -55,7 +55,6 @@
         <tinkerpop.version>3.3.3</tinkerpop.version>
         <janusgraph.version>0.3.2</janusgraph.version>
         <postgres.version>42.2.5</postgres.version>
-        <cassandra.version>3.1.0</cassandra.version>
         <elastic.search.version>6.6.0</elastic.search.version>
     </properties>
 
@@ -105,12 +104,6 @@
             <artifactId>postgresql</artifactId>
             <version>${postgres.version}</version>
         </dependency>
-        <!-- Cassandra -->
-        <dependency>
-            <groupId>com.datastax.cassandra</groupId>
-            <artifactId>cassandra-driver-core</artifactId>
-            <version>${cassandra.version}</version>
-        </dependency>
         <!-- ElasticSearch -->
         <dependency>
             <groupId>org.elasticsearch</groupId>
@@ -135,6 +128,13 @@
             <artifactId>httpcore</artifactId>
             <version>4.4.11</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.9</version>
+        </dependency>
+
 
     </dependencies>
 

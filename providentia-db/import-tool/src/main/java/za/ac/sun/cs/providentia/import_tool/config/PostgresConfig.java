@@ -18,9 +18,6 @@ public class PostgresConfig implements DBConfig {
 
     private static final Logger LOG = (Logger) LoggerFactory.getLogger(PostgresConfig.class);
     public final PostgresTransactionManager tm;
-    public final double sectorSize;
-    public final int queueSize;
-    public final double percentageData;
     private final String PROPERTIES = "janus-graph.properties";
     private final Properties props;
     private final Connection db;
@@ -43,9 +40,6 @@ public class PostgresConfig implements DBConfig {
         String tempHostName = "localhost";
         String tempPort = "5432";
         String tempDatabase = "yelp";
-        double tempSectorSize = 0.3;
-        int tempQueueSize = 100;
-        double tempPercentageData = 1.0;
 
         try {
             tempHostName = props.getProperty("hostname");
@@ -59,27 +53,6 @@ public class PostgresConfig implements DBConfig {
             tempDatabase = props.getProperty("database");
         } catch (Exception ignored) {
         }
-        // Size of queue of operations per transaction before committing
-        try {
-            tempSectorSize = Double.parseDouble(props.getProperty("import.sector-size"));
-        } catch (Exception ignored) {
-        }
-        // Size of queue of operations per transaction before committing
-        try {
-            tempQueueSize = Integer.parseInt(props.getProperty("import.queue-size"));
-        } catch (Exception ignored) {
-        }
-        try {
-            tempPercentageData = Double.parseDouble(props.getProperty("import.data.percentage"));
-            if (tempPercentageData > 1.0 || tempPercentageData < 0.0)
-                tempPercentageData = 1.0;
-            throw new Exception("Percentage data setting invalid. Using 1.0 default.");
-        } catch (Exception ignored) {
-        }
-
-        this.sectorSize = tempSectorSize;
-        this.queueSize = tempQueueSize;
-        this.percentageData = tempPercentageData;
 
         this.hostname = tempHostName;
         this.port = tempPort;

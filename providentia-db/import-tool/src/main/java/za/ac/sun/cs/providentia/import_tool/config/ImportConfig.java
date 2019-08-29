@@ -26,8 +26,6 @@ public class ImportConfig {
         PostgresConfig tempPostgresConfig = null;
         CassandraConfig tempCassandraConfig = null;
         TigerGraphConfig tempTigerGraphConfig = null;
-        // Get property files
-        ClassLoader loader = this.getClass().getClassLoader();
         try {
             // Read properties
             tempDataConfig = new DataConfig();

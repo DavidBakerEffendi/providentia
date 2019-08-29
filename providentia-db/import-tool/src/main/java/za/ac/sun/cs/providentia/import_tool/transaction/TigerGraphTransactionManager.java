@@ -4,9 +4,14 @@ import za.ac.sun.cs.providentia.domain.Business;
 import za.ac.sun.cs.providentia.domain.Review;
 import za.ac.sun.cs.providentia.domain.User;
 
+import java.net.URI;
 import java.util.LinkedList;
 
 public class TigerGraphTransactionManager implements TransactionManager {
+
+    public TigerGraphTransactionManager(URI client) {
+
+    }
 
     @Override
     public void createTransaction(LinkedList<String> records, Class<?> selectedClass, boolean... optional) {
