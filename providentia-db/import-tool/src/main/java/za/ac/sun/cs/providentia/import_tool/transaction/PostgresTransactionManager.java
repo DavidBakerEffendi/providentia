@@ -33,7 +33,9 @@ public class PostgresTransactionManager implements TransactionManager {
     }
 
     public void createTransaction(LinkedList<String> records, Class<?> selectedClass, boolean... optional) {
-        boolean mode = optional[0];
+        boolean mode = false;
+        if (optional.length > 0)
+            mode = optional[0];
         try {
             stmt = conn.createStatement();
             for (String row : records) {

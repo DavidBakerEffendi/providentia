@@ -17,7 +17,6 @@ public class TigerGraphConfig implements DBConfig {
     public final String hostAddress;
     public final int hostPort;
     private final String PROPERTIES = "tiger-graph.properties";
-    private final URI client;
 
     TigerGraphConfig() throws IOException {
         LOG.info("Loading TigerGraph config.");
@@ -48,16 +47,15 @@ public class TigerGraphConfig implements DBConfig {
         this.hostPort = tempIndexPort;
 
         LOG.info("Creating HTTP Rest Client for TigerGraph endpoints.");
-        this.client = connect();
-        this.tm = new TigerGraphTransactionManager(client);
+        URI uri = connect();
+        this.tm = new TigerGraphTransactionManager(uri);
     }
 
     @Override
     public URI connect() {
         try {
             return new URIBuilder()
-                    .setScheme("http")
-                    .setHost("hostAddress")
+                    .setHost(hostAddress)
                     .setPort(hostPort)
                     .build();
         } catch (Exception e) {

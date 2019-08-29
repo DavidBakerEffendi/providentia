@@ -66,7 +66,9 @@ public class ImportTool {
             // Adds all business, city, categories, and states
             insertDataClass(Business.class, DATABASE.TIGER_GRAPH);
             // Adds all users.
-            insertDataClass(User.class, DATABASE.TIGER_GRAPH);
+            insertDataClass(User.class, DATABASE.TIGER_GRAPH, USERS_MODE);
+            // Adds all user's friends
+            insertDataClass(User.class, DATABASE.TIGER_GRAPH, FRIENDS_MODE);
             // Adds all reviews
             insertDataClass(Review.class, DATABASE.TIGER_GRAPH);
         }
