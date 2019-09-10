@@ -29,6 +29,7 @@ Now one will have access to the following:
 * `gsql`: Grants access to GSQL shell.
 * TigerGraph Visual IDE: Connect to `http://localhost:14240` for TigerGraph's Graph Studio.
 
+To enable use of geospatial functions, you need to copy the `hpp` and `cpp` files found in `tigergraph`. There is a bash script that uses `docker cp` to do this for you, all you need to to is run `./transfer_geofunctions` in the `tigergraph` directory.
 
 ### Elassandra 
 
