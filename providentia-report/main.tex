@@ -1,0 +1,86 @@
+\documentclass{article}
+
+\usepackage{arxiv}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{array}
+\usepackage{xcolor}         % to indicate TODOs and edits
+\usepackage{colortbl}       % for colouring rows in tables
+\usepackage{graphicx}       % for images
+\usepackage{gensymb}
+\usepackage{lipsum}
+
+\definecolor{Gray}{gray}{0.85} % the gray used in table headers
+\definecolor{LightGray}{gray}{0.95} % the gray used in table subheaders
+
+\title{An investigation into the suitability of graph database technology in the analysis of spatio-temporal data}
+
+\author{
+  S.D.~Baker Effendi \\
+  Department of Computer Science\\
+  Stellenbosch University\\
+  Stellenbosch, South Africa \\
+  \texttt{davidbakereffendi@hotmail.com} \\
+  %% examples of more authors
+  \And
+  A.B.~van der Merwe \thanks{Project Supervisor} \\
+  Department of Computer Science\\
+  Stellenbosch University\\
+  Stellenbosch, South Africa \\
+  \texttt{abvdm@cs.sun.ac.za} \\
+}
+
+\begin{document}
+\maketitle
+
+% abstract
+\input{abstract.tex}
+
+% keywords
+\keywords{Graph database \and spatio-temporal data \and NoSQL}
+
+\section{Introduction}
+\input{sections/1_introduction.tex}
+
+\section{Problem Definition}
+\label{sec:prob-def}
+\input{sections/2_problem_definition.tex}
+
+\section{Literature Review}
+\label{sec:lit-rev}
+\input{sections/3_literature_review.tex}
+
+\section{Graph Querying Techniques and Languages}
+\label{sec:graph-lang}
+\input{sections/4_graph_query_languages.tex}
+
+\section{Design and Architecture}
+\label{sec:des-arch}
+\input{sections/5_design_and_architecture.tex}
+
+\section{Implementation}
+\label{sec:impl}
+\input{sections/6_implementation.tex}
+
+\section{Experiments}
+\label{sec:experiments}
+\input{sections/7_experiments.tex}
+
+\section{Conclusion and Further Work}
+\label{sec:conclusion}
+\input{sections/8_conclusion.tex}
+
+\newpage
+
+\bibliographystyle{unsrt}
+\bibliography{references} 
+
+
+\end{document}
