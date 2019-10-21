@@ -1,6 +1,7 @@
 The following section explores the three popular graph querying languages, two of which are used in the databases being investigated in this report, and properties of graph querying. Graph querying languages have a notion of traversing the graph and accumulating results. This makes it very different to traditional SQL and is the main factor in contributing to the learning curve. These languages are still fairly new and there are many more being developed as the technique of graph traversal becomes more refined. \textcolor{blue}{TODO: Update this section is finalized}
 
 \subsection{Languages}
+\label{subsec:lang}
 
 \paragraph{Gremlin}
 
@@ -39,7 +40,7 @@ GSQL is described as a SQL-like language which is the conceptual descendent from
 
 In GSQL, there is a large emphasis on creating a language that enables massively parallel processing on queries. The vertex and edge blocks in GSQL queries indicate independent computations separated by incoming vertices or edges referred to as guarding conditions. These blocks are pieced together by the output of one block being the input of another. Control of this flow can be handled by if-then-else or while statements allowing for subsequent blocks using dynamically calculated input.
 
-As with Gremlin, there is an emphasis on a strong, functional programming style. One has the ability to define named parameterized queries which is analogous to creating a function. These parameterized queries can then be called by other queries enabling the re-use of code.
+As with Gremlin, there is an emphasis on a strong, functional programming style. One has the ability to define named parameterized queries which is analogous to creating a function. These parameterized queries can then be called by other queries enabling the re-use of code. As is the case with Gremlin and Cypher, TigerGraph allows for the conversion of Cypher to GSQL for those migrating from their competitor, Neo4j \cite{tigergraph-infoworld}.
 
 \textcolor{blue}{TODO: Show examples of GSQL}
 

@@ -41,7 +41,7 @@ The CAP theorem illustrates the trade-off between safety and liveness when consi
 
 \subsection{Relational Database}
 
-Edgar F. Codd, an IBM fellow, was responsible for proposing the idea about the relation model \cite{relational-db}. The relational model came as a solution to the problem in the distinction between the logical view and physical representation of the data being stored. This was the main issue with the database management systems of the late sixties. Other issues included having programmers follow large pointer chains to access data and redesign programs whenever storage layout structure had to be reconfigured (such as the introduction of indexing).
+Edgar F. Codd, an IBM fellow, was responsible for proposing the idea about the relational model \cite{relational-db}. The relational model came as a solution to the problem in the distinction between the logical view and physical representation of the data being stored. This was the main issue with the database management systems of the late sixties. Other issues included having programmers follow large pointer chains to access data and redesign programs whenever storage layout structure had to be reconfigured (such as the introduction of indexing).
 
 The relational model solved these issues by providing a clear boundary between the logical and physical representation of data, create a simple model that could be understood by all programmers, and introduce high level language concepts.
 
@@ -61,14 +61,14 @@ The model's structure stores data in tuples with relations represented as tables
     \label{fig:foreign-key}
 \end{figure}
 
-The high level language concepts introduced are the algebraic operators we see in SQL today such as \verb|SELECT|, \verb|UNION|, \verb|JOIN|, etc. These operators allow use to convert our relations (tables) into other relations (resulting tables as output).
+The high level language concepts introduced are the algebraic operators we see in SQL today such as \verb|SELECT|, \verb|UNION|, \verb|JOIN|, etc. These operators allow users to convert relations (tables) into other relations (resulting in tables as output).
 
-Since the 1970's, relational database management systems have been the leading database technology with a variety of capabilities and language dialects. This was until NoSQL began pulling traction among large Internet corporations and was implemented in the form of distributed, non-relational databases in the 2000s \cite{data-in-nosql}.
+Since the 1970's, relational database management systems have been the leading database technology with a variety of capabilities and language dialects. This was until NoSQL obtained traction among large Internet corporations and was implemented in the form of distributed, non-relational databases in the 2000s \cite{data-in-nosql}.
 
 \subsection{NoSQL Database}
 \label{nosql-database}
 
-NoSQL databases were created to address the shortfalls in classic relational databases when used for data of large volume, variety, and velocity \cite{nosql-db}. Many of these issues were introduced with the increasing popularity of the Internet and systems hosted on the cloud. Relational databases scale poorly over multiple nodes and on large volumes of data which is why SQL databases could no longer be used as the data solution for major Internet companies such as Facebook, Amazon, and Google. 
+NoSQL databases were created to address the shortfalls in classic relational databases when used for data of large volume, variety, and velocity \cite{nosql-db}. Many of these issues were introduced with the increasing popularity of the Internet and systems hosted in the cloud. Relational databases scale poorly over multiple nodes and on large volumes of data which is why SQL databases could no longer be used as the data solution for major Internet companies such as Facebook, Amazon, and Google. 
 
 NoSQL database technologies are non-relational and use non-SQL languages to manipulate and query the data. NoSQL is designed to run on multiple nodes (distributed systems), scale horizontally, and some even implementing technologies such as massively parallel processing (MPP) \cite{tigergraph-mpp} or in-memory processing (such as H-store \cite{hstore}). NewSQL is a distributed SQL technology which implements NoSQL features to achieve ACID-compliance (alongside partition tolerance) in any case so they will not be referred to as relational database technology when mentioned in this paper \cite{nosql-db}.
 
