@@ -24,7 +24,7 @@ JanusGraph is largely based on the Apache tech-stack making use of technologies 
     \label{fig:janusgraph-cap}
 \end{figure}
 
-JanusGraph can store graph data via three supporting back ends; Apache Cassandra, Apache HBase, and Apache Berkeley. The CAP Theorem (Section \ref{cap}) should be referred to when considering which of the three back ends to use -- this is illustrated in Figure \ref{fig:janusgraph-cap}. 
+JanusGraph can store graph data via three supporting back ends; Apache Cassandra, Apache HBase, and Apache Berkeley. The CAP Theorem (Section \ref{cap}) should be referred to when considering which of the three back ends to use -- this is illustrated in Figure \ref{fig:janusgraph-cap}.
 
 Examples of companies who have deployed JanusGraph in production include Netflix, Redhat, Uber, and IBM \cite{janusgraph-readme}. The professional support, documentation, and fact that one is able to leverage all these advanced features for free is why JanusGraph is one of the graph databases used in this investigation. The configuration of JanusGraph used in this report is with Apache Cassandra as the storage back end and ElasticSearch as the search engine for spatial and temporal query support.
 
@@ -41,7 +41,7 @@ For all intents and purposes, the developer edition is more than capable to perf
 \subsection{Web-application Simulation}
 The web-application, called Providentia\footnote{The name of the web-application is a nod to JanusGraph and Titan's theme of Roman mythology. Providentia is associated with provision and forethought \cite{providentia-meaning}. This was thought to be fitting due to the nature of the experiments bringing out the best database to move forward with when making a decision on which technology to use for storing and modeling one's data.}, is used to queue analysis into a pipeline where each benchmark is to be run, server performance measured, and accumulated results to be displayed. This is deployed on target hardware and will import a subset of the data (given a configurable percentage) and then one will be able to use the web-based interface to perform all necessary benchmarking tasks.
 
-The architecture and how each technology communicates is illustrated in Figure \ref{fig:providentia-architecture}. The databases are containerized using Docker\footnote{\url{https://www.docker.com/}}. 
+The architecture and how each technology communicates is illustrated in Figure \ref{fig:providentia-architecture}. The databases are containerized using Docker\footnote{\url{https://www.docker.com/}}.
 
 \begin{figure}[h!]
     \centering
@@ -50,104 +50,62 @@ The architecture and how each technology communicates is illustrated in Figure \
     \label{fig:providentia-architecture}
 \end{figure}
 
-JanusGraph has some Java specific features that add limitations when making use of embedded 
-Gremlin in Python. These limitations are when trying to make use of mixed indexing search 
-predicates such as spatial queries. The workaround for this was making use of the Gremlin 
-Translator which would take Gremlin as a string and interpret it on the server side.
+JanusGraph has some Java specific features that add limitations when making use of embedded Gremlin in Python. These limitations are when trying to make use of mixed indexing search predicates such as spatial queries. The workaround for this was making use of the Gremlin Translator which would take Gremlin as a string and interpret it on the server side.
 
-The first motivation towards using a Python back end is that the text in the reviews can be 
-analysed using NLTK for easy sentiment analysis. The second is that a simple REST API can 
-easily and quickly be designed using the Flask framework. Angular was subjectively chosen 
-as the front end framework as it allows for fast and stable front end web development. All 
-benchmark results are stored in a separate database within PostgreSQL.
+The first motivation towards using a Python back end is that the text in the reviews can be analysed using NLTK for easy sentiment analysis. The second is that a simple REST API can easily and quickly be designed using the Flask framework. Angular was subjectively chosen as the front end framework as it allows for fast and stable front end web development. All benchmark results are stored in a separate database within PostgreSQL.
 
-The front end of Providentia allows a user to query each database, test the sentiment classifier, 
-add benchmarking jobs and to review the performance and results of each analysis. Each job is run 
-serially to avoid too much interference and competition between each database for resources. At 
-intervals the CPU performance and memory consumption is measured and stored in PostgreSQL. The 
-server performance and results of an analysis can be viewed together to validate that the outputs 
-are the same and how each database uses the server's resources.
+The front end of Providentia allows a user to query each database, test the sentiment classifier, add benchmarking jobs and to review the performance and results of each analysis. Each job is run serially to avoid too much interference and competition between each database for resources. At intervals the CPU performance and memory consumption is measured and stored in PostgreSQL. The server performance and results of an analysis can be viewed together to validate that the outputs are the same and how each database uses the server's resources.
 
 \subsection{Data Analysis}
-Over each of the databases a number of data analysis jobs are performed on the data. This section
-describes what each analysis aims to do and how they align to a typical real world use case. Each
-of these jobs have some kind of spatiotemporal aspect to test the accessibility of the data to 
-demonstrate how well the given database handles the data. 
+Over each of the databases a number of data analysis jobs are performed on the data. This section describes what each analysis aims to do and how they align to a typical real world use case. Each of these jobs have some kind of spatiotemporal aspect to test the accessibility of the data to demonstrate how well the given database handles the data.
 
-These analysis are run over different percentages of the data loaded in each database and the
-performance is then measured and discussed in Section \ref{sec:experiments}. This section goes
-into more detail about the types of queries written and how well each language expresses each 
+These analysis are run over different percentages of the data loaded in each database and the performance is then measured and discussed in Section \ref{sec:experiments}. This section goes into more detail about the types of queries written and how well each language expresses each
 query.
 
 \subsubsection{Sentiment Analysis}
-One application for graph analytic platforms is in machine learning. In order to further build 
-context around each of the kernels mentioned in the next section, a simple binary sentiment 
-classifier is used to classify the text of reviews as representing either a positive or negative 
-sentiment. Sentiment analysis is a class of natural language processing where subjective 
-information is extracted from a given text \cite{sentiment-analysis-gupta}.
+One application for graph analytic platforms is in machine learning. In order to further build context around each of the kernels mentioned in the next section, a simple binary sentiment classifier is used to classify the text of reviews as representing either a positive or negative sentiment. Sentiment analysis is a class of natural language processing where subjective information is extracted from a given text \cite{sentiment-analysis-gupta}.
 
-Although this investigation does not explore the applications of machine learning models on
-spatiotemporal data, it will explore how it could reveal interesting information alongside patterns
-among the data. All natural language processing is done using the Natural Language Toolkit (NLTK)
+Although this investigation does not explore the applications of machine learning models on spatiotemporal data, it will explore how it could reveal interesting information alongside patterns among the data. All natural language processing is done using the Natural Language Toolkit (NLTK)
 \footnote{\url{https://www.nltk.org/}} for Python.
 
 \subsubsubsection{Machine Learning Model}
-NLTK's Na\"ive Bayes classifier\footnote{\texttt{nltk.NaiveBayesClassifier}} was used as the model
-to train and classify sentiment. Na\"ive Bayes is a probabilistic machine learning model which has
-proven very effective in text classification. A limitation of this model on a binary classification
-problem include only being able to perform linear separability. This should not be an issue
-regarding the use of adjectives as feature vectors since the most informative adjectives seem to be
-verbose and particular to a specific sentiment e.g. words like horrible, disgusting, perfect, and
-wonderful \cite{rish2001empirical}. One risk is that of negation which may make certain adjectives
-less information e.g. good vs not good \cite{blanco2011some}. Nevertheless the model performs well
-in terms of separating the two classes and, given the training data, has a good generalization
+NLTK's Na\"ive Bayes classifier\footnote{\texttt{nltk.NaiveBayesClassifier}} was used as the model to train and classify sentiment. Na\"ive Bayes is a probabilistic machine learning model which has proven very effective in text classification. A limitation of this model on a binary classification
+problem include only being able to perform linear separability. This should not be an issue regarding the use of adjectives as feature vectors since the most informative adjectives seem to be verbose and particular to a specific sentiment e.g. words like horrible, disgusting, perfect, and
+wonderful \cite{rish2001empirical}. One risk is that of negation which may make certain adjectives less information e.g. good vs not good \cite{blanco2011some}. Nevertheless the model performs well in terms of separating the two classes and, given the training data, has a good generalization
 performance.
 
 \subsubsubsection{Training Process}
-The data used is from this dataset and is extracted with the following assumption -- 1 star reviews
-hold negative sentiment and 5 star reviews hold positive sentiment. 10 000 1 star reviews are
-tagged as ``negative'' and 10 000 5 star reviews are tagged as ``positive''. Training and
-validation data are split by 70\% training and 30\% validation. 
+The data used is from this dataset and is extracted with the following assumption -- 1 star reviews hold negative sentiment and 5 star reviews hold positive sentiment. 10 000 1 star reviews are tagged as ``negative'' and 10 000 5 star reviews are tagged as ``positive''. Training and validation data are split by 70\% training and 30\% validation.
 
-The data pre-processing and training of the Na\"ive Bayes model used in this investigation is based
-on the process described by Munir \cite{SamiraMunir}. Using NLTK, one can separate different parts
-of speech within a given sentence or paragraph. First, a bag of words is created from both classes
-the training data. For a given review, punctuation is removed, words are tokenized, stop words
-removed, and only adjectives are kept and these adjectives are added to our bag. A frequency 
-distribution is then used to determine the most informative words for a given label.
+The data pre-processing and training of the Na\"ive Bayes model used in this investigation is based on the process described by Munir \cite{SamiraMunir}. Using NLTK, one can separate different parts of speech within a given sentence or paragraph. First, a bag of words is created from both classes
+the training data. For a given review, punctuation is removed, words are tokenized, stop words removed, and only adjectives are kept and these adjectives are added to our bag. A frequency distribution is then used to determine the most informative words for a given label.
 
-The top 5000 occurring adjectives are kept in the bag. These informative words can be seen as 
-5000 attributes where a review has the value ``true'' under an attribute found in the text and
-``false'' when a review does not have that attribute contained within its text. This will be 
-how a feature set will be constructed for a review. A Python dictionary is constructed with
-these 5000 attributes as keys and their value as the respective state as a boolean. This is
-then the first element of a tuple and the tag is the second. A trivial example of a feature
-set can be seen in Figure \ref{fig:bog-attri}.
+The top 5000 occurring adjectives are kept in the bag. These informative words can be seen as 5000 attributes where a review has the value ``true'' under an attribute found in the text and ``false'' when a review does not have that attribute contained within its text. This will be how a feature set will be constructed for a review. A Python dictionary is constructed with these 5000 attributes as keys and their value as the respective state as a boolean. This is then the first element of a tuple and the tag is the second. A trivial example of a feature set can be seen in Figure \ref{fig:bog-attri}.
 
 \begin{figure}[h!]
-\centering
-\begin{tabular}{ |p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|}
- \hline
- \rowcolor{Gray}
- \multicolumn{6}{|c|}{Review Text} \\
- \hline
- \multicolumn{6}{|c|}{I just ate the most yummy pizza at this restaurant! The setting was wonderful with outdoor seating on a patio} \\
- \multicolumn{6}{|c|}{ with a beautiful view. Service was incredible and I felt safe in good hands!} \\
- \hline
- \rowcolor{Gray}
- \multicolumn{6}{|c|}{Feature Set} \\
- \hline
- \textbf{Horrible} & \textbf{Dirty} & \textbf{Worst} & \textbf{Wonderful} & \textbf{Yummy} & \textbf{Perfection} \\
- \hline
- false & false & false & true & true & false \\
- \hline
- \rowcolor{LightGray}
- \multicolumn{1}{|c|}{Tag} & \multicolumn{5}{|c|}{Positive} \\
- \hline
-\end{tabular}
-\vspace*{5mm}
-\caption{An example of a review tagged as positive with it's feature set.}
-\label{fig:bog-attri}
+    \centering
+    \begin{tabular}{ |p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|}
+        \hline
+        \rowcolor{Gray}
+        \multicolumn{6}{|c|}{Review Text}                                                                                                       \\
+        \hline
+        \multicolumn{6}{|c|}{I just ate the most yummy pizza at this restaurant! The setting was wonderful with outdoor seating on a patio}     \\
+        \multicolumn{6}{|c|}{ with a beautiful view. Service was incredible and I felt safe in good hands!}                                     \\
+        \hline
+        \rowcolor{Gray}
+        \multicolumn{6}{|c|}{Feature Set}                                                                                                       \\
+        \hline
+        \textbf{Horrible}         & \textbf{Dirty}                 & \textbf{Worst} & \textbf{Wonderful} & \textbf{Yummy} & \textbf{Perfection} \\
+        \hline
+        false                     & false                          & false          & true               & true           & false               \\
+        \hline
+        \rowcolor{LightGray}
+        \multicolumn{1}{|c|}{Tag} & \multicolumn{5}{|c|}{Positive}                                                                              \\
+        \hline
+    \end{tabular}
+    \vspace*{5mm}
+    \caption{An example of a review tagged as positive with it's feature set.}
+    \label{fig:bog-attri}
 \end{figure}
 
 All of the reviews are then processed into these feature sets and tagged then given to the model to learn. Once the model has been trained, a review is classified by breaking it up into a feature set, given to the model to classify and the predicted class label is then returned.
@@ -155,7 +113,7 @@ All of the reviews are then processed into these feature sets and tagged then gi
 \subsubsection{Kernels}
 
 \subsubsubsection{Kate's Restaurant Recommendation}
-This analysis selects a user near the beginning of the dataset named Kate. This user has a number of reviews for restaurants in the Las Vegas area. A subset of reviews which hold a greater than 3.5 star rating by Kate are selected and sorted by date descending in order to take the most relevant ones. These businesses are then selected, filtered by category ``Restaurants'', and other users who have an equal or greater than star rating are then selected as the recommending users. 
+This analysis selects a user near the beginning of the dataset named Kate. This user has a number of reviews for restaurants in the Las Vegas area. A subset of reviews which hold a greater than 3.5 star rating by Kate are selected and sorted by date descending in order to take the most relevant ones. These businesses are then selected, filtered by category ``Restaurants'', and other users who have an equal or greater than star rating are then selected as the recommending users.
 
 Now assume that Kate has relocated to a new area. All businesses which have been rated 3.5 stars by the recommending users are then selected as restaurants to recommend to Kate in the new area. The text in these reviews are checked for sentiment and the percentage positive sentiment is displayed alongside the average star rating for each recommended restaurant. This sentiment vs. average star rating is used an interesting metric to analyse in terms of asking the question: How reliable is the star rating versus the actual sentiment found in the text?
 

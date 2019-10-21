@@ -1,4 +1,4 @@
-The following literature review is to present and clearly define the terms and definitions regarding database technology. The structure of this section begins to define the following principles; ACID compliance and the CAP theorem. The relational model will be explained to elaborate how the classic relational database came to be. The shortfalls of relational databases will then be used to introduce what NoSQL technology is, and how this contrasts with the many variations of NoSQL databases including key-value, column family, and document stores. 
+The following literature review is to present and clearly define the terms and definitions regarding database technology. The structure of this section begins to define the following principles; ACID compliance and the CAP theorem. The relational model will be explained to elaborate how the classic relational database came to be. The shortfalls of relational databases will then be used to introduce what NoSQL technology is, and how this contrasts with the many variations of NoSQL databases including key-value, column family, and document stores.
 
 A summary will conclude how each section ties into the scope of this project and why research into our problem definition will bring value to spatio-temporal data mining, analysis, and visualization.
 
@@ -8,7 +8,7 @@ A summary will conclude how each section ties into the scope of this project and
 From an article written in \emph{Database Guide} \cite{acid}; Atomicity, Consistency, Isolation, Durability (ACID) are the properties that can guarantee that transaction based databases perform reliably. These properties concern themselves over how databases recover after failures such as a transaction, system, or media failure.
 
 \paragraph{Atomicity}
-A single transaction could be comprised of one or more steps, and if one of them fails then the transaction will only be partially successful. Atomicity guarantees that if one step fails, the whole transaction fails and the state of the database will be rolled back to a state prior to the transaction. 
+A single transaction could be comprised of one or more steps, and if one of them fails then the transaction will only be partially successful. Atomicity guarantees that if one step fails, the whole transaction fails and the state of the database will be rolled back to a state prior to the transaction.
 
 \paragraph{Consistency}
 Data may need to conform to a variety of rules and constraints, especially with regard to relational databases. If any data does not conform to these rules or the set schema, it will not be consistent with the rest of the database. Allowing this data to become a part of the database means that we cannot guarantee our predefined rules. This is one of the properties that NoSQL databases relax on in order to provide higher availability and partition tolerance. A consistent database will ensure that any data being inserted into the database will follow all the predefined rules or else the transaction will be rejected.
@@ -68,7 +68,7 @@ Since the 1970's, relational database management systems have been the leading d
 \subsection{NoSQL Database}
 \label{nosql-database}
 
-NoSQL databases were created to address the shortfalls in classic relational databases when used for data of large volume, variety, and velocity \cite{nosql-db}. Many of these issues were introduced with the increasing popularity of the Internet and systems hosted in the cloud. Relational databases scale poorly over multiple nodes and on large volumes of data which is why SQL databases could no longer be used as the data solution for major Internet companies such as Facebook, Amazon, and Google. 
+NoSQL databases were created to address the shortfalls in classic relational databases when used for data of large volume, variety, and velocity \cite{nosql-db}. Many of these issues were introduced with the increasing popularity of the Internet and systems hosted in the cloud. Relational databases scale poorly over multiple nodes and on large volumes of data which is why SQL databases could no longer be used as the data solution for major Internet companies such as Facebook, Amazon, and Google.
 
 NoSQL database technologies are non-relational and use non-SQL languages to manipulate and query the data. NoSQL is designed to run on multiple nodes (distributed systems), scale horizontally, and some even implementing technologies such as massively parallel processing (MPP) \cite{tigergraph-mpp} or in-memory processing (such as H-store \cite{hstore}). NewSQL is a distributed SQL technology which implements NoSQL features to achieve ACID-compliance (alongside partition tolerance) in any case so they will not be referred to as relational database technology when mentioned in this paper \cite{nosql-db}.
 
@@ -81,31 +81,31 @@ NoSQL databases fall under a broad scope and, in this paper, they will be classi
 The basis of a key-value store is that the data is organized in the form of key-value pairs. The key is typically a numeric or string value whereas the value can be any data object or collection of data objects (where a list would be represented by multiple entries of the same key). Each document has a unique identifier with a list of attributes, the key-value paired data. A simple example of this can be seen in Figure \ref{fig:keyvalue}.
 
 \begin{figure}[h!]
-\centering
-\begin{tabular}{ |p{2cm}|p{6cm}|}
- \hline
- \rowcolor{Gray}
- \multicolumn{2}{|c|}{Businesses} \\
- \hline
- \rowcolor{LightGray}
- Key & Attributes \\
- \hline
- 0 & Name: ``McDonald's'' \\
- & Categories: ``Fast-food'' \\
- & Categories: ``Takeaway'' \\
- & Stars: 2.5\\
- & Open: true\\
- \hline
- 1 & Name: ``KFC'' \\
- & Categories: ``Fast-food'' \\
- & Categories: ``Restaurant'' \\
- & Stars: 3.0\\
- & Open: true \\
- \hline
-\end{tabular}
-\vspace*{5mm}
-\caption{An example of business entries stored in a key-value store.}
-\label{fig:keyvalue}
+    \centering
+    \begin{tabular}{ |p{2cm}|p{6cm}|}
+        \hline
+        \rowcolor{Gray}
+        \multicolumn{2}{|c|}{Businesses} \\
+        \hline
+        \rowcolor{LightGray}
+        Key & Attributes                 \\
+        \hline
+        0   & Name: ``McDonald's''       \\
+            & Categories: ``Fast-food''  \\
+            & Categories: ``Takeaway''   \\
+            & Stars: 2.5                 \\
+            & Open: true                 \\
+        \hline
+        1   & Name: ``KFC''              \\
+            & Categories: ``Fast-food''  \\
+            & Categories: ``Restaurant'' \\
+            & Stars: 3.0                 \\
+            & Open: true                 \\
+        \hline
+    \end{tabular}
+    \vspace*{5mm}
+    \caption{An example of business entries stored in a key-value store.}
+    \label{fig:keyvalue}
 \end{figure}
 
 Castellano \cite{keyvalue-article} explains that key-value stores are designed to be lightning fast, simple, and unstructured. They expose three operations namely; \verb|PUT|, \verb|GET|, and \verb|DELETE|, with some implementations adding an additional operation, \verb|SEARCH|, that matches keys or key-value pairs given a specified search expression and key namespace. These databases are decentralized in nature so find difficulty in providing the transactional guarantees of ACID.
@@ -119,33 +119,33 @@ As the name suggests, document store databases store their data in the form of d
 Manoj \cite{docstore-article} explains column families as more structured data stores in that they store data in columns. They are a hybrid row/column store but store their data in distributed architectures instead of tables. Data is stored in a column-family (analogous to a table in SQL) but column-families have no relation to one another unlike in relational models. Column-families are less flexible than the previous key-value and document store databases as one will have to predefine a column family's attributes and are grouped together under keyspaces. A column-family model is illustrated in Figure \ref{fig:colfam}.
 
 \begin{figure}[h!]
-\centering
-\begin{tabular}{ |p{6cm}|p{6cm}|}
- \hline
- \rowcolor{Gray}
- \multicolumn{2}{|c|}{Yelp Keyspace} \\
- \hline
- \rowcolor{LightGray}
- Users Column-Family & Businesses Column-Family \\
- \hline
- RowID: 0 & RowID: 0  \\
- FirstName: ``David'' & Name: ``McDonald's'' \\
- Email: ``david@sun.ac.za'' & Categories: ``Fast-food'' \\
- ReviewCount: 8 & Categories: ``Takeaway''\\
- &  Stars: 2.5\\
- & Open: true\\
- \hline
- RowID: 2 & RowID: 4 \\
- FirstName: ``Kyle'' & Name: ``KFC''\\
- Email: ``kyle@hotmail.com'' & Categories: ``Fast-food'' \\
- ReviewCount: 3 & Categories: ``Restaurant'' \\
- & Stars: 3.0\\
- & Open: true \\
- \hline
-\end{tabular}
-\vspace*{5mm}
-\caption{An example of user and business column-families.}
-\label{fig:colfam}
+    \centering
+    \begin{tabular}{ |p{6cm}|p{6cm}|}
+        \hline
+        \rowcolor{Gray}
+        \multicolumn{2}{|c|}{Yelp Keyspace}                      \\
+        \hline
+        \rowcolor{LightGray}
+        Users Column-Family         & Businesses Column-Family   \\
+        \hline
+        RowID: 0                    & RowID: 0                   \\
+        FirstName: ``David''        & Name: ``McDonald's''       \\
+        Email: ``david@sun.ac.za''  & Categories: ``Fast-food''  \\
+        ReviewCount: 8              & Categories: ``Takeaway''   \\
+                                    & Stars: 2.5                 \\
+                                    & Open: true                 \\
+        \hline
+        RowID: 2                    & RowID: 4                   \\
+        FirstName: ``Kyle''         & Name: ``KFC''              \\
+        Email: ``kyle@hotmail.com'' & Categories: ``Fast-food''  \\
+        ReviewCount: 3              & Categories: ``Restaurant'' \\
+                                    & Stars: 3.0                 \\
+                                    & Open: true                 \\
+        \hline
+    \end{tabular}
+    \vspace*{5mm}
+    \caption{An example of user and business column-families.}
+    \label{fig:colfam}
 \end{figure}
 
 \paragraph{Graph}

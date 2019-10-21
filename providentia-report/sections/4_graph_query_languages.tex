@@ -26,7 +26,7 @@ Gremlin integrates into multiple vendors (in our case, JanusGraph) and benefits 
 
 \paragraph{Cypher}
 
-In an effort to create an easier graph language to pick up, Cypher (see the openCypher project \cite{opencypher}) was created as a very SQL-like query language. Unfortunately, while it is easier to pick up, it is not Turing-complete \cite{modern-graph-query-lang}. Use of ASCII-art helps to create more intuitive and easy to visualize queries e.g. edges are denoted by \verb|-->| or \verb|--[..]->| and vertices by use of parenthesis \verb|(b:Business)|. 
+In an effort to create an easier graph language to pick up, Cypher (see the openCypher project \cite{opencypher}) was created as a very SQL-like query language. Unfortunately, while it is easier to pick up, it is not Turing-complete \cite{modern-graph-query-lang}. Use of ASCII-art helps to create more intuitive and easy to visualize queries e.g. edges are denoted by \verb|-->| or \verb|--[..]->| and vertices by use of parenthesis \verb|(b:Business)|.
 
 Cypher is a declarative language so there is less control over how the traverser goes about each step. This means that Cypher has less flexibility and could perform worse when compared to Gremlin. Another critism in terms of performance is that Cypher compiles into Gremlin which is then executed by the TinkerPop engine \cite{backtothefuture} and this overhead has yet to be optimized to where it should be when compared to traversal benchmarks. With Neo4j gathering more attention around Cypher, the performance issues may improve significantly in the future.
 

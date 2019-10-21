@@ -9,53 +9,53 @@ This subsection describes the hardware on the systems which ran the benchmarks a
 All experiments were run on the following two machines for comparison on how the technologies utilize multiple cores and perform on different storage mediums.
 
 \begin{table}[h!]
-\centering
-\begin{tabular}{ |p{2cm}|p{1.5cm}|p{1.5cm}|p{1.6cm}|p{1.5cm}|p{2cm}|p{2cm}|}
- \hline
- \rowcolor{Gray}
- Machine & CPUs & vCPUs & Base Clock & Memory & Storage Media & OS \\
- \hline
- Personal & 6 & 12 & 3.4GHz & 32GB & SSD & Debian 10 \\
- University & 8 & 16 & 2.27GHz & 32GB & SATA2 & Ubuntu 18.04 \\
- \hline
-\end{tabular}
-\vspace*{5mm}
-\caption{The specifications of the two machines used to benchmark database performance.}
-\label{tab:hardware}
+    \centering
+    \begin{tabular}{ |p{2cm}|p{1.5cm}|p{1.5cm}|p{1.6cm}|p{1.5cm}|p{2cm}|p{2cm}|}
+        \hline
+        \rowcolor{Gray}
+        Machine    & CPUs & vCPUs & Base Clock & Memory & Storage Media & OS           \\
+        \hline
+        Personal   & 6    & 12    & 3.4GHz     & 32GB   & SSD           & Debian 10    \\
+        University & 8    & 16    & 2.27GHz    & 32GB   & SATA2         & Ubuntu 18.04 \\
+        \hline
+    \end{tabular}
+    \vspace*{5mm}
+    \caption{The specifications of the two machines used to benchmark database performance.}
+    \label{tab:hardware}
 \end{table}
 
 \subsubsection{Dataset}
-The dataset used is from the Yelp Dataset Challenge \cite{yelpdataset}. Due to the enormity of the dataset\footnote{Totaling at around 8.69 gigabytes uncompressed.} only a subset of the data is used in increments to observe how well each database scales. The dataset is stored as non-valid JSON and first had to be preprocessed and converted into valid JSON. 
+The dataset used is from the Yelp Dataset Challenge \cite{yelpdataset}. Due to the enormity of the dataset\footnote{Totaling at around 8.69 gigabytes uncompressed.} only a subset of the data is used in increments to observe how well each database scales. The dataset is stored as non-valid JSON and first had to be preprocessed and converted into valid JSON.
 
 During this preprocessing many attributes not used in the analysis or benchmarking were removed to save on import time and storage costs. Only businesses, users, and reviews were used from the dataset but this resulted in a $\pm11.39\%$ reduction in uncompressed storage size\footnote{Which is results in close to 1 gigabyte which is a significant improvement.}, significant reduction in complexity and improvement in consistency among attributes. The result of this preprocessing can be seen in Table \ref{tab:yelp-data}.
 
 \begin{table}[h!]
-\centering
-\begin{tabular}{ |p{2cm}|p{2cm}||p{2cm}|p{2cm}||p{2cm}|p{2cm}|}
- \hline
- \rowcolor{Gray}
- \multicolumn{2}{|c||}{Business} & \multicolumn{2}{|c||}{User} & \multicolumn{2}{|c|}{Review} \\
- \hline
- \rowcolor{LightGray}
- Attribute & Data Type & Attribute & Data Type & Attribute & Data Type\\
- \hline
- business\_id & string & user\_id & string & review\_id & string \\
- name & string & name & string  & user\_id & string\\
- address & string & review\_count & integer & business\_id & string\\
- city & string & yelping\_since & timestamp & stars & integer \\
- state & string & friends & string array & date & timestamp\\
- postal code & string & useful & integer & text & string \\
- latitude & float & funny & integer & useful & integer \\
- longitude & float & cool & integer & funny & integer \\
- stars & float & fans & integer & cool & integer \\
- review\_count & integer & average\_stars & float & & \\
- is\_open & integer & & & & \\
- categories & string array & & & &\\
- \hline
-\end{tabular}
-\vspace*{5mm}
-\caption{Data used from the Yelp dataset after preprocessing.}
-\label{tab:yelp-data}
+    \centering
+    \begin{tabular}{ |p{2cm}|p{2cm}||p{2cm}|p{2cm}||p{2cm}|p{2cm}|}
+        \hline
+        \rowcolor{Gray}
+        \multicolumn{2}{|c||}{Business} & \multicolumn{2}{|c||}{User} & \multicolumn{2}{|c|}{Review}                                           \\
+        \hline
+        \rowcolor{LightGray}
+        Attribute                       & Data Type                   & Attribute                    & Data Type    & Attribute    & Data Type \\
+        \hline
+        business\_id                    & string                      & user\_id                     & string       & review\_id   & string    \\
+        name                            & string                      & name                         & string       & user\_id     & string    \\
+        address                         & string                      & review\_count                & integer      & business\_id & string    \\
+        city                            & string                      & yelping\_since               & timestamp    & stars        & integer   \\
+        state                           & string                      & friends                      & string array & date         & timestamp \\
+        postal code                     & string                      & useful                       & integer      & text         & string    \\
+        latitude                        & float                       & funny                        & integer      & useful       & integer   \\
+        longitude                       & float                       & cool                         & integer      & funny        & integer   \\
+        stars                           & float                       & fans                         & integer      & cool         & integer   \\
+        review\_count                   & integer                     & average\_stars               & float        &              &           \\
+        is\_open                        & integer                     &                              &              &              &           \\
+        categories                      & string array                &                              &              &              &           \\
+        \hline
+    \end{tabular}
+    \vspace*{5mm}
+    \caption{Data used from the Yelp dataset after preprocessing.}
+    \label{tab:yelp-data}
 \end{table}
 
 \subsection{Schema Design}
@@ -70,7 +70,7 @@ There are two broad classes\cite{btree} of retrievals used when gathering data, 
     \item Sequential e.g. from our reviews file, retrieve all records between June 2018 and November 2018.
     \item Random e.g. from our users file, retrieve the record containing information about J. Doe.
 \end{itemize}
-The way we search for our data using these two classes is guided by our indexes in order to improve the performance of our search by reducing the search space. The method of indexing differs depending on the data type we are using. 
+The way we search for our data using these two classes is guided by our indexes in order to improve the performance of our search by reducing the search space. The method of indexing differs depending on the data type we are using.
 
 Traditionally, databases have only needed to store primitive data types but now support various others such as IP, timestamps, arrays, UUID, and JSON. Spatial data is typically two-dimensional and this cannot be efficiently indexed with an B-tree but, for example, we would use an R-tree. TigerGraph make use of a supposedly more efficient method of querying spatial data that fits graph architecture appropriately, called a geograph, the performance of which will be compared in our experiments. In the following paragraphs the underlying index structures used for our databases will be discussed.
 
@@ -79,7 +79,7 @@ B-trees can be presented as a generalization of the binary search tree. The B in
 
 Typical binary trees may become unbalanced after some number of insert and deletion operations but B-trees always remain balanced. All leaves in a B-tree have the same depth and any search operation among $n$ records will never visit more than $1 + log_dn$ nodes.
 
-B-trees are popular for indexing one-dimensional data and are the default indexing method for many databases, and in our use case, are used for not only primary keys but also temporal indexing. One of the important uses of B-trees is the efficiency gain in sequential and range queries, further optimized by clustering each record in the data by their date fields. 
+B-trees are popular for indexing one-dimensional data and are the default indexing method for many databases, and in our use case, are used for not only primary keys but also temporal indexing. One of the important uses of B-trees is the efficiency gain in sequential and range queries, further optimized by clustering each record in the data by their date fields.
 
 \paragraph{R-Trees}
 
@@ -102,7 +102,7 @@ A disadvantage of this approach is an uneven distribution of vertices linked to 
 \subsubsection{Relational Design}
 \label{subsub:relational-design}
 
-Figure \ref{fig:relational-design} is the design of the Yelp dataset modelled in a relational database, specifically PostgreSQL. The \emph{location} attribute is indexed with an R-tree using the PostGIS\footnote{\url{https://postgis.net/}} extension. 
+Figure \ref{fig:relational-design} is the design of the Yelp dataset modelled in a relational database, specifically PostgreSQL. The \emph{location} attribute is indexed with an R-tree using the PostGIS\footnote{\url{https://postgis.net/}} extension.
 
 The decision not to extend \emph{city} and \emph{state} attributes into separate tables would lead to more joins for an attribute that is never queried since \emph{location} is the only purely spatial attribute -- the main attribute in the benchmarking. It may be faster to simply index state as an attribute due to the low cardinality of city and state paired in a single table. City is indexed and clustered such that records in the same city are physically stored together which, alongside location, should help retrieval speeds from a spatial query perspective. PostgreSQL makes use of B-trees and hash indexes for native data types \cite{post-vs-mysql}.
 
@@ -115,13 +115,13 @@ The review table is commonly used in queries and holds the most interesting attr
     \label{fig:relational-design}
 \end{figure}
 
-A business category and a user's friends are many-to-many relationships. The linking tables \texttt{bus\_2\_cat} and \texttt{friends} tables handle these relationships. 
+A business category and a user's friends are many-to-many relationships. The linking tables \texttt{bus\_2\_cat} and \texttt{friends} tables handle these relationships.
 
 \subsubsection{Graph Design}
 
-The JanusGraph design can be seen in Figure \ref{fig:janusgraph-design} whereas the TigerGraph design can be see in Figure \ref{fig:tigergraph-design}. The motivation for the difference in the two designs is mainly due to the graphs handling spatial data differently. 
+The JanusGraph design can be seen in Figure \ref{fig:janusgraph-design} whereas the TigerGraph design can be see in Figure \ref{fig:tigergraph-design}. The motivation for the difference in the two designs is mainly due to the graphs handling spatial data differently.
 
-JanusGraph indexes attributes on nodes and edges using either composite indexes \cite{janusgraph-comp-index}, which index native data types on equality conditions, or mixed indexes which leverages an indexing backend on more complex data types or for complex search predicates, e.g. fuzzy search on strings \cite{janusgraph-mixed-index}. 
+JanusGraph indexes attributes on nodes and edges using either composite indexes \cite{janusgraph-comp-index}, which index native data types on equality conditions, or mixed indexes which leverages an indexing backend on more complex data types or for complex search predicates, e.g. fuzzy search on strings \cite{janusgraph-mixed-index}.
 
 Figure \ref{fig:janusgraph-design} show which attributes are indexed using composite indexes and which use mixed indexes using an indexing backend. As in Section \ref{subsub:relational-design}, \emph{location} is indexing using R-trees with ElasticSearch's geo-search predicates. \emph{Date} is indexed using ElasticSearch for equality conditions using the \texttt{java.time.Instant} class -- this uses a Bkd-tree indexing implementation \cite{es-bkdtree-index}.
 
