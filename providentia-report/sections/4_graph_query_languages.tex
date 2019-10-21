@@ -18,7 +18,7 @@ Gremlin integrates into multiple vendors (in our case, JanusGraph) and benefits 
                 .inV().has("location", geoWithin(Geoshape.circle(35.15,-80.79, 5)))
                     .as("business_id")
             .select("stars", "text", "business_id")
-            .by("stars").by("text").by("business_id").format(user_id)
+            .by("stars").by("text").by("business_id")
     \end{verbatim}
     \caption{Returns all the reviews by the specified user ID within a 5km radius of 35\degree 15N 80\degree 79W ordered by date descending. The ability to query and index spatio-temporal properties is provided by JanusGraph's integration with a search engine such as ElasticSearch.}
     \label{lst:gremlin-example-1}
@@ -46,9 +46,14 @@ As with Gremlin, there is an emphasis on a strong, functional programming style.
 
 \subsection{Graph Pattern Matching}
 
-Graph pattern matching is an example of \emph{declarative} (descriptive) querying. Basic graph patterns follow the structure of the graph to query. A basic graph pattern for a property graph\footnote{Which is the type of graph being investigated in this paper.} is a graph where variables appear on the edges and vertices. A \emph{match} for a basic graph pattern is then mapped against the graph being queried. The variables in the basic graph pattern subgraph is matched to some values or constants in the original graph and returned as a result \cite{foundations-of-modern-gql}.
+Graph pattern matching is an example of \emph{declarative} (descriptive) querying. Basic graph patterns follow the structure of the graph to query. A basic graph pattern for a property graph\footnote{Which is the type of graph being investigated in this paper.} is a graph where variables appear on the edges and vertices. A \emph{match} for a basic graph pattern is then mapped against the graph being queried. The variables in the basic graph pattern subgraph is matched to selected values or constants in the original graph and returned as a result \cite{foundations-of-modern-gql}. An example of the pattern produced by Figure \ref{lst:gremlin-example-1} can be seen in Figure \ref{fig:gremlin-pattern}.
 
-\textcolor{blue}{ TODO: Insert visual example of graph pattern.}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=16cm]{img/gremlin-pattern.pdf}
+    \caption{An illustration of the graph pattern produced by Figure \ref{lst:gremlin-example-1}. The top half shows the graph traversal pattern and the bottom half how the output is projected from the matched vertices and edges.}
+    \label{fig:gremlin-pattern}
+\end{figure}
 
 Complex graph patterns extend on basic graph patterns by including the traditional relational operators used for sets such as union, difference, optional, and filter. These operators are described as follows:
 
