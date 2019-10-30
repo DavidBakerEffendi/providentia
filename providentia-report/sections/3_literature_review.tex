@@ -47,19 +47,19 @@ The relational model solved these issues by providing a clear boundary between t
 
 The model's structure stores data in tuples with relations represented as tables. Each tuple has attributes, primary and candidate keys. Each attribute has a domain which is the data type of the attribute's values. The tuples became rows and attributes the columns for each row under their respective tables. Furthermore, the degree refers to the number of columns in a table whereas cardinality the number of rows in a table. An illustration of this can be seen in figures \ref{fig:relational-database} and \ref{fig:foreign-key}.
 
-\begin{figure}[h!]
+\begin{figure*}[h]
     \centering
     \includegraphics[width=12cm]{img/relational-database.pdf}
     \caption{A simplified representation of the Yelp dataset in a relational database context illustrating tables and their relations.}
     \label{fig:relational-database}
-\end{figure}
+\end{figure*}
 
-\begin{figure}[h!]
+\begin{figure*}[h]
     \centering
     \includegraphics[width=13cm]{img/foreign-key.pdf}
     \caption{A closeup on the foreign key and primary key structure within the business, user, and review tables.}
     \label{fig:foreign-key}
-\end{figure}
+\end{figure*}
 
 The high level language concepts introduced are the algebraic operators we see in SQL today such as \verb|SELECT|, \verb|UNION|, \verb|JOIN|, etc. These operators allow users to convert relations (tables) into other relations (resulting in tables as output).
 
@@ -80,9 +80,9 @@ NoSQL databases fall under a broad scope and, in this paper, they will be classi
 
 The basis of a key-value store is that the data is organized in the form of key-value pairs. The key is typically a numeric or string value whereas the value can be any data object or collection of data objects (where a list would be represented by multiple entries of the same key). Each document has a unique identifier with a list of attributes, the key-value paired data. A simple example of this can be seen in Figure \ref{fig:keyvalue}.
 
-\begin{figure}[h!]
+\begin{figure}[h]
     \centering
-    \begin{tabular}{ |p{2cm}|p{6cm}|}
+    \begin{tabular}{ |p{2cm}|p{4cm}|}
         \hline
         \rowcolor{Gray}
         \multicolumn{2}{|c|}{Businesses} \\
@@ -118,9 +118,9 @@ As the name suggests, document store databases store their data in the form of d
 
 Manoj \cite{docstore-article} explains column families as more structured data stores in that they store data in columns. They are a hybrid row/column store but store their data in distributed architectures instead of tables. Data is stored in a column-family (analogous to a table in SQL) but column-families have no relation to one another unlike in relational models. Column-families are less flexible than the previous key-value and document store databases as one will have to predefine a column family's attributes and are grouped together under keyspaces. A column-family model is illustrated in Figure \ref{fig:colfam}.
 
-\begin{figure}[h!]
+\begin{figure}[h]
     \centering
-    \begin{tabular}{ |p{6cm}|p{6cm}|}
+    \begin{tabular}{ |p{3.1cm}|p{3.5cm}|}
         \hline
         \rowcolor{Gray}
         \multicolumn{2}{|c|}{Yelp Keyspace}                      \\
@@ -156,12 +156,12 @@ Graph databases are strong at finding patterns and revealing information about t
 
 Within the category of graph databases we find three main subcategories; property (or attributed) graphs, hypergraphs, and resource description framework (RDF) triples \cite{socialdata}. The type of graph databases focused on in this investigation are property graphs.
 
-\begin{figure}[h!]
+\begin{figure*}[h]
     \centering
     \includegraphics[width=12cm]{img/graph-db.pdf}
     \caption{A simplified representation of the Yelp dataset in a property graph database context illustrating vertices, edges, and their attribute keys.}
     \label{fig:graph-db}
-\end{figure}
+\end{figure*}
 
 \subsection{Summary}
 

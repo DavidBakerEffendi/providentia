@@ -8,8 +8,10 @@ This subsection describes the hardware on the systems which ran the benchmarks a
 
 All experiments were run on the following two machines for comparison on how the technologies utilize multiple cores and perform on different storage mediums.
 
-\begin{table}[h!]
+\begin{table*}[h]
     \centering
+    \caption{The specifications of the two machines used to benchmark database performance.}
+    \vspace*{5mm}
     \begin{tabular}{ |p{2cm}|p{1.5cm}|p{1.5cm}|p{1.6cm}|p{1.5cm}|p{2cm}|p{2cm}|}
         \hline
         \rowcolor{Gray}
@@ -19,18 +21,18 @@ All experiments were run on the following two machines for comparison on how the
         University & 8    & 16    & 2.27GHz    & 32GB   & SATA2         & Ubuntu 18.04 \\
         \hline
     \end{tabular}
-    \vspace*{5mm}
-    \caption{The specifications of the two machines used to benchmark database performance.}
     \label{tab:hardware}
-\end{table}
+\end{table*}
 
 \subsubsection{Dataset}
 The dataset used is from the Yelp Dataset Challenge \cite{yelpdataset}. Due to the enormity of the dataset\footnote{Totaling at around 8.69 gigabytes uncompressed.} only a subset of the data is used in increments to observe how well each database scales. The dataset is stored as non-valid JSON and first had to be preprocessed and converted into valid JSON.
 
 During this preprocessing many attributes not used in the analysis or benchmarking were removed to save on import time and storage costs. Only businesses, users, and reviews were used from the dataset but this resulted in a $\pm11.39\%$ reduction in uncompressed storage size\footnote{Which is results in close to 1 gigabyte which is a significant improvement.}, significant reduction in complexity and improvement in consistency among attributes. The result of this preprocessing can be seen in Table \ref{tab:yelp-data}.
 
-\begin{table}[h!]
+\begin{table*}[h]
     \centering
+    \caption{Data used from the Yelp dataset after preprocessing.}
+    \vspace*{5mm}
     \begin{tabular}{ |p{2cm}|p{2cm}||p{2cm}|p{2cm}||p{2cm}|p{2cm}|}
         \hline
         \rowcolor{Gray}
@@ -53,10 +55,8 @@ During this preprocessing many attributes not used in the analysis or benchmarki
         categories                      & string array                &                              &              &              &           \\
         \hline
     \end{tabular}
-    \vspace*{5mm}
-    \caption{Data used from the Yelp dataset after preprocessing.}
     \label{tab:yelp-data}
-\end{table}
+\end{table*}
 
 \subsection{Schema Design}
 
@@ -108,12 +108,12 @@ The decision not to extend \emph{city} and \emph{state} attributes into separate
 
 The review table is commonly used in queries and holds the most interesting attribute in terms of temporal insight. Since temporal information is one-dimensional and ordinal, the \emph{date} attribute is indexed and clustered.
 
-\begin{figure}[h!]
+\begin{figure*}[h]
     \centering
     \includegraphics[width=10cm]{img/relational-design.pdf}
     \caption{A UML diagram of the relational design of the Yelp dataset. Indexed attributes are in bold whereas clustered attributes are in italics.}
     \label{fig:relational-design}
-\end{figure}
+\end{figure*}
 
 A business category and a user's friends are many-to-many relationships. The linking tables \texttt{bus\_2\_cat} and \texttt{friends} tables handle these relationships.
 
@@ -125,19 +125,19 @@ JanusGraph indexes attributes on nodes and edges using either composite indexes 
 
 Figure \ref{fig:janusgraph-design} show which attributes are indexed using composite indexes and which use mixed indexes -- making use of the indexing backend. As in Section \ref{subsub:relational-design}, \emph{location} is indexed using R-trees with ElasticSearch's geo-search predicates. \emph{Date} is indexed using ElasticSearch for equality conditions using the \texttt{java.time.Instant} class -- this uses a Bkd-tree indexing implementation \cite{es-bkdtree-index}.
 
-\begin{figure}[h!]
+\begin{figure*}[h]
     \centering
     \includegraphics[width=10cm]{img/janus-design.pdf}
     \caption{A UML diagram of the graph design for JanusGraph.}
     \label{fig:janusgraph-design}
-\end{figure}
+\end{figure*}
 
 TigerGraph puts less of a focus on indexing and more on writing efficient and fast queries. One notable difference between the structure in the JanusGraph implementation and the TigerGraph implementation in Figure \ref{fig:tigergraph-design} is that there are no indexes and the extension of the \emph{location} attribute as the \texttt{Business\_Geo} edge and \texttt{Geo\_Grid} vertex. The code leveraged for this design idea was inspired from the TigerGraph geospatial webinar \cite{graphgurus} and C++ code on the TigerGraph ```ecosys''\footnote{\url{https://github.com/tigergraph/ecosys/tree/master/guru\_scripts/geospatial\_search}}.
 
-\begin{figure}[h!]
+\begin{figure*}[h]
     \centering
     \includegraphics[width=10cm]{img/tigergraph-design.pdf}
     \caption{A UML diagram of the graph design for TigerGraph.}
     \label{fig:tigergraph-design}
-\end{figure}
+\end{figure*}
 

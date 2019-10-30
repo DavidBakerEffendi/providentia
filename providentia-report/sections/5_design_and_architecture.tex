@@ -17,12 +17,12 @@ JanusGraph is a highly scalable graph database that is ready to be clustered amo
 
 JanusGraph is largely based on the Apache tech-stack making use of technologies such as Apache TinkerPop\footnote{Thus makes use of the property graph model.}, Lucene, Cassandra, Hadoop, and more. This adds to complexity when configuring JanusGraph as, for each technology plugged in, there may be configuration necessary. Gremlin is the native language through which JanusGraph is queried but, as mentioned in Section \ref{subsec:lang}, can be extended for Cypher queries. JanusGraph benefits from optional support for advanced search capabilities and having no-single point of failure \cite{janusgraph-docs}.
 
-\begin{figure}[h]
+\begin{figure*}[h]
     \centering
     \includegraphics[width=10cm]{img/CAP-JanusGraph.png}
     \caption{The CAP theorem illustrated using JanusGraph's three supporting storage back ends. This diagram is largely inspired from Chapter 1 in Titan's documentation and is adjusted for JanusGraph \cite{titan-cap}.}
     \label{fig:janusgraph-cap}
-\end{figure}
+\end{figure*}
 
 JanusGraph can store graph data via three supporting back ends; Apache Cassandra, Apache HBase, and Apache Berkeley. The CAP Theorem (Section \ref{cap}) should be referred to when considering which of the three back ends to use -- this is illustrated in Figure \ref{fig:janusgraph-cap}.
 
@@ -43,9 +43,9 @@ The web-application, called Providentia\footnote{The name of the web-application
 
 The architecture and how each technology communicates is illustrated in Figure \ref{fig:providentia-architecture}. The databases are containerized using Docker\footnote{\url{https://www.docker.com/}}.
 
-\begin{figure}[h!]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=10cm]{img/providentia-architecture.pdf}
+    \includegraphics[width=0.49\textwidth]{img/providentia-architecture.pdf}
     \caption{The architecture of Providentia.}
     \label{fig:providentia-architecture}
 \end{figure}
@@ -81,7 +81,7 @@ the training data. For a given review, punctuation is removed, words are tokeniz
 
 The top 5000 occurring adjectives are kept in the bag. These informative words can be seen as 5000 attributes where a review has the value ``true'' under an attribute found in the text and ``false'' when a review does not have that attribute contained within its text. This will be how a feature set will be constructed for a review. A Python dictionary is constructed with these 5000 attributes as keys and their value as the respective state as a boolean. This is then the first element of a tuple and the tag is the second. A trivial example of a feature set can be seen in Figure \ref{fig:bog-attri}.
 
-\begin{figure}[h!]
+\begin{figure*}[h]
     \centering
     \begin{tabular}{ |p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|}
         \hline
@@ -105,7 +105,7 @@ The top 5000 occurring adjectives are kept in the bag. These informative words c
     \vspace*{5mm}
     \caption{An example of a review tagged as positive with it's feature set.}
     \label{fig:bog-attri}
-\end{figure}
+\end{figure*}
 
 All of the reviews are then processed into these feature sets and tagged. They are then given to the model to learn. Once the model has been trained, a review is classified by breaking it up into a feature set, given to the model to classify and the predicted class label is then returned.
 

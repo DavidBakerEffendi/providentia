@@ -9,7 +9,7 @@ Gremlin is a functional, data-flow query language running on its own virtual mac
 
 Gremlin integrates into multiple vendors (in our case, JanusGraph) and benefits from Turing-completeness. Each transaction is local to a given thread which means that a transaction is automatically created in that thread without having to explicitly call a create method. Transactions are atomic and support rollbacks.
 
-\begin{figure}[h]
+\begin{figure*}[h]
     \centering
     \begin{verbatim}
         g.V().has("User", "user_id", "qUL3CdRRF1vedNvaq06rIA")
@@ -22,7 +22,7 @@ Gremlin integrates into multiple vendors (in our case, JanusGraph) and benefits 
     \end{verbatim}
     \caption{Returns all the reviews by the specified user ID within a 5km radius of 35\degree 15N 80\degree 79W ordered by date descending. The ability to query and index spatio-temporal properties is provided by JanusGraph's integration with a search engine such as ElasticSearch.}
     \label{lst:gremlin-example-1}
-\end{figure}
+\end{figure*}
 
 \paragraph{Cypher}
 
@@ -32,7 +32,7 @@ Cypher is a declarative language so there is less control over how the traverser
 
 Cypher has the advantage of being able to express complex traversals in a simpler and more intuitive manner than Gremlin. Due to the open-source nature of Cypher and, how closely it is linked to Gremlin, it benefits from the same portability advantages by being able to integrate with multiple vendors. TinkerPop 3 supports Cypher\footnote{https://github.com/opencypher/cypher-for-gremlin} so any TinkerPop 3 enabled graph database can be queried with either language and benefit from both whether making a high-level traversal or simple query. An example of a useful query on this dataset can be seen in Figure \ref{lst:cypher-example-1}.
 
-\begin{figure}[h]
+\begin{figure*}[h]
     \centering
     \begin{verbatim}
         CALL apoc.periodic.iterate(
@@ -44,7 +44,7 @@ Cypher has the advantage of being able to express complex traversals in a simple
     \end{verbatim}
     \caption{Returns all users who have reviewed the same businesses as a given user. This iterates through all of the users. Note how the return match checks that the user \texttt{p1} does not match user \texttt{p2}.}
     \label{lst:cypher-example-1}
-\end{figure}
+\end{figure*}
 
 \paragraph{GSQL}
 
@@ -60,12 +60,12 @@ As with Gremlin, there is an emphasis on a strong, functional programming style.
 
 Graph pattern matching is an example of \emph{declarative} (descriptive) querying. Basic graph patterns follow the structure of the graph to query. A basic graph pattern for a property graph\footnote{Which is the type of graph being investigated in this paper.} is a graph where variables appear on the edges and vertices. A \emph{match} for a basic graph pattern is then mapped against the graph being queried. The variables in the basic graph pattern subgraph is matched to selected values or constants in the original graph and returned as a result \cite{foundations-of-modern-gql}. An example of the pattern produced by Figure \ref{lst:gremlin-example-1} can be seen in Figure \ref{fig:gremlin-pattern}.
 
-\begin{figure}[h]
+\begin{figure*}[h]
     \centering
     \includegraphics[width=16cm]{img/gremlin-pattern.pdf}
     \caption{An illustration of the graph pattern produced by Figure \ref{lst:gremlin-example-1}. The top half shows the graph traversal pattern and the bottom half how the output is projected from the matched vertices and edges.}
     \label{fig:gremlin-pattern}
-\end{figure}
+\end{figure*}
 
 Complex graph patterns extend on basic graph patterns by including the traditional relational operators used for sets such as union, difference, optional, and filter. These operators are described as follows:
 
@@ -88,8 +88,8 @@ An example of one such query can be seen in Figure \ref{lst:cypher-nav-1} and \r
 \begin{figure}[h]
     \centering
     \begin{verbatim}
-        MATCH (x1:User) -[:friends*]-> (x2:User)
-        RETURN x1, x2
+    MATCH (x1:User) -[:friends*]-> (x2:User)
+    RETURN x1, x2
     \end{verbatim}
     \caption{Simple friend-of-a-friend query written in Cypher.}
     \label{lst:cypher-nav-1}
@@ -98,7 +98,9 @@ An example of one such query can be seen in Figure \ref{lst:cypher-nav-1} and \r
 \begin{figure}[h]
     \centering
     \begin{verbatim}
-        g.V().hasLabel(`User').out(`FRIENDS').hasLabel(`User')
+    g.V().hasLabel(`User')
+            .out(`FRIENDS')
+         .hasLabel(`User')
     \end{verbatim}
     \caption{Simple friend-of-a-friend query written in Gremlin.}
     \label{lst:gremlin-nav-1}
