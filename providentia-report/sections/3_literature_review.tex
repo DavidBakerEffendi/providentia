@@ -1,11 +1,11 @@
-The following literature review is to present and clearly define the terms and definitions regarding database technology. The structure of this section begins to define the following principles; ACID compliance and the CAP theorem. The relational model will be explained to elaborate how the classic relational database came to be. The shortfalls of relational databases will then be used to introduce what NoSQL technology is, and how this contrasts with the many variations of NoSQL databases including key-value, column family, and document stores.
+The following literature review aims to present and clearly define the terms and definitions related to database technology. The structure of this section begins by defining the following principles; ACID compliance and the CAP theorem. The relational model will be explained to elaborate how classic relational database technology came to be. The shortfalls of relational databases will then be used to introduce what NoSQL technology is, and how this contrasts with the many variations of NoSQL databases including key-value, column family, and document stores.
 
 A summary will conclude how each section ties into the scope of this project and why research into our problem definition will bring value to spatio-temporal data mining, analysis, and visualization.
 
 \subsection{ACID Compliance}
 \label{sec:acid}
 
-From an article written in \emph{Database Guide} \cite{acid}; Atomicity, Consistency, Isolation, Durability (ACID) are the properties that can guarantee that transaction based databases perform reliably. These properties concern themselves over how databases recover after failures such as a transaction, system, or media failure.
+From an article written in \emph{Database Guide} \cite{acid}; Atomicity, Consistency, Isolation, Durability (ACID) are the properties that can guarantee that transaction based databases perform reliably. These properties concern themselves with how databases recover after failures such as a transaction, system, or media failure.
 
 \paragraph{Atomicity}
 A single transaction could be comprised of one or more steps, and if one of them fails then the transaction will only be partially successful. Atomicity guarantees that if one step fails, the whole transaction fails and the state of the database will be rolled back to a state prior to the transaction.
@@ -187,7 +187,7 @@ Time adds an ordinal relation among all entries in the data that hold this prope
 
 Relational databases should come close due to their ability to manipulate data based on table relations. Their lack of scalability may see them lose in terms of overall benchmark performance when tested on large volumes of this kind of data, especially due to how join-style queries scale with table size \cite{data-in-nosql}.
 
-Makris, et. al. \cite{mongovspostgres} compares how MongoDB (with GeoJSON) and PostgreSQL (with PostGIS) perform against one another on spatial data and show that PostgreSQL outperforms its NoSQL rival. Referring to the content in Subsection \ref{nosql-database} it doesn't come as a surprise due to the lack of suitability relational queries are for document store databases. This means that complex queries perform poorly for a database such as MongoDB. One important observation that this paper does point out is how well PostgreSQL performed despite the volume of data. This suggests that the scalability issue was not as prominent as how well these complex queries were handled.
+Makris, et. al. \cite{mongovspostgres} compares how MongoDB (with GeoJSON) and PostgreSQL (with PostGIS) perform against one another on spatial data and show that PostgreSQL outperforms its NoSQL rival. Referring to the content in subsection \ref{nosql-database} it doesn't come as a surprise due to the lack of suitability relational queries are for document store databases. This means that complex queries perform poorly for a database such as MongoDB. One important observation that this paper does point out is how well PostgreSQL performed despite the volume of data. This suggests that the scalability issue was not as prominent as how well these complex queries were handled.
 
 \begin{quote}
     \textbf{Why spatio-temporal data?}

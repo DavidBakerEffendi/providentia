@@ -1,4 +1,4 @@
-The following section describes how the systems were setup, data processed, modelled and notable indexes used.
+The following section describes how the systems were setup, data processed, modelled and describes notable indexes used in each technology.
 
 \subsection{Benchmark Setup}
 
@@ -65,7 +65,7 @@ The following subsections describe the different indexing techniques used on the
 \subsubsection{Indexing}
 When storing a database considered to be large, it will necessitate that the data be stored on secondary storage since it would most likely not be able to fit in memory. This slows down the data access speeds considerably. When specific records need to be retrieved among large volumes of data, an intelligent method of organizing the data needs to be implemented. We can do this by narrowing our search space to a small subset where our target data lies. These small subsets are our \emph{indexes} much like files in a cabinet where we can identify the subsets by which alphabet range the heading associates with.
 
-There are two broad classes\cite{btree} of retrievals used when gathering data, namely:
+There are two broad classes \cite{btree} of retrievals used when gathering data, namely:
 \begin{itemize}
     \item Sequential e.g. from our reviews file, retrieve all records between June 2018 and November 2018.
     \item Random e.g. from our users file, retrieve the record containing information about J. Doe.
@@ -123,7 +123,7 @@ The JanusGraph design can be seen in Figure \ref{fig:janusgraph-design} whereas 
 
 JanusGraph indexes attributes on nodes and edges using either composite indexes \cite{janusgraph-comp-index}, which index native data types on equality conditions, or mixed indexes which leverages an indexing backend on more complex data types or for complex search predicates, e.g. fuzzy search on strings \cite{janusgraph-mixed-index}.
 
-Figure \ref{fig:janusgraph-design} show which attributes are indexed using composite indexes and which use mixed indexes using an indexing backend. As in Section \ref{subsub:relational-design}, \emph{location} is indexing using R-trees with ElasticSearch's geo-search predicates. \emph{Date} is indexed using ElasticSearch for equality conditions using the \texttt{java.time.Instant} class -- this uses a Bkd-tree indexing implementation \cite{es-bkdtree-index}.
+Figure \ref{fig:janusgraph-design} show which attributes are indexed using composite indexes and which use mixed indexes -- making use of the indexing backend. As in Section \ref{subsub:relational-design}, \emph{location} is indexed using R-trees with ElasticSearch's geo-search predicates. \emph{Date} is indexed using ElasticSearch for equality conditions using the \texttt{java.time.Instant} class -- this uses a Bkd-tree indexing implementation \cite{es-bkdtree-index}.
 
 \begin{figure}[h!]
     \centering
