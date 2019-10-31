@@ -1,5 +1,6 @@
 import logging
 import os
+import pickle
 import random
 import re
 
@@ -14,6 +15,19 @@ word_features = None
 def get_classifier():
     global classifier
     return classifier
+
+
+def deserialize_model():
+    global classifier
+    global word_features
+
+    classifier_f = open("./models/naivebayes.pickle", "rb")
+    classifier = pickle.load(classifier_f)
+    classifier_f.close()
+
+    features_f = open("./models/features.pickle", "rb")
+    word_features = pickle.load(features_f)
+    features_f.close()
 
 
 def train_model(train_dir, app):
@@ -62,10 +76,27 @@ def train_model(train_dir, app):
 
     logging.debug('[SENTIMENT] (6/6) Preparing Naive Bayes classifier')
     classifier = nltk.NaiveBayesClassifier.train(training_set)
-    logging.debug('[SENTIMENT] Classifier accuracy percentage: ' + str(
+    logging.debug('[SENTIMENT] Classifier training accuracy: ' + str(
+        (nltk.classify.accuracy(classifier, training_set)) * 100) + '%')
+    logging.debug('[SENTIMENT] Classifier validation accuracy: ' + str(
         (nltk.classify.accuracy(classifier, testing_set)) * 100) + '%')
+
+    # Serialize model
+    try:
+        if not os.path.exists('./models'):
+            os.makedirs('./models')
+        save_classifier = open("./models/naivebayes.pickle", "wb")
+        pickle.dump(classifier, save_classifier)
+        save_classifier.close()
+
+        save_features = open("./models/features.pickle", "wb")
+        pickle.dump(word_features, save_features)
+        save_features.close()
+    except OSError as e:
+        logging.error("Unable to serialize Naive Bayes model! Classifier available but only in memory.", e)
     # Custom method to see n most informative features as a Python list
     # pos, neg = show_most_informative_features_in_list(classifier, 100)
+    logging.info("Sentiment classifier ready!")
 
 
 def load_words(train_dir, perc_data):

@@ -1,6 +1,7 @@
 import atexit
 import logging
 import os
+import pickle
 
 from flask import Flask
 from flask_cors import CORS
@@ -91,8 +92,18 @@ def create_app():
     scheduler.add_job(func=log_server_state, id='log_server_state', trigger='interval', seconds=1)
     # train the classifier model if it is enabled
     if app.config['ENABLE_SENTIMENT'] is True:
-        scheduler.add_job(func=sentiment.train_model, id='train_sentiment', trigger='date',
-                          next_run_time=classifier_start_train, args=[app.config['SENTIMENT_DATA'], app])
+        # Check if model exists else train one
+        if os.path.exists("./models/naivebayes.pickle") is True and os.path.exists("./models/features.pickle") is True:
+            try:
+                sentiment.deserialize_model()
+                logging.info("Sentiment classifier ready!")
+            except OSError as e:
+                logging.error("Unable to deserialize Naive Bayes model! Creating a new one.", e)
+                scheduler.add_job(func=sentiment.train_model, id='train_sentiment', trigger='date',
+                                  next_run_time=classifier_start_train, args=[app.config['SENTIMENT_DATA'], app])
+        else:
+            scheduler.add_job(func=sentiment.train_model, id='train_sentiment', trigger='date',
+                              next_run_time=classifier_start_train, args=[app.config['SENTIMENT_DATA'], app])
     scheduler.start()
     # shut down the scheduler when exiting the app
     atexit.register(lambda: scheduler.shutdown())
