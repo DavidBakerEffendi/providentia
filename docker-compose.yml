@@ -1,0 +1,20 @@
+version: "3.3"
+
+services:
+    angular:
+        container_name: providentia-ng
+        depends_on:
+            - "flask"
+        build: ./providentia-ng
+        expose:
+            - "4200"
+        ports:
+            - "4200:4200"
+    flask:
+        container_name: providentia-flask
+        build: ./providentia-flask
+        expose:
+            - "5000"
+        ports:
+            - "5000:5000"
+
