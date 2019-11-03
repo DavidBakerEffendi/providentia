@@ -1,9 +1,9 @@
 # Providentia
-A web-based bench marking tool for testing query speeds of JanusGraph vs other DBMS in the context of spatio-temporal data mainly using the Yelp challenge dataset.
+A web-based bench marking tool for testing query speeds of graph databases vs relational in the context of spatio-temporal data mainly using the Yelp challenge dataset.
 
 ## Project Structure
 
-![Providentia Structure](providentia-assets/Providentia.png "Providentia Structure")
+![Providentia Structure](providentia-report/img/providentia-architecture.pdf "Providentia Structure")
 
 * Client is based on Angular7+.
 * API is Flask and is used to communicate with the client for analysis using NLTK and other statistic techniques to simulate 'real' analysis.
@@ -12,7 +12,7 @@ A web-based bench marking tool for testing query speeds of JanusGraph vs other D
 The following databases are being benchmarked:
 * JanusGraph with Cassandra and ElasticSearch
 * PostgreSQL with PostGIS
-* Cassandra with ElasticSearch
+* TigerGraph
 
 ## Hardware Requirements
 Not all databases need to be run at the same time, but once they each have the dataset imported along with the NLTK classifiers the memory requirements stack up. To counter this, many of the configuration files contain percentage modifiers for how much of the data you would like loaded up. 

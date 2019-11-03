@@ -8,8 +8,6 @@ First normalize Yelp files in the `normalize-yelp` directory. Once business.json
 
 ## Docker Instructions
 
-Inside of the `docker-containers` directory you will find bash scripts pulling and starting the databases. Example, to pull Elassandra image (from this directory):
-```bash
-./docker-containers/elassandra/pull.sh
-```
+Inside of the `docker-containers` directory you will find `docker-compose` scripts to Dockerize each database.
+
 For more information, find the README in the `docker-containers` directory.
