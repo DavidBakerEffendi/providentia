@@ -3,7 +3,7 @@ A web-based bench marking tool for testing query speeds of graph databases vs re
 
 ## Project Structure
 
-![Providentia Structure](providentia-report/img/providentia-architecture.pdf "Providentia Structure")
+![Providentia Structure](providentia-assets/providentia-architecture.png "Providentia Structure")
 
 * Client is based on Angular7+.
 * API is Flask and is used to communicate with the client for analysis using NLTK and other statistic techniques to simulate 'real' analysis.
