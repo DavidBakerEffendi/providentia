@@ -1,0 +1,7 @@
+# Python
+venv
+# Data files
+*.json
+*.csv
+# Output
+/out/
