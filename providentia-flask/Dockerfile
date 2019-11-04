@@ -5,7 +5,7 @@ WORKDIR /app
 COPY . .
 
 RUN ["apk", "update"]
-RUN ["apk, "add", "postgresql-dev", "gcc", "python3-dev", "musl-dev", "linux-headers"]
+RUN ["apk", "add", "postgresql-dev", "gcc", "python3-dev", "musl-dev", "linux-headers"]
 
 RUN ["pip3", "install", "--upgrade", "pip"]
 RUN ["pip3", "install", "-r", "requirements.txt"]
