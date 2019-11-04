@@ -3,18 +3,13 @@ version: "3.3"
 services:
     angular:
         container_name: providentia-ng
-        #        depends_on:
-        #    - "flask"
         build:
             context: ./providentia-ng
-            dockerfile: Dockerfile-prod
+            dockerfile: Dockerfile
         expose:
             - "4200"
         ports:
             - "4200:4200"
-        volumes:
-            - ".:/app"
-            - "/app/node_modules"
     flask:
         container_name: providentia-flask
         build: ./providentia-flask
