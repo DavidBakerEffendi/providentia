@@ -107,6 +107,7 @@ def create_app():
     scheduler.add_job(func=log_server_state, id='log_server_state', trigger='interval', seconds=1)
     # train the classifier model if it is enabled
     if app.config['ENABLE_SENTIMENT'] is True:
+        logging.debug('[SENTIMENT] Checking necessary NLTK resources are installed')
         check_nltk_deps()
         # Check if model exists else train one
         if os.path.exists("./models/naivebayes.pickle") is True and os.path.exists("./models/features.pickle") is True:
