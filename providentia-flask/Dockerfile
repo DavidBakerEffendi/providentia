@@ -1,4 +1,4 @@
-FROM python:3.6.8-alpine
+FROM python:3.7.3-alpine
 
 WORKDIR /app
 
@@ -11,4 +11,4 @@ RUN ["pip3", "install", "--upgrade", "pip"]
 RUN ["pip3", "install", "-r", "requirements.txt"]
 RUN ["pip3", "install", "python-dotenv"]
 
-CMD flask run --no-reload
+CMD flask run --no-reload --host 0.0.0.0

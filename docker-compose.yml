@@ -13,6 +13,8 @@ services:
     flask:
         container_name: providentia-flask
         build: ./providentia-flask
+        environment:
+            TZ: "Africa/Johannesburg"
         expose:
             - "5000"
         ports:
