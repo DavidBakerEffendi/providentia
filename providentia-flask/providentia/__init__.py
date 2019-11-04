@@ -1,12 +1,27 @@
 import atexit
 import logging
 import os
-import pickle
+import nltk
 
 from flask import Flask
 from flask_cors import CORS
 
 import config
+
+
+def check_nltk_deps():
+    try:
+        nltk.data.find('tokenizers/punkt')
+    except LookupError:
+        nltk.download('punkt')
+    try:
+        nltk.data.find('corpora/stopwords')
+    except LookupError:
+        nltk.download('stopwords')
+    try:
+        nltk.data.find('taggers/averaged_perceptron_tagger')
+    except LookupError:
+        nltk.download('averaged_perceptron_tagger')
 
 
 def test_database_connections(app):
@@ -92,6 +107,7 @@ def create_app():
     scheduler.add_job(func=log_server_state, id='log_server_state', trigger='interval', seconds=1)
     # train the classifier model if it is enabled
     if app.config['ENABLE_SENTIMENT'] is True:
+        check_nltk_deps()
         # Check if model exists else train one
         if os.path.exists("./models/naivebayes.pickle") is True and os.path.exists("./models/features.pickle") is True:
             try:

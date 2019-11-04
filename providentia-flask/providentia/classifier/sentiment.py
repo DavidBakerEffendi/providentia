@@ -43,18 +43,6 @@ def train_model(train_dir, app):
     logging.debug('[SENTIMENT] Training sentiment classifier')
 
     logging.debug('[SENTIMENT] (0/6) Checking necessary NLTK resources are installed')
-    try:
-        nltk.data.find('tokenizers/punkt')
-    except LookupError:
-        nltk.download('punkt')
-    try:
-        nltk.data.find('corpora/stopwords')
-    except LookupError:
-        nltk.download('stopwords')
-    try:
-        nltk.data.find('taggers/averaged_perceptron_tagger')
-    except LookupError:
-        nltk.download('averaged_perceptron_tagger')
 
     logging.debug('[SENTIMENT] (1/6) Loading bag of words')
     all_words, documents = load_words(train_dir, perc_data)
