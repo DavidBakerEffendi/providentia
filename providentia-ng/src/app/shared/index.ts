@@ -20,3 +20,4 @@ export * from './service/log.service';
 export * from './service/query.service';
 export * from './service/analysis/kate.service';
 export * from './service/analysis/review-trend.service';
+export * from  './util/colour-generator';

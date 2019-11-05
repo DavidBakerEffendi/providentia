@@ -4,6 +4,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { InfoMessage, IBenchmark, BenchmarkService, IServerLog, LogService } from '../shared';
 import { ActivatedRoute, Router } from "@angular/router";
 import { MAT_STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+import { ColourGenerator } from '../shared';
 
 export class Stats {
     mean?: Number;
@@ -37,14 +38,7 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
         borderWidth: 1,
     }];
 
-    public perfCPUColors: Array<any> = [
-        { backgroundColor: 'rgba(252, 28, 7, .2)', borderColor: 'rgba(184, 18, 3, .7)' },
-        { backgroundColor: 'rgba(254, 97, 233, .2)', borderColor: 'rgba(183, 0, 159, .7)' },
-        { backgroundColor: 'rgba(71, 255, 86, .2)', borderColor: 'rgba(0, 158, 13, .7)' },
-        { backgroundColor: 'rgba(255, 167, 45, .2)', borderColor: 'rgba(209, 121, 0, .7)' },
-        { backgroundColor: 'rgba(255, 8, 94, .2)', borderColor: 'rgba(143, 0, 50, .7)' },
-        { backgroundColor: 'rgba(4, 0, 255, .2)', borderColor: 'rgba(2, 0, 135, .7)' }
-    ];
+    public perfCPUColors: Array<any> = [];
 
     public perfMemoryColors: Array<any> = [
         {
@@ -132,6 +126,20 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
                             };
                         }
                         this.perfCPUData[i].data.push({x:j, y:cpuPercentages[i]});
+                    }
+                    // Check colours
+                    if (cpuPercentages.length > this.perfCPUColors.length) {
+                        while (cpuPercentages.length > this.perfCPUColors.length) {
+                            const newCol = ColourGenerator.getRandomColor();
+                            this.perfCPUColors.push({
+                                backgroundColor: ColourGenerator.adjust(newCol, 80),
+                                borderColor: newCol,
+                            })
+                        }
+                        this.perfCPUColors.forEach(option => {
+                            option.fill = false;
+                            option.borderWidth = 2;
+                        })
                     }
                 });
                 this.setStats(this.perfCPUData, this.cpuStats);

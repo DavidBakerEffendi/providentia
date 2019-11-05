@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { InfoMessage, IServerLog, LogService, IBenchmark, BenchmarkService } from '../shared';
+import { ColourGenerator } from '../shared';
 
 @Component({
     selector: 'prv-home',
@@ -20,14 +21,7 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
     public chartMemoryData: Array<any>;
     public chartCPUData: Array<any>;
 
-    public chartCPUColors: Array<any> = [
-        { backgroundColor: 'rgba(252, 28, 7, .2)', borderColor: 'rgba(184, 18, 3, .7)' },
-        { backgroundColor: 'rgba(254, 97, 233, .2)', borderColor: 'rgba(183, 0, 159, .7)' },
-        { backgroundColor: 'rgba(71, 255, 86, .2)', borderColor: 'rgba(0, 158, 13, .7)' },
-        { backgroundColor: 'rgba(255, 167, 45, .2)', borderColor: 'rgba(209, 121, 0, .7)' },
-        { backgroundColor: 'rgba(255, 8, 94, .2)', borderColor: 'rgba(143, 0, 50, .7)' },
-        { backgroundColor: 'rgba(4, 0, 255, .2)', borderColor: 'rgba(2, 0, 135, .7)' }
-    ];
+    public chartCPUColors: Array<any> = [];
 
     public chartMemoryColors: Array<any> = [
         {
@@ -115,9 +109,9 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
                     // Check colours
                     if (cpuPercentages.length > this.chartCPUColors.length) {
                         while (cpuPercentages.length > this.chartCPUColors.length) {
-                            const newCol = this.getRandomColor();
+                            const newCol = ColourGenerator.getRandomColor();
                             this.chartCPUColors.push({
-                                backgroundColor: this.adjust(newCol, -40),
+                                backgroundColor: ColourGenerator.adjust(newCol, 80),
                                 borderColor: newCol,
                             })
                         }
@@ -161,19 +155,6 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
         } else {
             return "indigo accent-4"
         }
-    }
-
-    getRandomColor() {
-        const letters = '0123456789ABCDEF';
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
-
-    adjust(color: string, amount: number) {
-        return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
     }
 
 }
