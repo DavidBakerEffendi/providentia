@@ -110,14 +110,28 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
                         if (this.chartCPUData[i] === undefined || this.chartCPUData[i] === null) {
                             this.chartCPUData[i] = { data: [], label: `Core ${i}` };
                         }
-                        this.chartCPUData[i].data.push({x:j, y:cpuPercentages[i]});
+                        this.chartCPUData[i].data.push({ x: j, y: cpuPercentages[i] });
+                    }
+                    // Check colours
+                    if (cpuPercentages.length > this.chartCPUColors.length) {
+                        while (cpuPercentages.length > this.chartCPUColors.length) {
+                            const newCol = this.getRandomColor();
+                            this.chartCPUColors.push({
+                                backgroundColor: this.adjust(newCol, -40),
+                                borderColor: newCol,
+                            })
+                        }
+                        this.chartCPUColors.forEach(option => {
+                            option.fill = false;
+                            option.borderWidth = 2;
+                        })
                     }
                 });
                 const memoryDataFlat = res.body.map(a => a.memory_perc);
                 const perfMemoryD = []
                 // Map memory data
                 memoryDataFlat.forEach((d, i) => {
-                    perfMemoryD.push({x: i, y:d})
+                    perfMemoryD.push({ x: i, y: d })
                 });
                 // Map memory data
                 this.chartMemoryData = [{ data: perfMemoryD, label: 'Memory Percentage' }];
@@ -148,4 +162,18 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
             return "indigo accent-4"
         }
     }
+
+    getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+    adjust(color: string, amount: number) {
+        return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+    }
+
 }
