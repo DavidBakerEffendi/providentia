@@ -331,7 +331,7 @@ public class TigerGraphTransactionManager implements TransactionManager {
     }
 
     @Override
-    public String getDataDescriptorShort(Class<?> classType) {
+    public String getDataDescriptorShort(Class<?> classType, boolean... optional) {
         if (classType == Business.class)
             return "BUS";
         else if (classType == User.class)
@@ -343,7 +343,7 @@ public class TigerGraphTransactionManager implements TransactionManager {
     }
 
     @Override
-    public String getDataDescriptorLong(Class<?> classType) {
+    public String getDataDescriptorLong(Class<?> classType, boolean... optional) {
         if (classType == Business.class)
             return "business, category, city and tables";
         else if (classType == User.class)

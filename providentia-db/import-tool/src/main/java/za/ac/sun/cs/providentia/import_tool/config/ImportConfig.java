@@ -79,7 +79,6 @@ public class ImportConfig {
         public final boolean importCassandra;
         public final double sectorSize;
         public final int queueSize;
-        public final double percentageData;
         private final String PROPERTIES = "data.properties";
 
         DataConfig() throws IOException {
@@ -110,7 +109,6 @@ public class ImportConfig {
 
             double tempSectorSize = 0.3;
             int tempQueueSize = 100;
-            double tempPercentageData = 1.0;
 
             try {
                 tempBusinessDir = props.getProperty("yelp.business");
@@ -159,18 +157,9 @@ public class ImportConfig {
                 tempQueueSize = Integer.parseInt(props.getProperty("import.queue-size"));
             } catch (Exception ignored) {
             }
-            // Percentage of dataset to load
-            try {
-                tempPercentageData = Double.parseDouble(props.getProperty("import.data.percentage"));
-                if (tempPercentageData > 1.0 || tempPercentageData < 0.0)
-                    tempPercentageData = 1.0;
-                throw new Exception("Percentage data setting invalid. Using 1.0 default.");
-            } catch (Exception ignored) {
-            }
 
             this.sectorSize = tempSectorSize;
             this.queueSize = tempQueueSize;
-            this.percentageData = tempPercentageData;
 
             this.businessDir = tempBusinessDir;
             this.userDir = tempUserDir;

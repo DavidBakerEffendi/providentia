@@ -18,7 +18,7 @@ public class PostgresConfig implements DBConfig {
 
     private static final Logger LOG = (Logger) LoggerFactory.getLogger(PostgresConfig.class);
     public final PostgresTransactionManager tm;
-    private final String PROPERTIES = "janus-graph.properties";
+    private final String PROPERTIES = "postgres.properties";
     private final Properties props;
     private final Connection db;
     private final String hostname;

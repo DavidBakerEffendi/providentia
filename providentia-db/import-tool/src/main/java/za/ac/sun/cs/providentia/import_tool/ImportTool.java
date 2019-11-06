@@ -119,9 +119,9 @@ public class ImportTool {
             FileReaderWrapper reader = new FileReaderWrapper(f);
             reader.open();
             boolean completed = false;
-            long totalTransactions = Math.round(FileReaderWrapper.countLines(f) * dataConfig.percentageData);
+            long totalTransactions = FileReaderWrapper.countLines(f);
 
-            try (final ProgressBar pb = new ProgressBar(tm.getDataDescriptorShort(classType), totalTransactions)) {
+            try (final ProgressBar pb = new ProgressBar(tm.getDataDescriptorShort(classType, optional), totalTransactions)) {
                 String line = reader.readLine();
                 int linesRead = 0;
                 int sectorCount = 1;
@@ -147,7 +147,7 @@ public class ImportTool {
                     }
                 } while (linesRead < pb.getMax());
                 LOG.info("All records from " + classType + " successfully read. Waiting to process "
-                        + tm.getDataDescriptorLong(classType) + ".");
+                        + tm.getDataDescriptorLong(classType, optional) + ".");
 
                 if (pb.getMax() == pb.getCurrent()) {
                     completed = true;

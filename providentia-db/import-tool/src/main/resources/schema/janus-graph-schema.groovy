@@ -48,17 +48,6 @@ mgmt.makePropertyKey("cool").dataType(Integer.class).cardinality(Cardinality.SIN
 mgmt.makePropertyKey("funny").dataType(Integer.class).cardinality(Cardinality.SINGLE).make()
 mgmt.makePropertyKey("useful").dataType(Integer.class).cardinality(Cardinality.SINGLE).make()
 mgmt.makePropertyKey("fans").dataType(Integer.class).cardinality(Cardinality.SINGLE).make()
-//        mgmt.makePropertyKey("complimentHot").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentMore").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentProfile").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentCute").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentList").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentNote").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentPlain").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentCool").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentFunny").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentWriter").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
-//        mgmt.makePropertyKey("complimentPhotos").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
 
 // Review properties
 mgmt.makePropertyKey("review_id").dataType(String.class).cardinality(Cardinality.SINGLE).make()

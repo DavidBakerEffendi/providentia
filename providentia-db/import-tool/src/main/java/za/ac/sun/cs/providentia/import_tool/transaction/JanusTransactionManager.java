@@ -27,7 +27,7 @@ import java.util.List;
 public class JanusTransactionManager implements TransactionManager {
 
     public static final boolean VERTEX_MODE = true;
-    public static final boolean EDGE_MODE = true;
+    public static final boolean EDGE_MODE = false;
     private boolean currentMode = VERTEX_MODE;
     private JanusGraphTransaction currentTx;
 
@@ -408,7 +408,11 @@ public class JanusTransactionManager implements TransactionManager {
      * @return a short code identifying data being imported.
      */
     @Override
-    public String getDataDescriptorShort(Class<?> classType) {
+    public String getDataDescriptorShort(Class<?> classType, boolean... optional) {
+        boolean currentMode = VERTEX_MODE;
+        if (optional.length > 0) {
+            currentMode = optional[0];
+        }
         if (classType == Business.class) {
             if (currentMode == VERTEX_MODE) {
                 return "BUS_VERT";
@@ -434,7 +438,11 @@ public class JanusTransactionManager implements TransactionManager {
      * @return a short code identifying data being imported.
      */
     @Override
-    public String getDataDescriptorLong(Class<?> classType) {
+    public String getDataDescriptorLong(Class<?> classType, boolean... optional) {
+        boolean currentMode = VERTEX_MODE;
+        if (optional.length > 0) {
+            currentMode = optional[0];
+        }
         if (classType == Business.class) {
             if (currentMode == VERTEX_MODE) {
                 return "business, attribute, category, city, and state vertices";

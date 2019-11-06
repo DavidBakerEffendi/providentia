@@ -137,7 +137,7 @@ public class CassandraTransactionManager implements TransactionManager {
         }
     }
 
-    public String getDataDescriptorShort(Class<?> classType) {
+    public String getDataDescriptorShort(Class<?> classType, boolean... optional) {
         if (classType == Business.class)
             return "BUS";
         else if (classType == User.class)
@@ -148,7 +148,7 @@ public class CassandraTransactionManager implements TransactionManager {
             return "UNKNWN";
     }
 
-    public String getDataDescriptorLong(Class<?> classType) {
+    public String getDataDescriptorLong(Class<?> classType, boolean... optional) {
         if (classType == Business.class)
             return "business and category tables";
         else if (classType == User.class)

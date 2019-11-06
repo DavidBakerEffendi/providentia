@@ -18,8 +18,8 @@ public interface TransactionManager {
 
     void insertReview(Review obj);
 
-    String getDataDescriptorShort(Class<?> classType);
+    String getDataDescriptorShort(Class<?> classType, boolean... optional);
 
-    String getDataDescriptorLong(Class<?> classType);
+    String getDataDescriptorLong(Class<?> classType, boolean... optional);
 
 }
