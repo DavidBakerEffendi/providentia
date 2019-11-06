@@ -1,4 +1,4 @@
 # !/bin/bash
-docker cp ExprFunctions.hpp prv-tigergraph:/home/tigergraph/tigergraph/dev/gdk/gsql/src/QueryUdf/
-docker cp ExprUtil.hpp prv-tigergraph:/home/tigergraph/tigergraph/dev/gdk/gsql/src/QueryUdf/
-docker cp TokenBank.cpp prv-tigergraph:/home/tigergraph/tigergraph/dev/gdk/gsql/src/TokenBank/
+docker cp ./geofunctions/ExprFunctions.hpp prv-tigergraph:/home/tigergraph/tigergraph/dev/gdk/gsql/src/QueryUdf/
+docker cp ./geofunctions/ExprUtil.hpp prv-tigergraph:/home/tigergraph/tigergraph/dev/gdk/gsql/src/QueryUdf/
+docker cp ./geofunctions/TokenBank.cpp prv-tigergraph:/home/tigergraph/tigergraph/dev/gdk/gsql/src/TokenBank/

@@ -1,0 +1,36 @@
+DROP JOB loadYelp
+
+CREATE LOADING JOB loadYelp FOR GRAPH MyGraph {
+    fBus = "~/tigergraph/loadingData/business.csv";
+    fCat = "~/tigergraph/loadingData/categories.csv";
+    fUse = "~/tigergraph/loadingData/users.csv";
+    fFnd = "~/tigergraph/loadingData/friendships.csv";
+    fRev = '~/tigergraph/loadingData/reviews.csv";
+
+    # Load data from business files
+    LOAD fBus
+        TO VERTEX Business VALUES ($"business_id", $"address", $"postal_code", $"stars", $"review_count", $"is_open", $"name")
+        USING header="true", separator=",";
+    LOAD fBus
+        TO EDGE Business_Geo VALUES ($"business_id", getGridId($"latitude", $"longitude"), $"latitude", $"longitude")
+        USING header="true", separator=",";
+    LOAD fBus
+        TO EDGE In_City VALUES ($"business_id", $"city")
+        USING header="true", separator=",";
+    LOAD fBus
+        TO EDGE In_State VALUES ($"city", $"state")
+    LOAD fCat
+        TO EDGE In_Category VALUES ($"business_id", $"category")
+
+    # Load data from users files
+    LOAD fUse
+        TO VERTEX User VALUES ($"user_id", $"name", $"review_count", $"yelping_since", $"useful", $"funny", $"cool", $"fans", $"average_stars")
+    LOAD fFnd
+        TO EDGE Friends VALUES ($"user_id", $"friend_id")
+    
+    # Load data from review files
+    LOAD fRev
+        TO EDGE Reviews VALUES ($"user_id", $"business_id", $"stars", $"useful", $"funny", $"cool", $"text", $"date", $"review_id")
+}
+
+RUN JOB loadYelp
