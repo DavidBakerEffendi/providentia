@@ -5,8 +5,9 @@ from tqdm import tqdm
 CSV_USE = "./out/users.csv"
 CSV_FND = "./out/friendships.csv"
 
-USE_HEADERS = ["user_id", "name", "review_count", "yelping_since", "useful",  "funny", "cool", "fans", "average_stars"]
+USE_HEADERS = ["user_id", "name", "review_count", "yelping_since", "useful", "funny", "cool", "fans", "average_stars"]
 FND_HEADERS = ["user_id", "friend_id"]
+
 
 def write_csv(f):
     f_use = open(CSV_USE, 'w')
@@ -33,7 +34,10 @@ def process_line(fw_use, fw_fnd, line):
 
     data = json.loads(line)
     for h in USE_HEADERS:
-        use_line[h] = data[h]
+        if type(data[h]) is str:
+            use_line[h] = data[h].replace(",", "")
+        else:
+            use_line[h] = data[h]
     fw_use.writerow(use_line)
 
     for friend in data["friends"]:

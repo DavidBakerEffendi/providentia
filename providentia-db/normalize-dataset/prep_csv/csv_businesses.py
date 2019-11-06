@@ -35,7 +35,10 @@ def process_line(fw_bus, fw_cat, line):
 
     data = json.loads(line)
     for h in BUS_HEADERS:
-        bus_line[h] = data[h]
+        if type(data[h]) is str:
+            bus_line[h] = data[h].replace(",", "")
+        else:
+            bus_line[h] = data[h]
     fw_bus.writerow(bus_line)
 
     for cat in data["categories"]:

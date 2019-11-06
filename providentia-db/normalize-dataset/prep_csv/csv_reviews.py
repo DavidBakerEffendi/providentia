@@ -28,5 +28,8 @@ def process_line(fw_rev, line):
 
     data = json.loads(line)
     for h in REV_HEADERS:
-        rev_line[h] = data[h]
+        if type(data[h]) is str:
+            rev_line[h] = data[h].replace(",", "")
+        else:
+            rev_line[h] = data[h]
     fw_rev.writerow(rev_line)

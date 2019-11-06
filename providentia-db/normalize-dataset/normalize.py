@@ -1,5 +1,4 @@
 import os
-
 from tqdm import tqdm
 
 
@@ -8,12 +7,14 @@ def normalize(file_dir, out_dir, process_line):
     fw = open(out_dir, 'w')
     num_lines = sum(1 for _ in open(file_dir, 'r'))
 
+    fr.seek(0)
     with tqdm(total=num_lines) as pbar:
         for line in fr:
             process_line(fw, line)
             pbar.update(1)
     fr.close()
     fw.close()
+
 
 def normalize_file(norm_setting_file, norm_module):
     if not os.path.isfile(norm_setting_file) is True:
@@ -29,6 +30,7 @@ if __name__ == "__main__":
     import config
     from norm import normalize_businesses, normalize_reviews, normalize_users
     from subset import sub_businesses, sub_reviews, sub_users
+    from prep_csv import csv_businesses, csv_reviews, csv_users
 
     if os.path.exists("./out") is False:
         os.mkdir("./out")
@@ -70,8 +72,19 @@ if __name__ == "__main__":
         if config.SUBSET_SETTINGS["SUB_USE"] is True:
             print("Generating subset of users...")
             sub_users.generate_subset(f_dir=normalize_users.NORM_FILE,
-                                        perc=config.SUBSET_SETTINGS["PERC"])
+                                      perc=config.SUBSET_SETTINGS["PERC"])
 
     if config.PREPARE_CSV is True:
-        # TODO: Prepare CSV
-        pass
+        print("|--- Generating CSV from Data Subsets --|")
+        # CSV businesses
+        if config.PREPARE_SETTINGS["PREPARE_BUS"] is True:
+            print("Preparing businesses as CSV...")
+            csv_businesses.write_csv(sub_businesses.SUB_FILE)
+        # CSV reviews
+        if config.PREPARE_SETTINGS["PREPARE_REV"] is True:
+            print("Preparing reviews as CSV...")
+            csv_reviews.write_csv(sub_reviews.SUB_FILE)
+        # CSV users
+        if config.PREPARE_SETTINGS["PREPARE_USE"] is True:
+            print("Preparing users as CSV...")
+            csv_users.write_csv(sub_users.SUB_FILE)
