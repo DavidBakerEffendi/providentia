@@ -10,6 +10,15 @@ NORMALIZE_SETTINGS = {
     "USERS_FILE": "./user.json"
 }
 
+# Generate subset of data and clean user friends that aren't in table
+GEN_SUBSET = True
+SUBSET_SETTINGS = {
+    "SUB_BUS": False,
+    "SUB_REV": False,
+    "SUB_USE": True,
+    "PERC": 0.3
+}
+
 # The CSV format is used for TigerGraph's offline batch loader. The dataset
 # needs to be normalized to use this option and will refer to the files in
 # NORMALIZE_SETTINGS.

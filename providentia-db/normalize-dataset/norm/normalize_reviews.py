@@ -1,6 +1,6 @@
 import json
 
-NORM_FILE = 'review_norm.json'
+NORM_FILE = './out/review_norm.json'
 
 
 def process_line(fw, line):

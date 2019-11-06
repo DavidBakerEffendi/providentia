@@ -5,3 +5,4 @@ venv
 *.csv
 # Output
 /out/
+.directory
