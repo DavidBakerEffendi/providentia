@@ -12,7 +12,7 @@ def generate_subset(f_dir, perc):
     fr.seek(0)
     with tqdm(total=sub_num) as pbar:
         for line in fr:
-            fw.write(line + '\n')
+            fw.write(line)
             pbar.update(1)
             if pbar.n == sub_num - 1:
                 break
