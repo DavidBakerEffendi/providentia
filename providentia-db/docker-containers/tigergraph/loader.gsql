@@ -1,11 +1,12 @@
-DROP JOB loadYelp
+USE GRAPH MyGraph
 
+DROP JOB loadYelp
 CREATE LOADING JOB loadYelp FOR GRAPH MyGraph {
-    fBus = "~/tigergraph/loadingData/business.csv";
-    fCat = "~/tigergraph/loadingData/categories.csv";
-    fUse = "~/tigergraph/loadingData/users.csv";
-    fFnd = "~/tigergraph/loadingData/friendships.csv";
-    fRev = '~/tigergraph/loadingData/reviews.csv";
+    DEFINE FILENAME fBus = "~/tigergraph/loadingData/business.csv";
+    DEFINE FILENAME fCat = "~/tigergraph/loadingData/categories.csv";
+    DEFINE FILENAME fUse = "~/tigergraph/loadingData/users.csv";
+    DEFINE FILENAME fFnd = "~/tigergraph/loadingData/friendships.csv";
+    DEFINE FILENAME fRev = "~/tigergraph/loadingData/reviews.csv";
 
     # Load data from business files
     LOAD fBus
@@ -15,22 +16,37 @@ CREATE LOADING JOB loadYelp FOR GRAPH MyGraph {
         TO EDGE Business_Geo VALUES ($"business_id", getGridId($"latitude", $"longitude"), $"latitude", $"longitude")
         USING header="true", separator=",";
     LOAD fBus
+        TO VERTEX City VALUES ($"city")
+        USING header="true", separator=",";
+    LOAD fBus
         TO EDGE In_City VALUES ($"business_id", $"city")
         USING header="true", separator=",";
     LOAD fBus
+        TO VERTEX State VALUES ($"state")
+        USING header="true", separator=",";
+    LOAD fBus
         TO EDGE In_State VALUES ($"city", $"state")
+        USING header="true", separator=",";
+    LOAD fCat
+        TO VERTEX Category VALUES ($"category")
+        USING header="true", separator=",";
     LOAD fCat
         TO EDGE In_Category VALUES ($"business_id", $"category")
+        USING header="true", separator=",";
 
     # Load data from users files
     LOAD fUse
         TO VERTEX User VALUES ($"user_id", $"name", $"review_count", $"yelping_since", $"useful", $"funny", $"cool", $"fans", $"average_stars")
+        USING header="true", separator=",";
     LOAD fFnd
         TO EDGE Friends VALUES ($"user_id", $"friend_id")
+        USING header="true", separator=",";
     
     # Load data from review files
     LOAD fRev
         TO EDGE Reviews VALUES ($"user_id", $"business_id", $"stars", $"useful", $"funny", $"cool", $"text", $"date", $"review_id")
+        USING header="true", separator=",";
 }
 
-RUN JOB loadYelp
+
+RUN LOADING JOB loadYelp
