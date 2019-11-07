@@ -23,12 +23,16 @@ The following are the steps on how to get started:
 The above diagram illustrates the schema created by this application. Indices created on vertices holding custom unique 
 IDs from the data filtered by vertex labels. What is indexed in the graph is written in italics on the diagram.
 
-## Configuring Serializers
-Here are the following steps I took to configure the custom serializers for my Yelp POJOS:
+## Importing Data Into TigerGraph
 
-1) Find the `yelp-serializers.jar` under `libs`.
-2) Place the JAR in the `janusgraph-0.3.1-hadoop2/lib` folder.
-    
+TigerGraph data is imported using the batch offline import utility. See ``../docker-containers/tigergraph/``. This is 
+due to insert speeds being much slower than this solution.
+
+## Existing data
+
+The import tool will be able to handle existing data for all businesses and reviews but not for anything user or friend 
+related. This is due to the enormous increase in time complexity when existence is checked before insertion.
+
 ## Import Tool Configuration Reference
 This application's properties can be modified via `import-tool.properties`. The following are the configurations native 
 to this tool with a description for each:
@@ -38,4 +42,3 @@ to this tool with a description for each:
 |`import.drop-and-load-schema`|This drops the whole graph if it exists and loads thew new schema. This should only be set to false if the import process was paused for some reason.|false|
 |`import.queue-size`|Configures the maximum number of lines to add to a transaction before committing it to the DBMS. This is used to exploit the bulk-loading option.  This is kept fairly low to prevent ghost vertices/edges being created. Once can play with this setting to find optimal balance where self-dependent data is not affected, e.g. businesses.|100|
 |`import.sector-size`|The sector size of the file being read where a sector defines a fraction of the datafile. The way this is used is that if the number records read exceed the size of the current sector in which number of records processed lie then the tool stops creating new jobs to prevent GC memory overflow.|0.10|
-|`import.data.percentage`|This lets the import tool know what percentage of data you would like to import. This is important if you have less than 16GB RAM available.|1.0|

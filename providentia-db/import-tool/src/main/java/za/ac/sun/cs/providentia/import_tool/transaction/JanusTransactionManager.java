@@ -325,11 +325,6 @@ public class JanusTransactionManager implements TransactionManager {
     private void addUserVertex(JanusGraphTransaction tx, User u) throws JanusGraphException, IllegalStateException {
         GraphTraversalSource g = tx.traversal();
 
-        // If user exists, return
-        if (g.V().hasLabel("User").has("user_id", u.getUserId()).hasNext()) {
-            return;
-        }
-
         JanusGraphVertex uVert = tx.addVertex("User");
         uVert.property("user_id", u.getUserId());
         uVert.property("name", u.getName());
@@ -354,9 +349,8 @@ public class JanusTransactionManager implements TransactionManager {
         Vertex uVert = g.V().hasLabel("User").has("user_id", u.getUserId()).next();
         // Add friend relations
         for (String friendId : u.getFriends()) {
-            // Turns out some users have friends that aren't in the database
+            // Due to preprocessing, all user's friends will be in the database already
             final GraphTraversal<Vertex, Vertex> friendTraversal = g.V().hasLabel("User").has("user_id", friendId);
-            if (!friendTraversal.hasNext()) continue;
             Vertex friendVert = friendTraversal.next();
             // Check if edge exists, if not, add it, else do nothing
             if (!g.V(friendVert).both("FRIENDS").hasLabel("User").has("user_id", u.getUserId()).hasNext()) {

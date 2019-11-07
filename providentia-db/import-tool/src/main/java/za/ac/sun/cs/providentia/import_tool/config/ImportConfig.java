@@ -16,7 +16,6 @@ public class ImportConfig {
     public final JanusGraphConfig janusGraphConfig;
     public final PostgresConfig postgresConfig;
     public final CassandraConfig cassandraConfig;
-    public final TigerGraphConfig tigerGraphConfig;
 
     private static final Logger LOG = (Logger) LoggerFactory.getLogger(ImportConfig.class);
 
@@ -25,7 +24,6 @@ public class ImportConfig {
         JanusGraphConfig tempJanusGraphConfig = null;
         PostgresConfig tempPostgresConfig = null;
         CassandraConfig tempCassandraConfig = null;
-        TigerGraphConfig tempTigerGraphConfig = null;
         try {
             // Read properties
             tempDataConfig = new DataConfig();
@@ -35,8 +33,6 @@ public class ImportConfig {
                 tempPostgresConfig = new PostgresConfig();
             if (tempDataConfig.importCassandra)
                 tempCassandraConfig = new CassandraConfig();
-            if (tempDataConfig.importTigerGraph)
-                tempTigerGraphConfig = new TigerGraphConfig();
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -47,7 +43,6 @@ public class ImportConfig {
         this.janusGraphConfig = tempJanusGraphConfig;
         this.postgresConfig = tempPostgresConfig;
         this.cassandraConfig = tempCassandraConfig;
-        this.tigerGraphConfig = tempTigerGraphConfig;
     }
 
     public void closeAll() {
@@ -67,8 +62,6 @@ public class ImportConfig {
     }
 
     public static final class DataConfig {
-
-        public final boolean importTigerGraph;
 
         public final String businessDir;
         public final String userDir;
@@ -105,7 +98,6 @@ public class ImportConfig {
             boolean tempImportJanusGraph;
             boolean tempImportPostgres;
             boolean tempImportCassandra;
-            boolean tempImportTigerGraph;
 
             double tempSectorSize = 0.3;
             int tempQueueSize = 100;
@@ -141,11 +133,6 @@ public class ImportConfig {
             } catch (Exception e) {
                 tempImportCassandra = false;
             }
-            try {
-                tempImportTigerGraph = Boolean.parseBoolean(props.getProperty("database.tiger-graph"));
-            } catch (Exception e) {
-                tempImportTigerGraph = false;
-            }
 
             // Size of queue of operations per transaction before committing
             try {
@@ -168,7 +155,6 @@ public class ImportConfig {
             this.importJanusGraph = tempImportJanusGraph;
             this.importPostgres = tempImportPostgres;
             this.importCassandra = tempImportCassandra;
-            this.importTigerGraph = tempImportTigerGraph;
         }
 
     }

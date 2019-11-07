@@ -224,32 +224,6 @@ public class PostgresTransactionManager implements TransactionManager {
      * @param friend the user's friend to link.
      */
     private void insertFriend(String user, String friend) {
-        // Does friend exist?
-        try {
-            String sql = "SELECT id FROM users WHERE id = ?";
-            PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            p.setObject(1, friend);
-            ResultSet rs = p.executeQuery();
-            if (!rs.first()) {
-                return;
-            }
-        } catch (SQLException e) {
-            LOG.error("Error selecting " + user + " from table 'friends'.", e);
-        }
-        // Does link exist?
-        try {
-            String sql = "SELECT user_id FROM friends WHERE user_id = ? AND friend_id = ?";
-            PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            p.setString(1, user);
-            p.setObject(2, friend);
-            ResultSet rs = p.executeQuery();
-            if (rs.first()) {
-                return;
-            }
-        } catch (SQLException e) {
-            LOG.error("Error selecting " + user + " from table 'friends'.", e);
-        }
-
         try {
             String sql = "INSERT INTO friends (user_id, friend_id) VALUES (?, ?)";
             PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -282,33 +256,27 @@ public class PostgresTransactionManager implements TransactionManager {
      */
     public void insertUser(User u) {
         try {
-            String sql = "SELECT id FROM users WHERE id = ?";
-            PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            p.setString(1, u.getUserId());
-            ResultSet rs = p.executeQuery();
-            if (!rs.first()) {
-                sql = "INSERT INTO users (" +
+            String sql = "INSERT INTO users (" +
                         "id, name, review_count, yelping_since, useful, funny, cool, fans, average_stars) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                p.setString(1, u.getUserId());
-                p.setString(2, u.getName());
-                p.setInt(3, u.getReviewCount());
-                p.setTimestamp(4, new Timestamp(u.getYelpingSince().toEpochMilli()));
-                p.setInt(5, u.getUseful());
-                p.setInt(6, u.getFunny());
-                p.setInt(7, u.getCool());
-                p.setInt(8, u.getFans());
-                p.setDouble(9, u.getAverageStars());
+            PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            p.setString(1, u.getUserId());
+            p.setString(2, u.getName());
+            p.setInt(3, u.getReviewCount());
+            p.setTimestamp(4, new Timestamp(u.getYelpingSince().toEpochMilli()));
+            p.setInt(5, u.getUseful());
+            p.setInt(6, u.getFunny());
+            p.setInt(7, u.getCool());
+            p.setInt(8, u.getFans());
+            p.setDouble(9, u.getAverageStars());
 
-                if (p.executeUpdate() == 0) {
-                    throw new SQLException("Creating '" + u.getName() + "' failed, no rows affected.");
-                }
+            if (p.executeUpdate() == 0) {
+                throw new SQLException("Creating '" + u.getName() + "' failed, no rows affected.");
+            }
 
-                try (ResultSet generatedKeys = p.getGeneratedKeys()) {
-                    if (!generatedKeys.next()) {
-                        throw new SQLException("Creating '" + u.getName() + "' failed, no ID obtained.");
-                    }
+            try (ResultSet generatedKeys = p.getGeneratedKeys()) {
+                if (!generatedKeys.next()) {
+                    throw new SQLException("Creating '" + u.getName() + "' failed, no ID obtained.");
                 }
             }
         } catch (SQLException e) {

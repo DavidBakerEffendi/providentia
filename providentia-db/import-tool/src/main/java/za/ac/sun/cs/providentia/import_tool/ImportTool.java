@@ -61,17 +61,6 @@ public class ImportTool {
             // Adds all reviews
             insertDataClass(Review.class, DATABASE.CASSANDRA);
         }
-        if (dataConfig.importTigerGraph) {
-            LOG.info("Importing Yelp data into TigerGraph.");
-            // Adds all business, city, categories, and states
-            insertDataClass(Business.class, DATABASE.TIGER_GRAPH);
-            // Adds all users.
-            insertDataClass(User.class, DATABASE.TIGER_GRAPH, USERS_MODE);
-            // Adds all user's friends
-            insertDataClass(User.class, DATABASE.TIGER_GRAPH, FRIENDS_MODE);
-            // Adds all reviews
-            insertDataClass(Review.class, DATABASE.TIGER_GRAPH);
-        }
     }
 
     private final Logger LOG = (Logger) LoggerFactory.getLogger(ImportTool.class);
@@ -101,9 +90,6 @@ public class ImportTool {
                 break;
             case CASSANDRA:
                 tm = this.config.cassandraConfig.tm;
-                break;
-            case TIGER_GRAPH:
-                tm = this.config.tigerGraphConfig.tm;
                 break;
             default:
                 LOG.error("No valid database selected! Dataclass '" + classType + "' will not be inserted.");
