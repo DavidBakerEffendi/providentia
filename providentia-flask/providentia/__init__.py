@@ -45,6 +45,20 @@ def test_database_connections(app):
         tbl_databases.set_status('TigerGraph', status='DOWN', app=app)
 
 
+def filter_apscheduler_logs():
+    """Filters the excessive and unnecessary APScheduler logs"""
+    class NoRunningFilter(logging.Filter):
+        def filter(self, record):
+            return not (record.msg.startswith('Running job') or
+                        record.msg.startswith('Next wakeup') or
+                        record.msg.startswith('Looking for jobs to run') or
+                        'executed successfully' in record.msg)
+
+    my_filter = NoRunningFilter()
+    logging.getLogger("apscheduler.scheduler").addFilter(my_filter)
+    logging.getLogger("apscheduler.executors.default").addFilter(my_filter)
+
+
 def create_app():
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__, instance_relative_config=True)
@@ -126,6 +140,7 @@ def create_app():
         else:
             scheduler.add_job(func=sentiment.train_model, id='train_sentiment', trigger='date',
                               next_run_time=classifier_start_train, args=[app.config['SENTIMENT_DATA'], app])
+    filter_apscheduler_logs()
     scheduler.start()
     # shut down the scheduler when exiting the app
     atexit.register(lambda: scheduler.shutdown())
