@@ -15,4 +15,3 @@ build/
 *.egg-info/
 
 .idea
-/models/
