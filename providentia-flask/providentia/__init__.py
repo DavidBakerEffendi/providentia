@@ -1,8 +1,8 @@
 import atexit
 import logging
 import os
-import nltk
 
+import nltk
 from flask import Flask
 from flask_cors import CORS
 
@@ -26,7 +26,7 @@ def check_nltk_deps():
 
 def test_database_connections(app):
     """Tests if a connection to databases can be established."""
-    from providentia.db import janus_graph, postgres
+    from providentia.db import janus_graph, postgres, tigergraph
     from providentia.repository import tbl_databases
 
     if janus_graph.test_connection(app):
@@ -38,6 +38,11 @@ def test_database_connections(app):
         tbl_databases.set_status('PostgreSQL', status='UP', app=app)
     else:
         tbl_databases.set_status('PostgreSQL', status='DOWN', app=app)
+
+    if tigergraph.test_connection(app):
+        tbl_databases.set_status('TigerGraph', status='UP', app=app)
+    else:
+        tbl_databases.set_status('TigerGraph', status='DOWN', app=app)
 
 
 def create_app():

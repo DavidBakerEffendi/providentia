@@ -47,7 +47,7 @@
                     <p>Query took: {{ queryResponses.get(database.name).time | number:'.1-6' }} ms</p>
                 </div>
 
-                <mat-action-row *ngIf="database.status !== 'DOWN'">
+                <mat-action-row *ngIf="database.status !== 'DOWN' && database.name !== 'TigerGraph'">
                     <div class="container">
                         <div class="row no-gutters">
                             <p class="col-sm-12 m-0" style="padding: 0">Submit a query:</p>
@@ -60,6 +60,16 @@
                     <button color="primary" (click)="submitQuery(database.name, queryInput.value)" mat-icon-button>
                         <mat-icon>send</mat-icon>
                     </button>
+                </mat-action-row>
+
+                <mat-action-row *ngIf="database.name === 'TigerGraph'">
+                    <div class="container">
+                        <div class="row no-gutters">
+                            <p>
+                                Unfortunately no manual queries my be submitted via Providentia. Providentia accesses TigerGraph via the Rest++ API only.
+                            </p>
+                        </div>
+                    </div>
                 </mat-action-row>
             </mat-expansion-panel>
         </mat-accordion>

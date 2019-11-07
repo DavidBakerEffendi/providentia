@@ -28,6 +28,6 @@ SENTIMENT_DATA = './training-data/sentiment'
 # Config for databases to benchmark
 # POSTGRES_YELP_CONN = 'postgres://postgres:docker@127.0.0.1:5432/yelp'
 # JANUSGRAPH_YELP_CONN = 'ws://localhost:8182/gremlin'
-# CASSANDRA_YELP_CONN = 'todo'
+# TIGERGRAPH_YELP_CONN = 'http://localhost:9000/'
 
 

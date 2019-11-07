@@ -88,7 +88,7 @@ values
         '1881dd76-82db-4073-97f9-5d9019d1ab99',
         '81c1ab05-bb06-47ab-8a37-b9aeee625d0f',
         'bfd2ae61-700f-4f52-b928-a6e27f0b4e11',
-        $$g.V().has("User", "user_id", "...").outE("REVIEWS").has("stars", gt(3)).order().by("date", desc).as("stars", "text")\n\t.inV().has("location", geoWithin(Geoshape.circle(35.15,-80.79, 5))).as("business_id")\n\t.select("stars").limit(5000)\n.select("stars", "text", "business_id").by("stars").by("text").by("business_id")$$,
+        $$g.V().has("User", "user_id", "...").outE("REVIEWS").has("stars", gt(3)).order().by("date", desc).as("stars", "text")\n\t.inV().has("location", geoWithin(Geoshape.circle(35.15,-80.79, 5))).as("business_id")\n\t.select("stars").limit(10)\n.select("stars", "text", "business_id").by("stars").by("text").by("business_id")$$,
         'Gremlin'
     ),
     (
@@ -102,7 +102,7 @@ values
         '8afb2d30-a152-4a1c-81ee-6fed84cfb968',
         '81c1ab05-bb06-47ab-8a37-b9aeee625d0f',
         '291a3c67-7838-40e4-ab4a-677200bc4743',
-        $$SELECT review.stars, review.text, review.business_id FROM review JOIN business ON review.business_id = business.id AND review.user_id = '...' AND ST_DWithin(location, ST_MakePoint(-80.79, 35.15)::geography, 5000) AND review.stars > 3 ORDER BY review.date DESC$$,
+        $$SELECT review.stars, review.text, review.business_id FROM review JOIN business ON review.business_id = business.id AND review.user_id = '...' AND ST_DWithin(location, ST_MakePoint(-80.79, 35.15)::geography, 5000) AND review.stars > 3 ORDER BY review.date DESC LIMIT 10$$,
         'SQL'
     ),
     (
@@ -116,7 +116,7 @@ values
         '68ec0033-adff-439c-a6ac-3a2eb4b005c6',
         '81c1ab05-bb06-47ab-8a37-b9aeee625d0f',
         'a63ea923-3e5d-42f5-bf28-045fbccb4c7e',
-        $$CREATE QUERY getRecentGoodReviewsNearUser(Vertex<User> p) FOR GRAPH MyGraph {\n\tTYPEDEF tuple<DATETIME reviewDate, STRING businessId, INT stars, STRING text> restAndReview;\n\n\tDOUBLE lat = 35.15;\n\tDOUBLE lon = -80.79;\n\tINT distKm = 5;\n\tSetAccum<STRING> @@vSet;\n\tHeapAccum<restAndReview>(5000, reviewDate DESC) @@busAndReviews;\n\n\tbusinesses = { Business.* };\n\tusers = { User.* };\n\tPSet = { p };\n\n\t@@vSet += getNearbyGridId(distKm, lat, lon);\n\tGrids = to_vertex_set(@@vSet, "Geo_Grid");\n\n\tNearbyBusinesses =\n\t\tSELECT b\n\t\tFROM Grids:s-(Business_Geo:e)-Business:b\n\t\tWHERE geoDistance(lat, lon, e.LATITUDE, e.LONGITUDE) <= distKm;\n\n\tRestaurants =\n\t\tSELECT b\n\t\tFROM businesses:b-(In_Category)->Category:c\n\t\tWHERE c.id == "Restaurants";\n\n\tNearbyRestaurants = NearbyBusinesses INTERSECT Restaurants;\n\tNearbyRestReviewsByP =\n\t\tSELECT b\n\t\tFROM NearbyRestaurants:b-(reverse_Reviews:tgt)->User:u\n\t\tWHERE tgt.STARS > 3 AND u == p\n\t\tACCUM @@busAndReviews += restAndReview(tgt.REVIEW_DATE, b.id, tgt.STARS, tgt.TEXT)\n\t\tLIMIT 5000;\n\tPRINT NearbyRestReviewsByP;\n\tPRINT @@busAndReviews;\n}$$,
+        $$CREATE QUERY getRecentGoodReviewsNearUser(Vertex<User> p) FOR GRAPH MyGraph {\n\tTYPEDEF tuple<DATETIME reviewDate, STRING businessId, INT stars, STRING text> restAndReview;\n\n\tDOUBLE lat = 35.15;\n\tDOUBLE lon = -80.79;\n\tINT distKm = 5;\n\tSetAccum<STRING> @@vSet;\n\tHeapAccum<restAndReview>(10, reviewDate DESC) @@busAndReviews;\n\n\tbusinesses = { Business.* };\n\tusers = { User.* };\n\tPSet = { p };\n\n\t@@vSet += getNearbyGridId(distKm, lat, lon);\n\tGrids = to_vertex_set(@@vSet, "Geo_Grid");\n\n\tNearbyBusinesses =\n\t\tSELECT b\n\t\tFROM Grids:s-(Business_Geo:e)-Business:b\n\t\tWHERE geoDistance(lat, lon, e.LATITUDE, e.LONGITUDE) <= distKm;\n\n\tRestaurants =\n\t\tSELECT b\n\t\tFROM businesses:b-(In_Category)->Category:c\n\t\tWHERE c.id == "Restaurants";\n\n\tNearbyRestaurants = NearbyBusinesses INTERSECT Restaurants;\n\tNearbyRestReviewsByP =\n\t\tSELECT b\n\t\tFROM NearbyRestaurants:b-(reverse_Reviews:tgt)->User:u\n\t\tWHERE tgt.STARS > 3 AND u == p\n\t\tACCUM @@busAndReviews += restAndReview(tgt.REVIEW_DATE, b.id, tgt.STARS, tgt.TEXT)\n\t\tLIMIT 10;\n\tPRINT NearbyRestReviewsByP;\n\tPRINT @@busAndReviews;\n}$$,
         'GSQL'
     ),
     (

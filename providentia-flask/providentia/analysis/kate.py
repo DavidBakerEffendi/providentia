@@ -100,14 +100,16 @@ def get_recent_reviews_for_user_near_kate(database, user_id):
         result = janus_graph.execute_query(
             'g.V().has("User", "user_id", "{}").outE("REVIEWS").has("stars", gt(3)).order().by("date", desc)'
             '.as("stars", "text").inV().has("location", geoWithin(Geoshape.circle(35.15,-80.79, 5))).as("business_id")'
-            '.select("stars", "text", "business_id").by("stars").by("text").by("business_id")'.format(user_id)
+            '.select("stars").limit(10).select("stars", "text", "business_id")'
+            '.by("stars").by("text").by("business_id")'
+            .format(user_id)
         )
     elif database == "PostgreSQL":
         result = postgres.execute_query(
             'SELECT review.stars, review.text, review.business_id FROM review JOIN business '
             'ON review.business_id = business.id '
             'AND review.user_id = \'{}\' AND ST_DWithin(location, ST_MakePoint(-80.79, 35.15)::geography, 5000) '
-            'AND review.stars > 3 ORDER BY review.date DESC'.format(user_id)
+            'AND review.stars > 3 ORDER BY review.date DESC LIMIT 10'.format(user_id)
         )
 
     time_elapsed = (perf_counter_ns() - start) / 1000000
