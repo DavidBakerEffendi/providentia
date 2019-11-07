@@ -1,24 +1,25 @@
-The following section explores the three popular graph querying languages -- two of which are used in the databases being investigated in this report -- and properties and techniques of graph querying. Graph querying languages have a notion of traversing the graph and accumulating results from pattern matching. This makes it very different to traditional SQL and is the main factor in contributing to the learning curve -- how to conceptualize graph expressions. These languages are still fairly new and there are many more being developed as the technique of graph traversal becomes more refined.
+The following section explores the three popular graph querying languages -- two of which are used in the databases being investigated in this report -- and properties and techniques of graph querying. Graph query languages have a notion of traversing the graph and accumulating results from pattern matching. This makes it very different to traditional SQL and is the main factor in contributing to the learning curve -- how to conceptualize graph expressions. These languages are still fairly new \edt{with some of the latest additions being GraphQL by Facebook (released in 2015) \cite{graphqlhome} and GSQL by TigerGraph (released in 2017) \cite{tgv1docs}}. As the technique of graph traversal becomes more refined \edt{ one can expect a few more languages to develop, especially in the later generations of the graph technology evolution.}
+\comB{Can you list a few of these ``many more being developed''.}
 
 \subsection{Languages}
 \label{subsec:lang}
 
 \paragraph{Gremlin}
 
-Gremlin is a functional, data-flow query language running on its own virtual machine \cite{gremlin-tinkerpop}. Due to how Gremlin is compiled, it can be written in both an imperative and declarative manner and be embedded into a host-language \cite{tinkerpop-docs}. Imperatively querying with Gremlin involves explicitly stating the traversal pattern whereas declarative allows the traverser to decide. The benefits of using an embedded querying language is that security risks from string concatenation and sanitizing input is handled automatically.
+Gremlin is a functional, data-flow query language running on its own virtual machine \cite{gremlin-tinkerpop}. Due to how Gremlin is compiled, it can be written in both an imperative and declarative manner and be embedded into a host-language \cite{tinkerpop-docs}. Imperatively querying with Gremlin involves explicitly stating the traversal pattern whereas declarative allows the traverser to decide. The benefits of using an embedded query language is that security risks from string concatenation and sanitizing input is handled automatically.
 
-Gremlin integrates into multiple vendors (in our case, JanusGraph) and benefits from Turing-completeness. Each transaction is local to a given thread which means that a transaction is automatically created in that thread without having to explicitly call a create method. Transactions are atomic and support rollbacks.
+Gremlin integrates into multiple vendor's products (in our case, JanusGraph) and benefits from Turing-completeness. Each transaction is local to a given thread which means that a transaction is automatically created in that thread without having to explicitly call a create method. Transactions are atomic and support rollbacks.
 
 \begin{figure*}[h]
     \centering
     \begin{verbatim}
-        g.V().has("User", "user_id", "qUL3CdRRF1vedNvaq06rIA")
-                .outE("REVIEWS").has("stars", gt(3)).order().by("date", desc)
-                    .as("stars", "text")
-                .inV().has("location", geoWithin(Geoshape.circle(35.15,-80.79, 5)))
-                    .as("business_id")
-            .select("stars", "text", "business_id")
-            .by("stars").by("text").by("business_id")
+    g.V().has("User", "user_id", "qUL3CdRRF1vedNvaq06rIA")
+            .outE("REVIEWS").has("stars", gt(3)).order().by("date", desc)
+                .as("stars", "text")
+            .inV().has("location", geoWithin(Geoshape.circle(35.15,-80.79, 5)))
+                .as("business_id")
+        .select("stars", "text", "business_id")
+        .by("stars").by("text").by("business_id")
     \end{verbatim}
     \caption{Returns all the reviews by the specified user ID within a 5km radius of 35\degree 15N 80\degree 79W ordered by date descending. The ability to query and index spatio-temporal properties is provided by JanusGraph's integration with a search engine such as ElasticSearch.}
     \label{lst:gremlin-example-1}
@@ -26,35 +27,75 @@ Gremlin integrates into multiple vendors (in our case, JanusGraph) and benefits 
 
 \paragraph{Cypher}
 
-In an effort to create an easier graph language to pick up, Cypher (see the openCypher project \cite{opencypher}) was created as a very SQL-like query language. Unfortunately, while it is easier to pick up, it is not Turing-complete \cite{modern-graph-query-lang}. Use of ASCII-art helps to create more intuitive and easy to visualize queries e.g. edges are denoted by \verb|-->| or \verb|--[..]->| and vertices by use of parenthesis \verb|(b:Business)|.
+In an effort to create an easier graph language to learn, Cypher (see the openCypher project \cite{opencypher}) was created as a very SQL-like query language. Unfortunately, while it is easier to pick up, it is not Turing-complete \cite{modern-graph-query-lang}.
 
-Cypher is a declarative language so there is less control over how the traverser goes about each step. This means that Cypher has less flexibility and could perform worse when compared to Gremlin. Another criticism in terms of performance is that Cypher compiles into Gremlin which is then executed by the TinkerPop engine \cite{backtothefuture} and this overhead has yet to be optimized to where it should be when compared to traversal performance benchmarks. At the time of writing, Neo4j has been gathering more attention around Cypher, so the performance issues may improve significantly in the near future.
+\edt{It should be noted that the fact that native Cypher is not Turing-complete be a problem dependent consideration. For most ordinary querying, not having a Turing-complete query language poses few to no major drawbacks at all. Examples of algorithms, popularly used on an enterprise level, which cannot be implemented in native Cypher are in PageRank/Label Propagation style algorithms \cite{modern-graph-query-lang}. The workaround is that Cypher provides calls an algorithms library to conduct these. Many important algorithms affected by this limitation are most likely implemented in the Neo4j Graph Algorithms library\footnote{\url{https://neo4j.com/docs/graph-algorithms/3.5/labs-algorithms/}}. An example of this can be seen in Figure \ref{lst:cypher-pagerank}. A problem with a hard-coded PageRank-style algorithm comes with the limitation of not having full control over the number of iterations and terminating conditions. Ultimately, one should check the documentation for this before considering opting for Turing-complete graph query languages.}
 
-Cypher has the advantage of being able to express complex traversals in a simpler and more intuitive manner than Gremlin. Due to the open-source nature of Cypher and, how closely it is linked to Gremlin, it benefits from the same portability advantages by being able to integrate with multiple vendors. TinkerPop 3 supports Cypher\footnote{https://github.com/opencypher/cypher-for-gremlin} so any TinkerPop 3 enabled graph database can be queried with either language and benefit from both whether making a high-level traversal or simple query. An example of a useful query on this dataset can be seen in Figure \ref{lst:cypher-example-1}.
+\begin{figure}[h]
+    \centering
+    \begin{verbatim}
+    CALL algo.pageRank(`Page', `LINKS', {
+        iterations:20,
+        dampingFactor:0.85,
+        write: true,
+        writeProperty:``pagerank''
+    })
+    \end{verbatim}
+    \caption{An example from the Neo4j documentation \cite{neo4jpagerank} on using the PageRank algorithm from the Neo4j Graph Algorithms library.}
+    \label{lst:cypher-pagerank}
+\end{figure}
+
+\comB{It is always debatable if not being Turing complete is a drawback - is there really some sensible query that can't be expressed in Cypher?} 
+Use of ASCII-art helps to create more intuitive and easy to visualize queries, e.g. edges are denoted by \verb|-->| or \verb|--[..]->| and vertices by the use of parenthesis as in \verb|(b:Business)|.
+
+Cypher is a declarative language so there is less control over how the traverser goes about each step. This means that Cypher has less flexibility and could perform worse when compared to Gremlin. Another criticism in terms of performance is that Cypher compiles into Gremlin which is then executed by the TinkerPop engine \cite{backtothefuture} and this overhead should still be reduced. At the time of writing, Neo4j has been gathering more attention around Cypher, so the performance issues may improve significantly in the near future.
+
+Cypher has the advantage of being able to express complex traversals in a simpler and more intuitive manner than Gremlin. Due to the open-source nature of Cypher and, how closely it is linked to Gremlin, it benefits from the same portability advantages by being able to integrate with multiple vendors. TinkerPop 3 supports Cypher\footnote{https://github.com/opencypher/cypher-for-gremlin} so any TinkerPop 3 enabled graph database can be queried with either language and thus benefits from the ability that either query language can be used depending on if a high-level traversal or simple query is required. An example of a useful query on this dataset can be seen in Figure \ref{lst:cypher-example-1}.
 
 \begin{figure*}[h]
     \centering
     \begin{verbatim}
-        CALL apoc.periodic.iterate(
-            "MATCH (p1:User) RETURN p1",
-            "MATCH (p1)-[:REVIEWS]->(r1)-->()<--(r2)<-[:REVIEWS]-(p2)
-                WHERE id(p1) < id(p2)",
-            {batchSize:100, parallel:true, iterateList:true}
-        );
+CALL apoc.periodic.iterate(
+    "MATCH (p1:User) RETURN p1",
+    "MATCH (p1)-[:REVIEWS]->(r1)-->()<--(r2)<-[:REVIEWS]-(p2)
+        WHERE id(p1) < id(p2)",
+    {batchSize:100, parallel:true, iterateList:true}
+);
     \end{verbatim}
-    \caption{Returns all users who have reviewed the same businesses as a given user. This iterates through all of the users. Note how the return match checks that the user \texttt{p1} does not match user \texttt{p2}.}
+    \caption{Returns all users who have reviewed the same businesses as a given user. The query iterates through all users. Note how the return match checks that the user \texttt{p1} does not match user \texttt{p2}.}
     \label{lst:cypher-example-1}
 \end{figure*}
 
 \paragraph{GSQL}
 
-GSQL is described as a SQL-like language which is the conceptual descendent from technologies such as Gremlin, Hadoop MapReduce, SQL, Cypher and SPARQL \cite{gsql-tigergraph}. GSQL, like Gremlin, is a Turing-complete graph query language that accumulates data along a traversal. One limitation that Gremlin has over GSQL is that Gremlin cannot simultaneously group two tables by separate group-by attributes. GSQL achieves this by providing the ability to define multiple grouping accumulators.
+GSQL is described as a SQL-like language which is the conceptual descendent from technologies such as Gremlin, Hadoop MapReduce, SQL, Cypher and SPARQL \cite{gsql-tigergraph}. GSQL, like Gremlin, is a Turing-complete graph query language that accumulates data along a traversal. One limitation that Gremlin has compared to GSQL, is that Gremlin cannot simultaneously group two tables by separate group-by attributes. GSQL achieves this by providing the ability to define multiple grouping accumulators.
+
+\edt{Accumulators are variables which accumulate information over a graph traversal and come in two major groups namely, scalar and collection. Scalar accumulators such as \texttt{OrAccum} or \texttt{SumAccum} store a single value. Collection accumulators such as \texttt{ListAccum} or \texttt{SetAccum} store a set of values or, as is the case with \texttt{ListAccum}, can nest accumulators. An example of a GSQL query using accumulators can be seen in Figure \ref{lst:gsql-accum}.}
+
+\begin{figure*}[h]
+    \centering
+    \begin{verbatim}
+CREATE QUERY getNearbyBusinesses(double lat, double lon, double distKm) FOR GRAPH YelpGraph {
+  SetAccum<STRING> @@vSet;
+  @@vSet += getNearbyGridId(distKm, lat, lon);
+  Grids = to_vertex_set(@@vSet, "Geo_Grid");
+	
+  bus =
+    SELECT b
+    FROM Grids:s-(Business_Geo:e)-Business:b 
+    WHERE geoDistance(lat, lon, e.LATITUDE, e.LONGITUDE) <= distKm;
+  PRINT bus;
+}
+    \end{verbatim}
+    \caption{A GSQL query that returns business vertices nearby the specified coordinates which lie within the radius \texttt{distKm}.}
+    \label{lst:gsql-accum}
+\end{figure*}
+
+\comB{Does it make sense to show concretely how this is done in GSQL? \edt{I can but these queries are typically a page long. GSQL is very easy to read but this makes for a lot of vertical whitespace. Perhaps I could refer the reader to the TigerGraph demos for this type of demonstration.}}
 
 In GSQL, there is a large emphasis on creating a language that enables massively parallel processing on queries. The vertex and edge blocks in GSQL queries indicate independent computations separated by incoming vertices or edges referred to as guarding conditions. These blocks are pieced together by the output of one block being the input of another. Control of this flow can be handled by if-then-else or while statements allowing for subsequent blocks using dynamically calculated input.
 
 As with Gremlin, there is an emphasis on a strong, functional programming style. One has the ability to define named, parameterized queries which is analogous to creating a function with arguments. These parameterized queries can then be called by other queries enabling the re-use of code. As is the case with Gremlin and Cypher, TigerGraph allows for the conversion of Cypher to GSQL for those migrating from their competitor, Neo4j \cite{tigergraph-infoworld}.
-
-\textcolor{blue}{TODO: Show examples of GSQL}
 
 \subsection{Graph Pattern Matching}
 
@@ -62,12 +103,12 @@ Graph pattern matching is an example of \emph{declarative} (descriptive) queryin
 
 \begin{figure*}[h]
     \centering
-    \includegraphics[width=16cm]{img/gremlin-pattern.pdf}
+    \includegraphics[width=14cm]{img/gremlin-pattern.pdf}
     \caption{An illustration of the graph pattern produced by Figure \ref{lst:gremlin-example-1}. The top half shows the graph traversal pattern and the bottom half how the output is projected from the matched vertices and edges.}
     \label{fig:gremlin-pattern}
 \end{figure*}
 
-Complex graph patterns extend on basic graph patterns by including the traditional relational operators used for sets such as union, difference, optional, and filter. These operators are described as follows:
+Complex graph patterns extend on basic graph patterns by including the traditional relational operators used for sets such as union, difference, optional, and filter. These operators are described next.
 
 \paragraph{Projection} A projection returns a subset of data from the accumulated results of the pattern match. An example of this is to return only the stars from reviews between a user and business and exclude the text and edge IDs.
 
@@ -88,8 +129,9 @@ An example of one such query can be seen in Figure \ref{lst:cypher-nav-1} and \r
 \begin{figure}[h]
     \centering
     \begin{verbatim}
-    MATCH (x1:User) -[:friends*]-> (x2:User)
-    RETURN x1, x2
+    MATCH (u:User)-[:friends*]->f
+    WHERE f <> u
+    RETURN f
     \end{verbatim}
     \caption{Simple friend-of-a-friend query written in Cypher.}
     \label{lst:cypher-nav-1}
@@ -98,9 +140,9 @@ An example of one such query can be seen in Figure \ref{lst:cypher-nav-1} and \r
 \begin{figure}[h]
     \centering
     \begin{verbatim}
-    g.V().hasLabel(`User')
+    g.V().hasLabel(`User').as(`u')
             .out(`FRIENDS')
-         .hasLabel(`User')
+         .hasLabel(`User').except(`u')
     \end{verbatim}
     \caption{Simple friend-of-a-friend query written in Gremlin.}
     \label{lst:gremlin-nav-1}
