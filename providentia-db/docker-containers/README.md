@@ -29,7 +29,17 @@ Now one will have access to the following:
 * `gsql`: Grants access to GSQL shell.
 * TigerGraph Visual IDE: Connect to `http://localhost:14240` for TigerGraph's Graph Studio.
 
-To enable use of geospatial functions, you need to copy the `hpp` and `cpp` files found in `tigergraph`. There is a bash script that uses `docker cp` to do this for you, all you need to to is run `./transfer_geofunctions` in the `tigergraph` directory.
+#### Enabling Geospatial Functions
+
+To enable use of geospatial functions, you need to copy the `hpp` and `cpp` files found in `tigergraph`. There is a bash script that uses `docker cp` to do this for you, all you need to to is run `./transfer_geofunctions` in the `tigergraph` directory. 
+
+#### Importing Yelp Dataset
+
+Once the dataset has been normalized and converted to CSV (See `../normalize-dataset`) then run `./transfer_data` which will move these CSV files and `loader.gsql` into the Docker container. Once SSH'd in to the Docker container, run `gsql` then the following command:
+```
+GSQL > @loader.gsql
+```
+This will begin the batch offline data loading job.
 
 ### Elassandra (Deprecated)
 
