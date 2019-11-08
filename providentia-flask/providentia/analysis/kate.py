@@ -3,7 +3,7 @@ from datetime import datetime
 from time import perf_counter_ns
 
 from providentia.classifier import sentiment
-from providentia.db import janus_graph, postgres
+from providentia.db import janus_graph, postgres, tigergraph
 from providentia.models import Benchmark, KateResult
 from providentia.repository import tbl_kate
 
@@ -23,6 +23,8 @@ def run(benchmark: Benchmark):
     business_reviews = []
     for user_id in similar_users:
         recent_reviews, q2_time = get_recent_reviews_for_user_near_kate(database, user_id)
+        if recent_reviews is None:
+            continue
         # now add each user's rating and sentiment to a list of BusinessReview objects. the adding and classification
         # is handled in the constructor
         analysis_time += update_business_reviews(database, recent_reviews, business_reviews)
@@ -62,6 +64,9 @@ def get_business_name(database, business_id):
             'g.V().has("Business", "business_id", "{}").next().values("name")'.format(business_id))[0]
     elif database == "PostgreSQL":
         return postgres.execute_query('SELECT name FROM business WHERE id = \'{}\''.format(business_id))[0][0]
+    elif database == "TigerGraph":
+        result = tigergraph.execute_query("getBusinessName?b={}".format(business_id))[0]['name']
+        return result
 
 
 def update_business_reviews(database, recent_reviews, business_reviews):
@@ -89,6 +94,18 @@ def update_business_reviews(database, recent_reviews, business_reviews):
             else:
                 business_review.total_stars += stars
                 business_review.add_sentiment(text)
+    elif database == "TigerGraph":
+        for review in recent_reviews:
+            business_review = next((x for x in business_reviews if x.business_id == review['businessId']), None)
+            if business_review is None:
+                business_reviews.append(BusinessReview(
+                    business_id=review["businessId"],
+                    text=review["text"],
+                    stars=review["stars"]))
+            else:
+                business_review.total_stars += review['stars']
+                business_review.add_sentiment(review['text'])
+
     return (perf_counter_ns() - start) / 1000000
 
 
@@ -111,6 +128,12 @@ def get_recent_reviews_for_user_near_kate(database, user_id):
             'AND review.user_id = \'{}\' AND ST_DWithin(location, ST_MakePoint(-80.79, 35.15)::geography, 5000) '
             'AND review.stars > 3 ORDER BY review.date DESC LIMIT 10'.format(user_id)
         )
+    elif database == "TigerGraph":
+        req = tigergraph.execute_query("getRecentGoodReviewsNearUser?p={}".format(user_id))
+        if req is not None:
+            result = req[0]['@@busAndReviews']
+        else:
+            result = req
 
     time_elapsed = (perf_counter_ns() - start) / 1000000
 
@@ -138,6 +161,8 @@ def get_users_who_like_same_restaurants_as_kate(database):
             'AND Categories.name = \'Restaurants\''.format(kate_id)
         )
         result = [i[0] for i in result]
+    elif database == "TigerGraph":
+        result = tigergraph.execute_query("getSimilarUsersBasedOnRestaurants?p={}".format(kate_id))[0]['@@userIds']
     time_elapsed = (perf_counter_ns() - start) / 1000000
 
     return result, time_elapsed

@@ -7,3 +7,5 @@ venv
 # Output
 /out/
 .directory
+# Jetbrain
+.idea

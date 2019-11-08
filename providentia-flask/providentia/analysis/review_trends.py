@@ -5,7 +5,7 @@ from time import perf_counter_ns
 from nltk.tokenize import RegexpTokenizer
 
 from providentia.classifier import sentiment
-from providentia.db import janus_graph, postgres
+from providentia.db import janus_graph, postgres, tigergraph
 from providentia.models import Benchmark, ReviewTrendResult
 from providentia.repository.analysis_tables import tbl_review_trends
 
@@ -96,6 +96,12 @@ def get_reviews_from_phoenix_2018(database):
             'SELECT text, review.stars, cool, funny, useful FROM business JOIN review ON business.id = '
             'review.business_id AND ST_DWithin(location, ST_MakePoint(-112.56, 33.45)::geography, 50000) '
             'AND date_part(\'year\', date) = 2018')
+    elif database == "TigerGraph":
+        req = tigergraph.execute_query('getReviewsFromPhoenix2018')
+        if req is not None:
+            return req[0]['@@reviewList']
+        else:
+            return []
 
 
 def aggregate_reviews(database, reviews):
@@ -119,6 +125,15 @@ def aggregate_reviews(database, reviews):
             else:
                 pr = star_map[float(r[1])]
             pr.add_review(r[0], r[2], r[3], r[4])
+    elif database == 'TigerGraph':
+        # TigerGraph data as dict
+        for r in reviews:
+            if r['stars'] not in star_map.keys():
+                pr = PhoenixReview()
+                star_map[r['stars']] = pr
+            else:
+                pr = star_map[r['stars']]
+            pr.add_review(r['text'], r['cool'], r['funny'], r['useful'])
 
     return star_map
 

@@ -47,6 +47,7 @@ def test_database_connections(app):
 
 def filter_apscheduler_logs():
     """Filters the excessive and unnecessary APScheduler logs"""
+
     class NoRunningFilter(logging.Filter):
         def filter(self, record):
             return not (record.msg.startswith('Running job') or
@@ -54,9 +55,16 @@ def filter_apscheduler_logs():
                         record.msg.startswith('Looking for jobs to run') or
                         'executed successfully' in record.msg)
 
-    my_filter = NoRunningFilter()
-    logging.getLogger("apscheduler.scheduler").addFilter(my_filter)
-    logging.getLogger("apscheduler.executors.default").addFilter(my_filter)
+    class RequestFilter(logging.Filter):
+        def filter(self, record):
+            return not (record.msg.startswith('http') or
+                        record.msg.startswith('Starting new HTTP connection'))
+    
+    run_filter = NoRunningFilter()
+    req_filter = RequestFilter()
+    logging.getLogger("apscheduler.scheduler").addFilter(run_filter)
+    logging.getLogger("apscheduler.executors.default").addFilter(run_filter)
+    logging.getLogger("urllib3.connectionpool").addFilter(req_filter)
 
 
 def create_app():
