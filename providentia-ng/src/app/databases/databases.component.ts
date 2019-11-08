@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { IDatabase, DatabaseService, InfoMessage } from '../shared';
+import APP_CONFIG from '../app.config';
 
 @Component({
     selector: 'prv-databases',
@@ -13,6 +14,7 @@ export class DatabasesComponent extends InfoMessage implements OnInit {
     databases: IDatabase[];
     showSpinner: Array<boolean>;
     queryResponses = new Map();
+    tigerGraphRest: string;
 
     constructor(
         private databaseService: DatabaseService,
@@ -22,6 +24,7 @@ export class DatabasesComponent extends InfoMessage implements OnInit {
     }
 
     ngOnInit() {
+        this.tigerGraphRest = APP_CONFIG.FLASK_API.substring(0, APP_CONFIG.FLASK_API.lastIndexOf(":") + 1) + "14240";
         this.showSpinner = [];
         this.databaseService.query().subscribe((res: HttpResponse<IDatabase[]>) => {
             this.databases = res.body;

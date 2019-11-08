@@ -14,6 +14,7 @@ export class NewJobComponent extends InfoMessage implements OnInit {
     databases: IDatabase[];
     datasets: IDataset[];
     analysis: IAnalysis[];
+    numJobs: Array<number> = [1, 5, 10, 15, 20, 30];
 
     dataOptions: FormGroup;
     descriptionOptions: FormGroup;
@@ -31,7 +32,8 @@ export class NewJobComponent extends InfoMessage implements OnInit {
             floatLabel: 'auto',
             dbCtrl: new FormControl('', Validators.required),
             dsCtrl: new FormControl('', Validators.required),
-            anCtrl: new FormControl('', Validators.required)
+            anCtrl: new FormControl('', Validators.required),
+            nmCtrl: new FormControl('', Validators.required)
         });
     }
 
@@ -87,26 +89,28 @@ export class NewJobComponent extends InfoMessage implements OnInit {
             analysis: this.dataOptions.value.anCtrl,
             status: 'WAITING'
         }
-        this.newJobService.create(newJob)
-            .subscribe((res: HttpResponse<IBenchmark>) => {
-                this.showSuccessMsg('New job successfully added to the pipeline!');
-            }, (res: HttpErrorResponse) => {
-                console.error(res.message)
-                if (res.status === 0) {
-                    this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
-                } else if (res.status === 500) {
-                    this.showErrorMsg(res.error.error);
-                } else if (res.status === 400) {
-                    this.showWarnMsg(res.error.error);
-                    // Point user to field to fix
-                    this.descriptionOptions.reset();
-                } else if (res.status === 404) {
-                    this.showWarnMsg(res.error.error);
-                    // Point user to field to fix
-                    this.dataOptions.reset();
-                } else {
-                    this.showErrorMsg(res.statusText);
-                }
-            });
+        for (var i = 0; i < this.dataOptions.value.nmCtrl; i++) {
+            this.newJobService.create(newJob)
+                .subscribe((res: HttpResponse<IBenchmark>) => {
+                    this.showSuccessMsg('New job successfully added to the pipeline!');
+                }, (res: HttpErrorResponse) => {
+                    console.error(res.message)
+                    if (res.status === 0) {
+                        this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
+                    } else if (res.status === 500) {
+                        this.showErrorMsg(res.error.error);
+                    } else if (res.status === 400) {
+                        this.showWarnMsg(res.error.error);
+                        // Point user to field to fix
+                        this.descriptionOptions.reset();
+                    } else if (res.status === 404) {
+                        this.showWarnMsg(res.error.error);
+                        // Point user to field to fix
+                        this.dataOptions.reset();
+                    } else {
+                        this.showErrorMsg(res.statusText);
+                    }
+                });
+        }
     }
 }

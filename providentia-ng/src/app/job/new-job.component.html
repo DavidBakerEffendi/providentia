@@ -26,7 +26,7 @@
         <form [formGroup]="dataOptions" *ngIf="databases && datasets && analysis" class="row px-3">
             <p class="lead col-12">Choose a backend storage solution, dataset and analysis to perform:</p>
             <!-- Database -->
-            <mat-form-field [floatLabel]="dataOptions.value.floatLabel" class="col-sm-12 col-md-4">
+            <mat-form-field [floatLabel]="dataOptions.value.floatLabel" class="col-sm-12 col-md-3">
                 <select matNativeControl formControlName="dbCtrl" required>
                     <option *ngFor="let database of databases" [value]="database.name">
                         {{ database.name }}</option>
@@ -37,7 +37,7 @@
             </mat-form-field>
             <!-- Dataset -->
             <mat-form-field [hideRequiredMarker]="dataOptions.value.hideRequired"
-                [floatLabel]="dataOptions.value.floatLabel" class="col-sm-12 col-md-4">
+                [floatLabel]="dataOptions.value.floatLabel" class="col-sm-12 col-md-3">
                 <select matNativeControl formControlName="dsCtrl" required>
                     <option *ngFor="let dataset of datasets" [value]="dataset.name">{{ dataset.name }}
                     </option>
@@ -48,13 +48,24 @@
             </mat-form-field>
             <!-- Analysis -->
             <mat-form-field [hideRequiredMarker]="dataOptions.value.hideRequired"
-                [floatLabel]="dataOptions.value.floatLabel" class="col-sm-12 col-md-4">
+                [floatLabel]="dataOptions.value.floatLabel" class="col-sm-12 col-md-3">
                 <select matNativeControl formControlName="anCtrl" required>
                     <option *ngFor="let analys of analysis" [value]="analys.name">{{ analys.name }}
                     </option>
                 </select>
                 <mat-label>
                     <mat-icon class="tab-icon">bubble_chart</mat-icon> Analysis
+                </mat-label>
+            </mat-form-field>
+            <!-- Number of jobs -->
+            <!-- Database -->
+            <mat-form-field [floatLabel]="dataOptions.value.floatLabel" class="col-sm-12 col-md-3">
+                <select matNativeControl formControlName="nmCtrl" required>
+                    <option *ngFor="let num of numJobs" [value]="num">
+                        {{ num }}</option>
+                </select>
+                <mat-label>
+                    <mat-icon class="tab-icon">format_list_numbered</mat-icon> Number of Jobs
                 </mat-label>
             </mat-form-field>
         </form>
