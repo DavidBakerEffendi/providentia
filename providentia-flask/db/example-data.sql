@@ -67,6 +67,12 @@ values
        'c2a361d5-9451-4222-b5f7-7696f5f2284d',
        $$Review Trends in Phoenix 2018$$,
        $$In this analysis we look at the correlation between various characteristics in the review data per star for reviews in the Phoenix area during 2018.$$
+   ),
+   (
+        '05c2c642-32c0-4e6a-a0e5-c53028035fc8',
+        'c2a361d5-9451-4222-b5f7-7696f5f2284d',
+        $$Julie's Friend's Holiday Suggestions$$,
+        $$In this analysis we look at a user called Julie who would like to travel to either Phoenix, Las Vegas, or Toronto during the end of year holiday period. We use the sentiment found in the reviews of businesses in those areas by her friends (when they visited during those months) to rank those three cities.$$
    );
 
 insert into queries (
