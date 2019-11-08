@@ -59,6 +59,10 @@
                     </div>
                     <!-- Graph -->
                     <div class="row" style="margin-right: 0; margin-left: 0;">
+                        <!-- Spinner -->
+                        <div class="col-12" *ngIf="(!perfCPUData || !perfMemoryData) && !showWarn">
+                            <mat-spinner [diameter]="50" style="margin-left:auto;margin-right:auto;"></mat-spinner>
+                        </div>
                         <div class="col-12 row" style="margin-right: 0; margin-left: 0;">
                             <h4 class="col-12">CPU Performance</h4>
                             <div class="col-10" style="display: block;" *ngIf="perfCPUData">
@@ -82,16 +86,12 @@
                                 </canvas>
                             </div>
 
-                            <div class="col-2">
+                            <div class="col-2" *ngIf="perfMemoryData">
                                 <p>Mean: {{ memoryStats.mean | number:'.1-4' }}%</p>
                                 <p>Median: {{ memoryStats.median | number:'.1-4' }}%</p>
                                 <p>Min: {{ memoryStats.min }}%</p>
                                 <p>Max: {{ memoryStats.max }}%</p>
                             </div>
-                        </div>
-                        <!-- Spinner -->
-                        <div class="col-12" *ngIf="(!perfCPUData || !perfMemoryData) && !showWarn">
-                            <mat-spinner [diameter]="50" style="margin-left:auto;margin-right:auto;"></mat-spinner>
                         </div>
                     </div>
                 </mat-tab>

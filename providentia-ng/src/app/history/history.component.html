@@ -12,6 +12,17 @@
     </div>
 
     <mat-content>
+        <!-- While waiting for history to arrive -->
+        <div [hidden]="showSpinner !== true">
+            <mat-spinner [diameter]="50" style="margin-left:auto;margin-right:auto;"></mat-spinner>
+        </div>
+
+        <!-- If no jobs found -->
+        <div *ngIf="emptyResultSet === true" class="alert alert-info" role="alert">
+            No jobs have been run yet. Please navigate to 'New Job' to add a job to the pipeline.
+        </div>
+
+        <!-- Once jobs have arrived -->
         <div class="mat-elevation-z3" *ngIf="dataSource">
             <table mat-table [dataSource]="dataSource">
 

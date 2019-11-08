@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 
@@ -13,9 +13,12 @@ export class HistoryComponent extends InfoMessage implements OnInit {
 
     displayedColumns: string[] = ['database', 'dataset', 'analysis', 'date_executed', 'query_time', 'analysis_time', 'status'];
     dataSource: MatTableDataSource<IBenchmark>;
+    showSpinner: boolean;
+    emptyResultSet: boolean;
 
     constructor(
-        private benchmarkService: BenchmarkService
+        private benchmarkService: BenchmarkService,
+        private ref: ChangeDetectorRef
     ) { super(); }
 
     ngOnInit() {
@@ -23,9 +26,12 @@ export class HistoryComponent extends InfoMessage implements OnInit {
     }
 
     getBenchmarks() {
+        this.showSpinner = true;
         this.benchmarkService.query()
             .subscribe((res: HttpResponse<IBenchmark[]>) => {
                 this.dataSource = new MatTableDataSource<IBenchmark>(res.body);
+                this.showSpinner = false;
+                this.ref.markForCheck();
             },
                 (res: HttpErrorResponse) => {
                     console.error(res.statusText)
@@ -35,10 +41,12 @@ export class HistoryComponent extends InfoMessage implements OnInit {
                         this.showErrorMsg(res.error.error);
                     } else if (res.status == 503) {
                         this.showInfoMsg(res.error.error);
+                        this.emptyResultSet = true;
                     } else {
                         this.showErrorMsg(res.statusText);
                     }
-
+                    this.showSpinner = false;
+                    this.ref.markForCheck();
                 });
     }
 }
