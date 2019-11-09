@@ -39,7 +39,7 @@ Once the dataset has been normalized and converted to CSV (See `../normalize-dat
 ```
 GSQL > @loader.gsql
 ```
-This will begin the batch offline data loading job.
+This will begin the batch offline data loading job. Remember to edit the file paths in the script before starting each job.
 
 ### Elassandra (Deprecated)
 

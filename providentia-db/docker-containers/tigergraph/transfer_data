@@ -1,7 +1,7 @@
 # !/bin/bash
-docker cp ../../normalize-dataset/out/business.csv prv-tigergraph:/home/tigergraph/tigergraph/loadingData/
-docker cp ../../normalize-dataset/out/categories.csv prv-tigergraph:/home/tigergraph/tigergraph/loadingData/
-docker cp ../../normalize-dataset/out/users.csv prv-tigergraph:/home/tigergraph/tigergraph/loadingData/
-docker cp ../../normalize-dataset/out/friendships.csv prv-tigergraph:/home/tigergraph/tigergraph/loadingData/
-docker cp ../../normalize-dataset/out/reviews.csv prv-tigergraph:/home/tigergraph/tigergraph/loadingData/
+for f in ../../normalize-dataset/out/*.csv
+do
+	echo "Copying $f"
+	docker cp $f prv-tigergraph:/home/tigergraph/tigergraph/loadingData/
+done
 docker cp loader.gsql prv-tigergraph:/home/tigergraph/
