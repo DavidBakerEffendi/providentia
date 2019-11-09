@@ -36,6 +36,7 @@
 \usepackage{titlesec}
 \usepackage{placeins}
 \usepackage{lipsum}
+\usepackage{listings}
 
 % Configure and add custom commands
 \input{configuration.tex}
@@ -47,7 +48,7 @@
   Department of Computer Science\\
   Stellenbosch University\\
   Stellenbosch, South Africa \\
-  \texttt{davidbakereffendi@hotmail.com} \qquad \texttt{abvdm@cs.sun.ac.za} \\
+  \texttt{\{20056354@, abvdm@cs\}.sun.ac.za} \\
 }
 
 \begin{document}
@@ -56,7 +57,7 @@
 % abstract
 \input{abstract.tex}
 % keywords
-\keywords{Graph database technology \and spatio-temporal data \and NoSQL \and Yelp dataset challenge}
+\keywords{Graph database \and spatio-temporal data \and NoSQL \and Yelp dataset}
 
 \twocolumn
 
@@ -87,9 +88,9 @@
 \section{Implementation}
 \label{sec:impl}
 \input{sections/6_implementation.tex}
-\FloatBarrier
+% \FloatBarrier
 
-\section{Experiments}
+\section{Results and Discussion}
 \label{sec:experiments}
 \input{sections/7_experiments.tex}
 \FloatBarrier

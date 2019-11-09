@@ -36,3 +36,81 @@
 
 \setcounter{secnumdepth}{4}
 \setcounter{tocdepth}{4}
+
+% Make listing keep verbatim style font
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  keepspaces=true,
+}
+
+
+\definecolor{keyword}{HTML}{2771a3}
+\definecolor{pattern}{HTML}{b53c2f}
+\definecolor{string}{HTML}{be681c}
+\definecolor{relation}{HTML}{7e4894}
+\definecolor{variable}{HTML}{107762}
+\definecolor{comment}{HTML}{8d9094}
+
+\lstset{
+	numbers=none,
+	stepnumber=1,
+	numbersep=5pt,
+	basicstyle=\small\ttfamily,
+	keywordstyle=\color{keyword}\bfseries\ttfamily,
+	commentstyle=\color{comment}\ttfamily,
+	stringstyle=\color{string}\ttfamily,
+	identifierstyle=\color{black},
+	showstringspaces=false,
+	aboveskip=3pt,
+	belowskip=3pt,
+	columns=flexible,
+	keepspaces=true,
+	breaklines=true,	
+	captionpos=b,
+	tabsize=2,
+	frame=none,
+}
+
+\lstset{upquote=true}
+
+% Listing rules for Cypher
+
+\lstdefinelanguage{cypher}
+{
+    morekeywords={
+		MATCH, OPTIONAL, WHERE, NOT, AND, OR, XOR, RETURN, DISTINCT, ORDER, BY, ASC, ASCENDING, DESC, DESCENDING, UNWIND, AS, UNION, WITH, ALL, CREATE, DELETE, DETACH, REMOVE, SET, MERGE, SET, SKIP, LIMIT, IN, CASE, WHEN, THEN, ELSE, END, INDEX, DROP, UNIQUE, CONSTRAINT, EXPLAIN, PROFILE, START, CALL
+	},
+    ndkeywords={pageRank, iterate},
+    keywordstyle={\color{keyword}\bfseries},
+    ndkeywordstyle= {\color{relation}},
+    sensitive=true
+}
+
+% Listing rules for Gremlin
+
+\lstdefinelanguage{gremlin}
+{
+    keywordstyle = {\color{keyword}},
+    morekeywords = {
+        has, outE, order, by, desc, asc, inV, select, circle, gt, lt, leq, as, geoWithin, hasLabel, out, except, V, where, values, neq, eq, valueMap, limit, in, dedup, fold, unfold
+    },
+    ndkeywords={Geoshape, g},
+    ndkeywordstyle= {\color{relation}},
+    sensitive=true,
+    morestring=*[d]{"},
+}
+
+% Listing rules for GSQL
+
+\lstdefinelanguage{gsql}
+{
+	morekeywords={
+		CREATE, QUERY, FOR, GRAPH, SELECT, FROM, WHERE, PRINT, ACCUM, INTERSECT, TYPEDEF, LIMIT
+	},
+	keywordstyle=\color{keyword}\bfseries,
+	ndkeywords={SetAccum, ListAccum, HeapAccum, STRING, INT, DOUBLE, VERTEX, EDGE, tuple, DATETIME},
+    ndkeywordstyle=\color{relation},
+    sensitive=true,
+    morestring=*[d]{"},
+}

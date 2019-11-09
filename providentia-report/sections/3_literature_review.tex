@@ -1,4 +1,4 @@
-The following literature review aims to present and clearly define the terms and definitions related to database technology. The structure of this section begins by defining the following principles; ACID compliance and the CAP theorem. The relational model will be explained to elaborate how classic relational database technology came to be. The shortfalls of relational databases will then be used to introduce what NoSQL technology is, and how this contrasts with the many variations of NoSQL databases including key-value, column family, and document stores. Based on our literature review, we will summarize the contributions of our research to spatio-temporal data mining, analysis, and visualization.
+The following literature review aims to present and clearly define the terms and definitions related to database technologies. This section begins by defining the following principles; ACID compliance and the CAP theorem. The relational model will be explained to show how classic relational database technology came to be. The shortfalls of relational databases will then be used to introduce what NoSQL technology is, and how this contrasts with the many variations of NoSQL databases including key-value, column family, and document stores. Based on our literature review, we will summarize the contributions of our research to spatio-temporal data mining, analysis, and visualization.
 
 \subsection{ACID Compliance}
 \label{sec:acid}
@@ -15,13 +15,13 @@ Data may need to conform to a variety of rules and constraints, especially with 
 To avoid transaction conflicts, each transaction needs to be performed in isolation. This means that no transaction will affect another, and if necessary, a given transaction will take precedence over another in case of a conflict.
 
 \paragraph{Durability}
-For a database to be reliable in the event of any of the aforementioned failures, if a transaction has been committed, it needs to be able to guarantee that the transaction has been stored permanently. Durability along with atomicity work together to keep a database reliable when faced with a failure either during or directly after a transaction as been committed.
+For a database to be reliable in the event of any of the aforementioned failures, it should be the case that if a transaction has been committed, it needs to be able to guarantee that the transaction has been stored permanently. Durability along with atomicity work together to keep a database reliable when faced with a failure either during or directly after a transaction has been committed.
 
 A database that is ACID-compliant is robust against data being corrupted during a failure and guarantees that only successful transactions are processed.
 
 \subsection{CAP Theorem}
 \label{cap}
-Gilbert \& Lynch \cite{cap} explain that, in distributed systems, there is often a trade-off between consistency, availability, and network partition tolerance (CAP). Eric Brewer presented this theorem in the context of geographically separated datacenters supporting web services implicating that a multi-node database cannot ensure all three properties under CAP. Following this web service context, the three properties are described as follows:
+Gilbert \& Lynch \cite{cap} explain that, in distributed systems, there is often a trade-off between consistency, availability, and network partition tolerance (CAP). Eric Brewer presented this theorem in the context of geographically separated datacenters supporting web services, implicating that a multi-node database cannot ensure all three properties under CAP. Following this web service context, the three properties are described as follows:
 
 \begin{itemize}
     \item \textbf{Consistency} means that the server will return the correct response to each request.
@@ -39,7 +39,7 @@ The CAP theorem illustrates the trade-off between safety and liveness when consi
 
 \subsection{Relational Databases}
 
-Edgar F. Codd, an IBM fellow, is normally accredited for proposing the relational model \cite{relational-db}. The relational model provides a solution to the problem of making a distinction between the logical view and physical representation of the data being stored. This was the main shortcoming with the database management systems of the late sixties. Other issues included programmers having to follow large pointer chains to access data and redesign programs whenever storage layout structure had to be reconfigured (such as the introduction of indexing).
+Edgar F. Codd, an IBM fellow, is normally accredited for proposing the relational model \cite{relational-db}. The relational model provides a solution to the problem of making a distinction between the logical view and physical representation of the data being stored. This was the main shortcoming with the database management systems of the late sixties. Other issues included programmers having to follow large pointer chains to access data and having to redesign programs whenever storage layout structure had to be reconfigured (such as the introduction of indexing).
 
 The relational model solved these issues by providing a clear boundary between the logical and physical representation of data, created a simple model that could be understood by all programmers, and introduced high level language concepts.
 
@@ -68,7 +68,7 @@ Since the 1970's, relational database management systems have been the leading d
 
 NoSQL databases were created to address the shortfalls in classic relational databases when used for data of large volume, variety, and velocity \cite{nosql-db}. Many of these issues were introduced with the increasing popularity of the Internet and systems hosted in the cloud. Relational databases scale poorly over multiple nodes and on large volumes of data, which is why SQL databases could no longer be used as the data solution for major Internet companies such as Facebook, Amazon, and Google.
 
-NoSQL database technologies are non-relational and use non-SQL languages to manipulate and query the data. NoSQL is designed to run on multiple nodes (distributed systems), scale horizontally, and some even implementing technologies such as massively parallel processing (MPP) \cite{tigergraph-mpp} or in-memory processing (such as H-store \cite{hstore}). NewSQL is a distributed SQL technology which implements NoSQL features to achieve ACID-compliance (alongside partition tolerance). They will not be referred to as relational database technology when mentioned in this paper \cite{nosql-db}.
+NoSQL database technologies are non-relational and use non-SQL languages to manipulate and query the data. NoSQL is designed to run on multiple nodes (distributed systems), scale horizontally, and some even implemented technologies such as massively parallel processing (MPP) \cite{tigergraph-mpp} or in-memory processing (such as H-store \cite{hstore}). NewSQL is a distributed SQL technology which implements NoSQL features to achieve ACID-compliance (alongside partition tolerance). They will not be referred to as relational database technology when mentioned in this paper \cite{nosql-db}.
 
 A main challenge for non-relational database systems is the conflict between high availability in distributed systems and remaining transaction based and ACID-complaint (see Subsection \ref{sec:acid}). This results in NoSQL DBMS to typically choose availability and partition tolerance over consistency (see Subsection \ref{cap}) and have become BASE (Basically Available, Soft-state, Eventually consistent)-type systems to compensate \cite{base}. Not all NoSQL databases follow this trend and there are some vendors such as Neo4j and OrientDB that are fully ACID compliant \cite{acid}.
 
@@ -76,9 +76,10 @@ NoSQL databases fall under a broad scope and, in this paper, they will be classi
 
 \paragraph{Key-Value Store}
 
-The basis of a key-value store is that the data is organized in the form of key-value pairs. The key is typically a numeric or string value whereas the value can be any data object or collection of data objects (where a list would be represented by multiple entries of the same key). Each document has a unique identifier with a list of attributes, the key-value paired data. A simple example of this can be seen in Figure \ref{fig:keyvalue}.
+The basis of a key-value store is that the data is organized in the form of key-value pairs. The key is typically a numeric or string value whereas the value can be any data object or collection of data objects (where a list would be represented by multiple entries of the same key). Each document has a unique identifier with a list of attributes forming the key-value paired data. A simple example of this can be seen in Figure \ref{fig:keyvalue}.
 
-\begin{figure}[h]
+\begin{figure}[ht]
+    \small
     \centering
     \begin{tabular}{ |p{2cm}|p{4cm}|}
         \hline
@@ -106,7 +107,7 @@ The basis of a key-value store is that the data is organized in the form of key-
     \label{fig:keyvalue}
 \end{figure}
 
-Castellano \cite{keyvalue-article} explains that key-value stores are designed to be lightning fast, simple, and unstructured. They expose three operations namely; \verb|PUT|, \verb|GET|, and \verb|DELETE|, with some implementations adding an additional operation, \verb|SEARCH|, that matches keys or key-value pairs given a specified search expression and key namespace. These databases are decentralized in nature so find difficulty in providing the transactional guarantees of ACID.
+Castellano \cite{keyvalue-article} explains that key-value stores are designed to be lightning fast, simple, and unstructured. They expose three operations namely; \verb|PUT|, \verb|GET|, and \verb|DELETE|, with some implementations adding an additional operation, \verb|SEARCH|, that matches keys or key-value pairs given a specified search expression and key namespace. These databases are decentralized in nature so struggles to provide the transactional guarantees of ACID.
 
 \paragraph{Document Store}
 
@@ -114,11 +115,12 @@ As the name suggests, document store databases store their data in the form of d
 
 \paragraph{Column Family Store}
 
-Manoj \cite{docstore-article} explains column families as more structured data stores in that they store data in columns. They are a hybrid row/column store but store their data in distributed architectures instead of tables. Data is stored in a column-family (analogous to a table in SQL) but column-families have no relation to one another unlike in relational models. Column-families are less flexible than the previous key-value and document store databases as one will have to predefine a column family's attributes and are grouped together under keyspaces. A column-family model is illustrated in Figure \ref{fig:colfam}.
+Manoj \cite{docstore-article} explains column families as more structured data stores in that they store data in columns. They are a hybrid row/column store but store their data in distributed architectures instead of tables. Data is stored in a column-family (analogous to a table in SQL), but column-families have no relation to one another unlike in relational models. Column-families are less flexible than the previous key-value and document store databases as one will have to predefine a column family's attributes and are grouped together under keyspaces. A column-family model is illustrated in Figure \ref{fig:colfam}.
 
 \begin{figure}[h]
+    \small
     \centering
-    \begin{tabular}{ |p{3.1cm}|p{3.5cm}|}
+    \begin{tabular}{ |p{3.3cm}|p{3.45cm}|}
         \hline
         \rowcolor{Gray}
         \multicolumn{2}{|c|}{Yelp Keyspace}                      \\
@@ -135,7 +137,7 @@ Manoj \cite{docstore-article} explains column families as more structured data s
         \hline
         RowID: 2                    & RowID: 4                   \\
         FirstName: ``Kyle''         & Name: ``KFC''              \\
-        Email: ``kyle@hotmail.com'' & Categories: ``Fast-food''  \\
+        Email: ``kyle@gmail.com'' & Categories: ``Fast-food''  \\
         ReviewCount: 3              & Categories: ``Restaurant'' \\
                                     & Stars: 3.0                 \\
                                     & Open: true                 \\
@@ -177,20 +179,21 @@ Moniruzzaman \& Hossain \cite{nosql-db} elaborate the shortcomings of relational
 
 Spatial data is often highly relational due to the ties between vertices representing physical locations and their association with other entities in the database. This means the data will be closely related and that trend will follow in how the queries are written. Chen \cite{socialdata} explains that the queries in a graph database are designed to reveal hidden trends among the relationships in the data (especially when visualized) rather than within the data itself adding additional value in this implementation.
 
-Time adds an ordinal relation among all entries in the data that hold this property. Due to graph databases being the most relational among the NoSQL databases and their ability to ask complex questions to complex data. These complex questions would be multi join-style queries which are typically expensive but due to a graph's relational architecture, graph databases should be more well suited in comparison to other NoSQL database solutions handling this semi-structured data \cite{data-in-nosql}.
+Time adds an ordinal relation among all entries in the data that hold this property. Graph databases are the most relational among the NoSQL databases and have the ability to ask complex questions on complex data. These complex questions would be multi join-style queries which are typically expensive, but due to a graph's relational architecture, graph databases should be better suited in comparison to other NoSQL database solutions handling semi-structured data \cite{data-in-nosql}.
 
 \begin{quote}
     \textbf{Why compare a relational solution to a graph database and not another NoSQL solution?}
 \end{quote}
 
-Relational databases should come close due to their ability to manipulate data based on table relations. Their lack of scalability may see them lose in terms of overall benchmark performance when tested on large volumes of this kind of data, especially due to how join-style queries scale with table size \cite{data-in-nosql}.
+Relational databases should come close to what is required in our setting due to their ability to manipulate data based on table relations, but their lack of scalability may impact overall benchmark performance negatively when tested on large volumes of the kind of data we consider, especially due to how join-style queries scale with table size \cite{data-in-nosql}.
 
-Makris, et. al. \cite{mongovspostgres} compares how MongoDB (with GeoJSON) and PostgreSQL (with PostGIS) perform against one another on spatial data and show that PostgreSQL outperforms its NoSQL rival. Referring to the content in subsection \ref{nosql-database} it doesn't come as a surprise due to the lack of suitability relational queries are for document store databases. This means that complex queries perform poorly for a database such as MongoDB. One important observation that this paper does point out is how well PostgreSQL performed despite the volume of data. This suggests that the scalability issue was not as prominent as how well these complex queries were handled.
+Makris, et. al. \cite{mongovspostgres} compares how MongoDB (with GeoJSON) and PostgreSQL (with PostGIS) perform against one another on spatial data and show that PostgreSQL outperforms its NoSQL rival. Considering our discussion in subsection \ref{nosql-database}, it does not come as a surprise, given the lack of suitability of relational queries in a document store databases. In general, complex queries perform poorly in databases such as MongoDB. One important observation that this paper does point out is how well PostgreSQL performs, despite the volume of data. This suggests that the scalability issue of relational databases was not as prominent in this comparison as much as how well these complex queries were handled.
+% \comB{Try and improve readability of previous sentence.}
 
 \begin{quote}
     \textbf{Why spatio-temporal data?}
 \end{quote}
 
-Spatio-temporal data is constantly being generated by GPS-equipped devices everyday \cite{twitterdata}\cite{clost}. This data has important applications in epidemiologic \cite{spatiotemporal-epidemiology}, marine, disaster relief, and social data investigation \cite{rao2012spatiotemporal}. Few papers address a graph database solution for spatio-temporal data but due to its importance and abundance it would be important to seek an appropriate technology to store, model, and visualize these datasets.
+Spatio-temporal data is constantly being generated by GPS-equipped devices everyday \cite{twitterdata}\cite{clost}. This data has important applications in epidemiologic \cite{spatiotemporal-epidemiology}, marine, disaster relief, and social data investigation \cite{rao2012spatiotemporal}. Few papers address a graph database solution for spatio-temporal data, but due to its importance and abundance it would be important to seek an appropriate technology to store, model, and visualize these datasets.
 
-\paragraph{In conclusion} The findings in this paper would answer which technology, graph or relational, would perform the best not only in benchmark performance but suitability in terms of querying, modelling, and visualizing spatio-temporal data. This answer will be useful if one would like to perform analysis on not only a spatio-temporal dataset, but also investigate relations among the data with a suitable database, and perform/write efficient queries.
+\paragraph{In conclusion} The findings in this paper would answer which technology, graph or relational, would perform the best not only in benchmark performance but also in suitability in terms of querying, modelling, and visualizing of spatio-temporal data. This answer will be useful if one would like to perform analysis on not only a spatio-temporal dataset, but also investigate relationships in the data with a suitable database, and perform/write efficient queries.
