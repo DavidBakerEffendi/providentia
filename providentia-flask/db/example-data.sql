@@ -83,6 +83,7 @@ insert into queries (
     language
 )
 values
+       -- Analysis 1
     (
         'c4ec05a7-faa9-4bdd-90ae-280a40917406',
         '81c1ab05-bb06-47ab-8a37-b9aeee625d0f',
@@ -125,6 +126,7 @@ values
         $$CREATE QUERY getRecentGoodReviewsNearUser(Vertex<User> p) FOR GRAPH MyGraph {\n\tTYPEDEF tuple<DATETIME reviewDate, STRING businessId, INT stars, STRING text> restAndReview;\n\n\tDOUBLE lat = 35.15;\n\tDOUBLE lon = -80.79;\n\tINT distKm = 5;\n\tSetAccum<STRING> @@vSet;\n\tHeapAccum<restAndReview>(10, reviewDate DESC) @@busAndReviews;\n\n\tbusinesses = { Business.* };\n\tusers = { User.* };\n\tPSet = { p };\n\n\t@@vSet += getNearbyGridId(distKm, lat, lon);\n\tGrids = to_vertex_set(@@vSet, "Geo_Grid");\n\n\tNearbyBusinesses =\n\t\tSELECT b\n\t\tFROM Grids:s-(Business_Geo:e)-Business:b\n\t\tWHERE geoDistance(lat, lon, e.LATITUDE, e.LONGITUDE) <= distKm;\n\n\tRestaurants =\n\t\tSELECT b\n\t\tFROM businesses:b-(In_Category)->Category:c\n\t\tWHERE c.id == "Restaurants";\n\n\tNearbyRestaurants = NearbyBusinesses INTERSECT Restaurants;\n\tNearbyRestReviewsByP =\n\t\tSELECT b\n\t\tFROM NearbyRestaurants:b-(reverse_Reviews:tgt)->User:u\n\t\tWHERE tgt.STARS > 3 AND u == p\n\t\tACCUM @@busAndReviews += restAndReview(tgt.REVIEW_DATE, b.id, tgt.STARS, tgt.TEXT)\n\t\tLIMIT 10;\n\tPRINT NearbyRestReviewsByP;\n\tPRINT @@busAndReviews;\n}$$,
         'GSQL'
     ),
+       -- Analysis 2
     (
         'd5d16f45-d1ba-4181-b95c-dfd4e2f16b6f',
         'b540a4dd-f010-423b-9644-aef4e9b754a9',
@@ -144,5 +146,27 @@ values
         'b540a4dd-f010-423b-9644-aef4e9b754a9',
         'a63ea923-3e5d-42f5-bf28-045fbccb4c7e',
         $$CREATE QUERY get2018ReviewsInPhoenix() FOR GRAPH MyGraph {\n\tTYPEDEF tuple<STRING text, INT stars, INT cool, INT funny, INT useful> reviews;\n\n\tDOUBLE lat = 33.45;\n\tDOUBLE lon = -112.56;\n\tINT distKm = 50;\n\tSetAccum<STRING> @@vSet;\n\tSetAccum<reviews> @@reviews;\n\n\tbusinesses = { Business.* };\n\tusers = { User.* };\n\n\t@@vSet += getNearbyGridId(distKm, lat, lon);\n\tGrids = to_vertex_set(@@vSet, "Geo_Grid");\n\tNearbyBusinesses =\n\t\tSELECT b\n\t\tFROM Grids:s-(Business_Geo:e)-Business:b\n\t\tWHERE geoDistance(lat, lon, e.LATITUDE, e.LONGITUDE) <= distKm;\n\tReviews2018 =\n\t\tSELECT b\n\t\tFROM businesses:b-(reverse_Reviews:r)-User:u\n\t\tWHERE year(r.REVIEW_DATE) == 2018\n\t\tACCUM @@reviews += reviews(r.TEXT, r.STARS, r.COOL, r.FUNNY, r.USEFUL);\n\n\tPRINT @@reviews;\n}$$,
+        'GSQL'
+    ),
+       -- Analysis 3
+    (
+        '862bc3ee-a956-4ecd-8535-e2314c532c3a',
+        '05c2c642-32c0-4e6a-a0e5-c53028035fc8',
+        '291a3c67-7838-40e4-ab4a-677200bc4743',
+        $$SELECT R.text FROM review R\n\tJOIN business B ON R.business_Id = B.id\n\tINNER JOIN friends F2 ON R.user_id = F2.friend_id\n\tINNER JOIN friends F1 ON F2.user_id = F1.friend_id\nWHERE F1.user_id = "7weuSPSSqYLUFga6IYP4pg"\n\tAND (F1.friend_id <> "7weuSPSSqYLUFga6IYP4pg" AND F2.user_id <> "7weuSPSSqYLUFga6IYP4pg")\n\tAND ST_DWithin(B.location, ST_MakePoint(..., ...)::geography, 30000) \n\tAND (date_part("month", R.date) >= 10 AND date_part("month", R.date) <= 12)$$,
+        'SQL'
+    ),
+    (
+        'd42d6354-d8df-4853-b698-1ed5556b6031',
+        '05c2c642-32c0-4e6a-a0e5-c53028035fc8',
+        'bfd2ae61-700f-4f52-b928-a6e27f0b4e11',
+        $$g.V().has("User", "user_id", "7weuSPSSqYLUFga6IYP4pg").as("julie")\n\t.out("FRIENDS").as("f1").out("FRIENDS").as("f2")\n\t.union(select("f1"), select("f2")).where(neq("julie")).outE("REVIEWS").filter{\n\t\tit.get().value("date").atZone(ZoneId.of("-07:00")).toLocalDate().getMonthValue() >= 10 &&\n\t\tit.get().value("date").atZone(ZoneId.of("-07:00")).toLocalDate().getMonthValue() <= 12}.as("text")\n\t.inV().has("location", geoWithin(Geoshape.circle({}, {}, 30)))$$,
+        'Gremlin'
+    ),
+    (
+        '2492bd63-e162-4415-8ac8-4a58647b4f16',
+        '05c2c642-32c0-4e6a-a0e5-c53028035fc8',
+        'a63ea923-3e5d-42f5-bf28-045fbccb4c7e',
+        $$CREATE QUERY getFriendReviewsInArea(VERTEX<User> p, DOUBLE lat, DOUBLE lon) FOR GRAPH MyGraph {\n\tSetAccum<STRING> @@reviews;\n\tSetAccum<VERTEX> @@F1F2;\n\n\tINT distKm = 30;\n\tusers = { User.* };\n\tPSet = { p };\n\tGrids = to_vertex_set(getNearbyGridId(distKm, lat, lon), "Geo_Grid");\n\n\tNearbyBusinesses =\n\t\tSELECT b\n\t\tFROM Grids:s-(Business_Geo:e)-Business:b\n\t\tWHERE geoDistance(lat, lon, e.LATITUDE, e.LONGITUDE) <= distKm;\n\n\tF1 =\n\t\tSELECT f\n\t\tFROM PSet-(Friends)-User:f\n\t\tACCUM @@F1F2 += f;\n\n\tF2 =\n\t\tSELECT f\n\t\tFROM F1-(Friends)-User:f\n\t\tWHERE f != p\n\t\tACCUM @@F1F2 += f;\n\n\tFReviewedBusinesses =\n\t\tSELECT b\n\t\tFROM users:f-(Reviews:tgt)-Business:b\n\t\tWHERE @@F1F2.contains(f);\n\n\tNearbyFBusiness = NearbyBusinesses INTERSECT FReviewedBusinesses;\n\n\tGetTheReviews =\n\t\tSELECT b\n\t\tFROM NearbyFBusiness:b-(reverse_Reviews:tgt)-User:u\n\t\tWHERE MONTH(tgt.REVIEW_DATE) >= 10 AND MONTH(tgt.REVIEW_DATE) <= 12\n\t\tAND @@F1F2.contains(u)\n\t\tACCUM @@reviews += tgt.TEXT;\n\n\tPRINT @@reviews;}$$,
         'GSQL'
     );
