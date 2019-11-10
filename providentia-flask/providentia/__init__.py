@@ -52,6 +52,7 @@ def filter_apscheduler_logs():
         def filter(self, record):
             return not (record.msg.startswith('Running job') or
                         record.msg.startswith('Next wakeup') or
+                        record.msg.startswith('Execution of job') or
                         record.msg.startswith('Looking for jobs to run') or
                         'executed successfully' in record.msg)
 

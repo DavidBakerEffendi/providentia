@@ -1,8 +1,9 @@
 import json
 import csv
+import config
 from tqdm import tqdm
 
-CSV_REV = "./out/reviews.csv"
+CSV_REV = "./out/reviews_{}.csv".format(config.SUBSET_SETTINGS['PERC'])
 
 REV_HEADERS = ["review_id", "user_id", "business_id", "stars", "useful", "funny", "cool", "text", "date"]
 

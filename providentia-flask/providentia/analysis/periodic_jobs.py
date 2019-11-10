@@ -39,13 +39,15 @@ def execute_waiting():
 
 def start_job(benchmark: Benchmark):
     """Updates the status of benchmarks and decides which analysis to run"""
-    from providentia.analysis import kate, review_trends
+    from providentia.analysis import kate, review_trends, city_sentiment
 
     tbl_benchmark.set_as(benchmark.benchmark_id, 'PROCESSING')
     if benchmark.analysis.analysis_id == kate.analysis_id:
         kate.run(benchmark)
     elif benchmark.analysis.analysis_id == review_trends.analysis_id:
         review_trends.run(benchmark)
+    elif benchmark.analysis.analysis_id == city_sentiment.analysis_id:
+        city_sentiment.run(benchmark)
 
     benchmark.status = 'COMPLETE'
     tbl_benchmark.update(benchmark)

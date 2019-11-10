@@ -1,9 +1,10 @@
 import json
 import csv
+import config
 from tqdm import tqdm
 
-CSV_USE = "./out/users.csv"
-CSV_FND = "./out/friendships.csv"
+CSV_USE = "./out/users_{}.csv".format(config.SUBSET_SETTINGS['PERC'])
+CSV_FND = "./out/friendships_{}.csv".format(config.SUBSET_SETTINGS['PERC'])
 
 USE_HEADERS = ["user_id", "name", "review_count", "yelping_since", "useful", "funny", "cool", "fans", "average_stars"]
 FND_HEADERS = ["user_id", "friend_id"]

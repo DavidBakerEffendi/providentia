@@ -349,7 +349,7 @@ public class JanusTransactionManager implements TransactionManager {
         Vertex uVert = g.V().hasLabel("User").has("user_id", u.getUserId()).next();
         // Add friend relations
         for (String friendId : u.getFriends()) {
-            // Due to preprocessing, all user's friends will be in the database already
+            // Due to pre-processing, all user's friends will be in the database already
             final GraphTraversal<Vertex, Vertex> friendTraversal = g.V().hasLabel("User").has("user_id", friendId);
             Vertex friendVert = friendTraversal.next();
             // Check if edge exists, if not, add it, else do nothing

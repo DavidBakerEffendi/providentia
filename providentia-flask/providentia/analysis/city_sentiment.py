@@ -2,31 +2,30 @@ import logging
 from datetime import datetime
 from time import perf_counter_ns
 
+from providentia.classifier import sentiment
 from providentia.db import janus_graph, postgres, tigergraph
 from providentia.models import Benchmark
 
 analysis_id = "05c2c642-32c0-4e6a-a0e5-c53028035fc8"
 julie_id = "7weuSPSSqYLUFga6IYP4pg"
 
-cities = {
-    'Phoenix': (33.54, -112.17),
-    'Las Vegas': (36.16, -115.14),
-    'Toronto': (43.72, -79.38)
-}
+coords = (36.16, -115.14)
 
 
 def run(benchmark: Benchmark):
     database = benchmark.database.name
-    logging.debug("Starting review trend analysis using %s", database)
+    logging.debug("Starting city sentiment analysis using %s", database)
     # initialize timers
     benchmark.date_executed = datetime.utcnow()
     # Run query
     start = perf_counter_ns()
-    reviews = get_reviews_per_city(database)
+    reviews = get_lv_reviews_from_friends(database)
     q1_total_time = (perf_counter_ns() - start) / 1000000
     # Analyse results
     start = perf_counter_ns()
-    # TODO
+    vegas_reviews = VegasReviews()
+    for r in reviews:
+        vegas_reviews.add_review(r)
     analysis_time = (perf_counter_ns() - start) / 1000000
     # Add time
     total_time = q1_total_time + analysis_time
@@ -42,32 +41,61 @@ def run(benchmark: Benchmark):
     benchmark.analysis_time = analysis_time
 
 
-def get_reviews_per_city(database):
-    reviews = {}
-    for c in cities.keys():
-        lat, lon = cities[c]
-        if database == 'JanusGraph':
-            result = janus_graph.execute_query(
-                'g.V().has("User", "user_id", "{}").out("FRIENDS").outE("REVIEWS").filter{'
-                'it.get().value("date").atZone(ZoneId.of("-07:00")).toLocalDate().getMonthValue() >= 10 &&'
-                'it.get().value("date").atZone(ZoneId.of("-07:00")).toLocalDate().getMonthValue() <= 12}.as("text")'
-                '.inV().has("location", geoWithin(Geoshape.circle({}, {}, 30))).select("text").by("text")'
-                    .format(julie_id, lat, lon))
-            reviews[c] = result
-        elif database == "PostgreSQL":
-            result = postgres.execute_query(
-                'SELECT R.text FROM review R '
-                'JOIN business B ON R.business_Id = B.id '
-                'JOIN friends F ON R.user_id = F.friend_id '
-                'AND F.user_id = {} '
-                'AND ST_DWithin(B.location, ST_MakePoint({}, {}})::geography, 30000)'
-                'AND (date_part("month", R.date) >= 10 AND date_part("month", R.date) <= 12)'
-                    .format(julie_id, lon, lat))
-            reviews[c] = result
-        elif database == "TigerGraph":
-            req = tigergraph.execute_query('getFriendReviewsInArea?p={}&lat={}&lon={}'.format(julie_id, lat, lon))
-            if req is not None:
-                result = req[0]['@@reviews']
-            else:
-                result = []
-            reviews[c] = result
+def get_lv_reviews_from_friends(database):
+    lat, lon = coords
+    if database == 'JanusGraph':
+        result = janus_graph.execute_query(
+            'g.V().has("User", "user_id", "%s").as("julie")'
+            '.out("FRIENDS").as("f1").out("FRIENDS").as("f2")'
+            '.union(select("f1"), select("f2")).where(neq("julie")).outE("REVIEWS").filter{'
+            'it.get().value("date").atZone(ZoneId.of("-07:00")).toLocalDate().getMonthValue() >= 11 &&'
+            'it.get().value("date").atZone(ZoneId.of("-07:00")).toLocalDate().getMonthValue() <= 12}.as("text")'
+            '.inV().has("location", geoWithin(Geoshape.circle(%f, %f, 30)))'
+            '.select("text").by("text")' % (julie_id, lat, lon))
+    elif database == "PostgreSQL":
+        result = postgres.execute_query(
+            "SELECT DISTINCT R.text FROM review R "
+            "JOIN business B ON R.business_Id = B.id "
+            "INNER JOIN friends F2 ON R.user_id = F2.friend_id "
+            "INNER JOIN friends F1 ON F2.user_id = F1.friend_id "
+            "WHERE F1.user_id = $${}$$ "
+            "AND F2.user_id <> $${}$$ "
+            "AND (R.user_id = F1.user_id OR R.user_id = F1.friend_id) "
+            "AND ST_DWithin(B.location, ST_MakePoint({}, {})::geography, 30000) "
+            "AND (date_part('month', R.date) >= 11 AND date_part('month', R.date) <= 12)"
+                .format(julie_id, julie_id, lon, lat))
+        result = [i[0] for i in result]
+    elif database == "TigerGraph":
+        req = tigergraph.execute_query('getFriendReviewsInArea?p={}&lat={}&lon={}'.format(julie_id, lat, lon))
+        if req is not None:
+            result = req[0]['@@reviews']
+        else:
+            result = []
+    return result
+
+
+class VegasReviews(object):
+
+    def __init__(self):
+        self.review_count = 0
+        # self.stars = 0
+        self.positive_count = 0
+        self.negative_count = 0
+
+    def add_review(self, text):
+        self.review_count += 1
+        # self.stars += stars
+        if sentiment.classify(text) == "pos":
+            self.positive_count += 1
+        else:
+            self.negative_count += 1
+
+    def get_sentiment(self):
+        return (self.positive_count / self.review_count) * 100
+
+    # def get_stars(self):
+    #     return self.stars / self.review_count
+    #
+    # def __str__(self):
+    #     return "{{'stars': '{}', 'sentiment':{}}}" \
+    #         .format(self.get_stars(), self.get_sentiment())

@@ -1,5 +1,5 @@
 SCALE = True
-PERC = '10'
+PERC = '20'
 SETUP = 1
 
 if SETUP == 1:

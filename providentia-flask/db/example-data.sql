@@ -72,7 +72,7 @@ values
         '05c2c642-32c0-4e6a-a0e5-c53028035fc8',
         'c2a361d5-9451-4222-b5f7-7696f5f2284d',
         $$Julie's Friend's Holiday Suggestions$$,
-        $$In this analysis we look at a user called Julie who would like to travel to either Phoenix, Las Vegas, or Toronto during the end of year holiday period. We use the sentiment found in the reviews of businesses in those areas by her friends (when they visited during those months) to rank those three cities.$$
+        $$In this analysis we look at a user called Julie who would like to travel to Las Vegas during the end of year holiday period. We use the sentiment found in the reviews of businesses in those areas by her friends (when they visited during those months) to rank Las Vegas in terms of percentage positive sentiment.$$
    );
 
 insert into queries (
@@ -160,7 +160,7 @@ values
         'd42d6354-d8df-4853-b698-1ed5556b6031',
         '05c2c642-32c0-4e6a-a0e5-c53028035fc8',
         'bfd2ae61-700f-4f52-b928-a6e27f0b4e11',
-        $$g.V().has("User", "user_id", "7weuSPSSqYLUFga6IYP4pg").as("julie")\n\t.out("FRIENDS").as("f1").out("FRIENDS").as("f2")\n\t.union(select("f1"), select("f2")).where(neq("julie")).outE("REVIEWS").filter{\n\t\tit.get().value("date").atZone(ZoneId.of("-07:00")).toLocalDate().getMonthValue() >= 10 &&\n\t\tit.get().value("date").atZone(ZoneId.of("-07:00")).toLocalDate().getMonthValue() <= 12}.as("text")\n\t.inV().has("location", geoWithin(Geoshape.circle({}, {}, 30)))$$,
+        $$g.V().has("User", "user_id", "7weuSPSSqYLUFga6IYP4pg").as("julie")\n\t.out("FRIENDS").as("f1").out("FRIENDS").as("f2")\n\t.union(select("f1"), select("f2")).where(neq("julie")).outE("REVIEWS").filter{\n\t\tit.get().value("date").atZone(ZoneId.of("-07:00")).toLocalDate().getMonthValue() >= 10 &&\n\t\tit.get().value("date").atZone(ZoneId.of("-07:00")).toLocalDate().getMonthValue() <= 12}.as("text")\n\t.inV().has("location", geoWithin(Geoshape.circle(..., ..., 30)))$$,
         'Gremlin'
     ),
     (

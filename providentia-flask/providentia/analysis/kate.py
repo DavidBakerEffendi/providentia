@@ -50,6 +50,8 @@ def run(benchmark: Benchmark):
     for bus_rev in business_reviews:
         kate_row = KateResult()
         kate_row.business = get_business_name(database, bus_rev.business_id)
+        if kate_row.business is None:
+            continue
         kate_row.star_average = bus_rev.get_star_avg()
         kate_row.sentiment_average = bus_rev.get_sentiment()
         kate_row.benchmark = benchmark
@@ -65,8 +67,11 @@ def get_business_name(database, business_id):
     elif database == "PostgreSQL":
         return postgres.execute_query('SELECT name FROM business WHERE id = \'{}\''.format(business_id))[0][0]
     elif database == "TigerGraph":
-        result = tigergraph.execute_query("getBusinessName?b={}".format(business_id))[0]['name']
-        return result
+        result = tigergraph.execute_query("getBusinessName?b={}".format(business_id))
+        if result is not None:
+            return result[0]['name']
+        else:
+            return result
 
 
 def update_business_reviews(database, recent_reviews, business_reviews):
@@ -131,7 +136,7 @@ def get_recent_reviews_for_user_near_kate(database, user_id):
     elif database == "TigerGraph":
         req = tigergraph.execute_query("getRecentGoodReviewsNearUser?p={}".format(user_id))
         if req is not None:
-            result = req[0]['@@busAndReviews']
+            result = req[0]['@@finalReviews']
         else:
             result = req
 

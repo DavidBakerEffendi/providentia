@@ -11,12 +11,12 @@ NORMALIZE_SETTINGS = {
 }
 
 # Generate subset of data and clean user friends that aren't in table
-GEN_SUBSET = False
+GEN_SUBSET = True
 SUBSET_SETTINGS = {
     "SUB_BUS": True,
     "SUB_REV": True,
     "SUB_USE": True,
-    "PERC": 0.1
+    "PERC": 0.3
 }
 
 # The CSV format is used for TigerGraph's offline batch loader. The dataset

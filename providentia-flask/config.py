@@ -3,7 +3,7 @@ import logging
 # Default
 DEBUG = False
 TESTING = False
-DATABASE_URI = 'postgres://postgres:docker@127.0.0.1:5432/providentia'
+DATABASE_URI = 'postgres://postgres:docker@localhost:5432/providentia'
 LOGGING_LEVEL = logging.INFO
 
 ENABLE_SENTIMENT = True

@@ -1,7 +1,8 @@
 import json
 from tqdm import tqdm
+import config
 
-SUB_FILE = "./out/users_subset.json"
+SUB_FILE = "./out/users_subset_{}.json".format(config.SUBSET_SETTINGS['PERC'])
 
 
 def get_user_ids(fr, sub_num):

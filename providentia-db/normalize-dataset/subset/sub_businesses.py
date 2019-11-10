@@ -1,6 +1,7 @@
 from tqdm import tqdm
+import config
 
-SUB_FILE = "./out/business_subset.json"
+SUB_FILE = "./out/business_subset_{}.json".format(config.SUBSET_SETTINGS['PERC'])
 
 
 def generate_subset(f_dir, perc):
