@@ -2,11 +2,11 @@ USE GRAPH MyGraph
 
 DROP JOB loadYelp
 CREATE LOADING JOB loadYelp FOR GRAPH MyGraph {
-    DEFINE FILENAME fBus = "~/tigergraph/loadingData/business.csv";
-    DEFINE FILENAME fCat = "~/tigergraph/loadingData/categories.csv";
-    DEFINE FILENAME fUse = "~/tigergraph/loadingData/users.csv";
-    DEFINE FILENAME fFnd = "~/tigergraph/loadingData/friendships.csv";
-    DEFINE FILENAME fRev = "~/tigergraph/loadingData/reviews.csv";
+    DEFINE FILENAME fBus = "~/tigergraph/loadingData/business_0.13.csv";
+    DEFINE FILENAME fCat = "~/tigergraph/loadingData/categories_0.13.csv";
+    DEFINE FILENAME fUse = "~/tigergraph/loadingData/users_0.13.csv";
+    DEFINE FILENAME fFnd = "~/tigergraph/loadingData/friendships_0.13.csv";
+    DEFINE FILENAME fRev = "~/tigergraph/loadingData/reviews_0.13.csv";
 
     # Load data from business files
     LOAD fBus

@@ -11,8 +11,8 @@ services:
             - prv-tigergraph:/var/lib/tigergraph/data
         ulimits:
             nofile:
-                soft: "1000000"
-                hard: "1000000"
+                soft: 1000000
+                hard: 1000000
         stdin_open: true
         tty: true
 volumes:

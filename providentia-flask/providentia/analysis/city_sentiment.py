@@ -21,11 +21,13 @@ def run(benchmark: Benchmark):
     start = perf_counter_ns()
     reviews = get_lv_reviews_from_friends(database)
     q1_total_time = (perf_counter_ns() - start) / 1000000
+    if database == "PostgreSQL":
+        reviews = [{'text': i[0], 'stars': i[1]} for i in reviews]
     # Analyse results
     start = perf_counter_ns()
     vegas_reviews = VegasReviews()
     for r in reviews:
-        vegas_reviews.add_review(r)
+        vegas_reviews.add_review(r['text'], r['stars'])
     analysis_time = (perf_counter_ns() - start) / 1000000
     # Add time
     total_time = q1_total_time + analysis_time
@@ -39,6 +41,7 @@ def run(benchmark: Benchmark):
     # Update benchmark object values
     benchmark.query_time = q1_total_time
     benchmark.analysis_time = analysis_time
+    print(vegas_reviews)
 
 
 def get_lv_reviews_from_friends(database):
@@ -47,14 +50,15 @@ def get_lv_reviews_from_friends(database):
         result = janus_graph.execute_query(
             'g.V().has("User", "user_id", "%s").as("julie")'
             '.out("FRIENDS").as("f1").out("FRIENDS").as("f2")'
-            '.union(select("f1"), select("f2")).where(neq("julie")).outE("REVIEWS").filter{'
+            '.union(select("f1"), select("f2")).dedup().where(neq("julie")).outE("REVIEWS").filter{'
             'it.get().value("date").atZone(ZoneId.of("-07:00")).toLocalDate().getMonthValue() >= 11 &&'
-            'it.get().value("date").atZone(ZoneId.of("-07:00")).toLocalDate().getMonthValue() <= 12}.as("text")'
+            'it.get().value("date").atZone(ZoneId.of("-07:00")).toLocalDate().getMonthValue() <= 12}'
+            '.as("text").as("stars")'
             '.inV().has("location", geoWithin(Geoshape.circle(%f, %f, 30)))'
-            '.select("text").by("text")' % (julie_id, lat, lon))
+            '.select("text", "stars").by("text", "stars")' % (julie_id, lat, lon))
     elif database == "PostgreSQL":
         result = postgres.execute_query(
-            "SELECT DISTINCT R.text FROM review R "
+            "SELECT DISTINCT R.text, R.stars FROM review R "
             "JOIN business B ON R.business_Id = B.id "
             "INNER JOIN friends F2 ON R.user_id = F2.friend_id "
             "INNER JOIN friends F1 ON F2.user_id = F1.friend_id "
@@ -64,7 +68,6 @@ def get_lv_reviews_from_friends(database):
             "AND ST_DWithin(B.location, ST_MakePoint({}, {})::geography, 30000) "
             "AND (date_part('month', R.date) >= 11 AND date_part('month', R.date) <= 12)"
                 .format(julie_id, julie_id, lon, lat))
-        result = [i[0] for i in result]
     elif database == "TigerGraph":
         req = tigergraph.execute_query('getFriendReviewsInArea?p={}&lat={}&lon={}'.format(julie_id, lat, lon))
         if req is not None:
@@ -78,13 +81,13 @@ class VegasReviews(object):
 
     def __init__(self):
         self.review_count = 0
-        # self.stars = 0
+        self.stars = 0
         self.positive_count = 0
         self.negative_count = 0
 
-    def add_review(self, text):
+    def add_review(self, text, stars):
         self.review_count += 1
-        # self.stars += stars
+        self.stars += stars
         if sentiment.classify(text) == "pos":
             self.positive_count += 1
         else:
@@ -93,9 +96,9 @@ class VegasReviews(object):
     def get_sentiment(self):
         return (self.positive_count / self.review_count) * 100
 
-    # def get_stars(self):
-    #     return self.stars / self.review_count
-    #
-    # def __str__(self):
-    #     return "{{'stars': '{}', 'sentiment':{}}}" \
-    #         .format(self.get_stars(), self.get_sentiment())
+    def get_stars(self):
+        return self.stars / self.review_count
+
+    def __str__(self):
+        return "{{'stars': '{}', 'sentiment':{}}}" \
+            .format(self.get_stars(), self.get_sentiment())
