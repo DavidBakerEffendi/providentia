@@ -1,0 +1,47 @@
+CREATE QUERY getRecentGoodReviewsNearUser(
+    Vertex<User> p) FOR GRAPH MyGraph {
+    TYPEDEF tuple<DATETIME reviewDate,
+        STRING businessId, INT stars,
+        STRING text> restAndReview;
+	
+    DOUBLE lat = 35.15;
+    DOUBLE lon = -80.79;
+    INT distKm = 5;
+    HeapAccum<restAndReview>
+        (10, reviewDate DESC) @@busAndReviews;
+    ListAccum<restAndReview> @@finalReviews;
+    businesses = { Business.* };
+    users = { User.* };
+    PSet = { p };
+    Grids = to_vertex_set(
+        getNearbyGridId(distKm, lat, lon),
+                        "Geo_Grid");
+	
+	NearbyBusinesses =
+	  SELECT b
+	  FROM Grids:s-(Business_Geo:e)-Business:b 
+	  WHERE geoDistance(lat, lon,
+	    e.LATITUDE, e.LONGITUDE) <= distKm;
+	
+	Restaurants =
+	  SELECT b
+	  FROM businesses:b-(In_Category)->Category:c
+	  WHERE c.id == "Restaurants";
+	
+	NearbyRestaurants =
+	    NearbyBusinesses INTERSECT Restaurants;
+	NearbyRestReviewsByP =
+	  SELECT u
+	  FROM NearbyRestaurants:b
+	    -(reverse_Reviews:tgt)->
+	    User:u
+	  WHERE tgt.STARS > 3 AND u == p
+	  ACCUM @@busAndReviews +=
+	    restAndReview(tgt.REVIEW_DATE, b.id,
+	                  tgt.STARS, tgt.TEXT);
+	FOREACH i IN RANGE[0, 9] DO
+	  @@finalReviews += @@busAndReviews.pop();
+	END;
+	
+	PRINT @@finalReviews;
+}

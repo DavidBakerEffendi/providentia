@@ -93,9 +93,9 @@
 {
     keywordstyle = {\color{keyword}},
     morekeywords = {
-        has, outE, order, by, desc, asc, inV, select, circle, gt, lt, leq, as, geoWithin, hasLabel, out, except, V, where, values, neq, eq, valueMap, limit, in, dedup, fold, unfold
+        has, outE, order, by, desc, asc, inV, select, circle, gt, lt, leq, as, geoWithin, hasLabel, out, except, V, where, values, neq, eq, valueMap, limit, in, dedup, fold, unfold, inE, between, union, filter, get, value, atZone, of, getMonthValue, toLocalDate
     },
-    ndkeywords={Geoshape, g},
+    ndkeywords={Geoshape, ZoneId},
     ndkeywordstyle= {\color{relation}},
     sensitive=true,
     morestring=*[d]{"},
@@ -106,7 +106,7 @@
 \lstdefinelanguage{gsql}
 {
 	morekeywords={
-		CREATE, QUERY, FOR, GRAPH, SELECT, FROM, WHERE, PRINT, ACCUM, INTERSECT, TYPEDEF, LIMIT
+		CREATE, QUERY, FOR, GRAPH, SELECT, FROM, WHERE, PRINT, ACCUM, INTERSECT, TYPEDEF, LIMIT, DO, FOREACH, RANGE, DO, IN, END, YEAR, MONTH
 	},
 	keywordstyle=\color{keyword}\bfseries,
 	ndkeywords={SetAccum, ListAccum, HeapAccum, STRING, INT, DOUBLE, VERTEX, EDGE, tuple, DATETIME},

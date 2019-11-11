@@ -1,228 +1,117 @@
-This section discusses the queries for and how each database performed on implementing the kernels mentioned in Section \ref{sec:kernels}. Section \ref{sec:overallPerf} will discuss the overall performance of each database and characteristics of each query language displayed throughout each kernel.
+This section discusses how each database performed on implementing the kernels mentioned in Section \ref{sec:kernels}.
 
 \subsection{Kate's Restaurant Recommendation}
 
-\subsubsection{Queries}
-
-\subsubsubsection{SQL}
-
-Listing \ref{lst:sql1KateRest} works as follows: First, the reviews, user, and business tables are joined together to find out which businesses Kate reviewed. Once all these businesses are obtained, all users who rated these businesses above 3 stars are obtained by another review join. Finally, the categories table (and its linking table) is joined to the businesses to only include restaurants.
-
-\begin{lstlisting}[
-    language=sql,
-    caption={
-        A SQL query that returns all the IDs of all the users who have rated restaurants Kate has been to above 3 stars.
-    },
-    label={lst:sql1KateRest}
-]
-SELECT DISTINCT OtherReviews.user_id
-FROM users 
-JOIN review KateReviews 
-    ON users.id = KateReviews.user_id 
-    AND users.id = "qUL3CdRRF1vedNvaq06rIA"
-    AND KateReviews.stars > 3 
-JOIN business KateBus
-    ON KateReviews.business_id = KateBus.id
-JOIN review OtherReviews
-    ON OtherReviews.user_id != KateReviews.user_id 
-    AND OtherReviews.business_id = KateReviews.business_id
-JOIN bus_2_cat Bus2Cat
-    ON OtherReviews.business_id = Bus2Cat.business_id
-JOIN category Categories
-    ON Bus2Cat.category_id = Categories.id 
-        AND Categories.name = "Restaurants"
-\end{lstlisting}
-
-Listing \ref{lst:sql2KateRest} begins by joining the review and business tables to match all businesses reviewed by the given user. These businesses are filtered by those within the Las Vegas area (with a radius of 50km). The reviews are ordered by date and limited to return only 10, as to keep only the latest reviews from the user.
-
-\begin{lstlisting}[
-    language=sql,
-    caption={
-        A SQL query that returns the star rating, text and business ID for restaurants a user has reviewed above 3 stars.
-    },
-    label={lst:sql2KateRest}
-]
-SELECT review.stars, review.text, review.business_id
-FROM review
-JOIN business
-    ON review.business_id = business.id
-    AND review.user_id = "..."
-    AND ST_DWithin(location,
-       ST_MakePoint(-80.79, 35.15)::geography,
-       5000)
-    AND review.stars > 3
-ORDER BY review.date DESC
-LIMIT 10
-\end{lstlisting}
-
-
-\subsubsubsection{Gremlin}
-
-The query in Listing \ref{lst:gremlin1KateRest} works by obtaining the vertex representing Kate and declaring the referencing for this vertex using the \texttt{as} step. The review edges leaving Kate are then filtered by those with a star rating above 3. The \texttt{inV()} step simply refers to the businesses who have the incoming review edge. The \texttt{in("REVIEWS")} step is different from the \texttt{inE} step as it skips across the edge and references the user vertices directly -- which are then selected if they are not Kate's vertex. These users are referenced and the category vertices are checked to filter out businesses which aren't restaurants. The users referenced earlier are then selected, duplicates are removed and their ID values are selected for the return.
-
-\begin{lstlisting}[
-    language=gremlin,
-    caption={
-        A Gremlin query that returns all the IDs of all the users who have rated restaurants Kate has been to above 3 stars.
-    },
-    label={lst:gremlin1KateRest}
-]
-g.V().has("User",
-    "user_id", "qUL3CdRRF1vedNvaq06rIA")
-    .as("kate")
-  .outE("REVIEWS").has("stars", gt(3))
-  .inV().in("REVIEWS").where(neq("kate"))
-    .as("users")
-  .out("REVIEWS").out("IN_CATEGORY")
-    .has("name", "Restaurants")
-  .select("users").dedup()
-  .values("user_id").fold()
-\end{lstlisting}
-
-Listing \ref{lst:gremlin2KateRest} starts again at the user vertex. The reviews are once again filtered by rating and then ordered by date. The reviews are then referenced for later twice as this can be used to create a dictionary-style output later. The vertices with these incoming review edges are implicitly business vertices again and are selected by their location using the mixed spatial index from ElasticSearch. These businesses are referenced for later. The reviews are selected and limited to 10 and all the prior references are selected. The dictionary-style output is produced using a combination of the \texttt{select} and \texttt{by} step\footnote{\texttt{select} will select the prior references and the \texttt{by} step will select the attribute to display from the references in \texttt{select} respectively.}. The output will now look like a list of dictionary objects with the keys; \texttt{stars}, \texttt{text}, and \texttt{business\_id} which are easily serialized and deserialized over sockets or a REST API.
-
-\begin{lstlisting}[
-    language=gremlin,
-    caption={
-        A Gremlin query that returns the star rating, text and business ID for restaurants a user has reviewed above 3 stars.
-    },
-    label={lst:gremlin2KateRest}
-]
-g.V().has("User", "user_id", "...")
-    .outE("REVIEWS").has("stars", gt(3))
-        .order().by("date", desc)
-        .as("stars", "text")
-    .inV().has("location",
-        geoWithin(
-            Geoshape.circle(35.15,-80.79, 5)
-        )).as("business_id")
-    .select("stars").limit(10)
-    .select("stars", "text", "business_id")
-    .by("stars").by("text").by("business_id")
-\end{lstlisting}
-
-\subsubsubsection{GSQL}
-
-GSQL queries work by first declaring variables and seeds, then writing the query. The GSQL query in Listing \ref{lst:gsql1KateRest} declares a \texttt{SetAccum} which does not allow duplicates and the three seeds; \texttt{categories}, \texttt{businesses}, and \texttt{PSet}. First, businesses which are categorized as restaurants are selected, then businesses which were rated by the user -- which will be Kate. The users who reviewed the intersection of these two business sets are then accumulated based on the constraints that their ratings were above 3 stars and that those users aren't Kate. The results of the accumulated users is then printed which returns a JSON string of the variable's contents when the REST endpoint is queried.
-
-\begin{lstlisting}[
-    language=gsql,
-    caption={
-        A GSQL query that returns all the IDs of all the users who have rated restaurants Kate has been to above 3 stars.
-    },
-    label={lst:gsql1KateRest}
-]
-CREATE QUERY getSimilarUsersBasedOnRestaurants(
-    VERTEX<User> p) FOR GRAPH MyGraph { 
-    SetAccum<STRING> @@userIds;
-    categories = { Category.* };
-    businesses = { Business.* };
-    PSet = { p };
-	
-	Restaurants =
-	  SELECT b
-	  FROM businesses:b-(In_Category)->Category:c
-	  WHERE c.id == "Restaurants";
-	
-	PRatedBusinesses =
-	  SELECT b
-	  FROM PSet-(Reviews)->Business:b
-	  WHERE r.STARS > 3;
-	
-	PRatedRestaurants = 
-	  PRatedBusinesses INTERSECT Restaurants;
-	
-	PeopleRatedSameBusinesses =
-	  SELECT tgt
-      FROM PRatedRestaurants:m
-          -(reverse_Reviews:r)->
-          User:tgt
- 	  WHERE tgt != p AND r.STARS > 3
-	  ACCUM @@userIds += tgt.id;
-	
-  PRINT @@userIds;
-}
-\end{lstlisting}
-
-Listing \ref{lst:gsql2KateRest} begins by declaring a custom type which has a tuple format. This allows one to record only the properties one wants to, similar to the \texttt{select} and \texttt{by} steps in Listing \ref{lst:gremlin1KateRest}. A \texttt{HeapAccum} is constructed with a max size of 1000, and is used as it can order the accumulator by the properties in the custom type -- in this case the date property. Using the geo-grid, all grid IDs are obtained using the \texttt{getNearbyGridId} method, which is then converted into a vertex set by matching the grid IDs to their respective vertices in the graph. The businesses connected to these grid vertices is obtained and businesses categorized as restaurants are then intersected as before Listing \ref{lst:gsql1KateRest}. The top 10 tuples from the heap are popped and accumulated in a list which is then printed.
-
-\begin{lstlisting}[
-    language=gsql,
-    caption={
-        A GSQL query that returns the star rating, text and business ID for restaurants a user has reviewed above 3 stars.
-    },
-    label={lst:gsql2KateRest}
-]
-CREATE QUERY getRecentGoodReviewsNearUser(
-    Vertex<User> p) FOR GRAPH MyGraph {
-    TYPEDEF tuple<DATETIME reviewDate,
-        STRING businessId, INT stars,
-        STRING text> restAndReview;
-	
-    DOUBLE lat = 35.15;
-    DOUBLE lon = -80.79;
-    INT distKm = 5;
-    HeapAccum<restAndReview>
-        (10, reviewDate DESC) @@busAndReviews;
-    ListAccum<restAndReview> @@finalReviews;
-    businesses = { Business.* };
-    users = { User.* };
-    PSet = { p };
-    Grids = to_vertex_set(
-        getNearbyGridId(distKm, lat, lon),
-                        "Geo_Grid");
-	
-	NearbyBusinesses =
-	  SELECT b
-	  FROM Grids:s-(Business_Geo:e)-Business:b 
-	  WHERE geoDistance(lat, lon,
-	    e.LATITUDE, e.LONGITUDE) <= distKm;
-	
-	Restaurants =
-	  SELECT b
-	  FROM businesses:b-(In_Category)->Category:c
-	  WHERE c.id == "Restaurants";
-	
-	NearbyRestaurants =
-	    NearbyBusinesses INTERSECT Restaurants;
-	NearbyRestReviewsByP =
-	  SELECT u
-	  FROM NearbyRestaurants:b
-	    -(reverse_Reviews:tgt)->
-	    User:u
-	  WHERE tgt.STARS > 3 AND u == p
-	  ACCUM @@busAndReviews +=
-	    restAndReview(tgt.REVIEW_DATE, b.id,
-	                  tgt.STARS, tgt.TEXT);
-	FOREACH i IN RANGE[0, 9] DO
-	  @@finalReviews += @@busAndReviews.pop();
-	END;
-	
-	PRINT @@finalReviews;
-}
-\end{lstlisting}
-
-\subsubsection{Query Speed}
+\todo{Discuss the performance results}
 
 \todo{Show scatter plot with each load on x-axis and database as each point on the legend}
 
+Figure \ref{fig:kateResult} shows which restaurants would be recommended to Kate. One can see that both positive sentiment and star average over reviews for highly regarded restaurants compare well and remain consistent.
+
+The reviews returned by the query were typically well above 3 stars and, since the Na\"ive Bayes performed well when predicting unseen text data, it comes as no surprise that most of the reviews were tagged as positive. Further analysis could look at how positive sentiment and star rating would compare for inconsistently performing restaurants but a special measure would need to be put in place to determine how ``inconsistency'' is measured.
+
+\begin{figure}[ht]
+    \small
+    \centering
+    \begin{tabular}{ |p{3.25cm}||p{1.78cm}|p{1.59cm}|}
+        \hline
+        \rowcolor{Gray}
+        \multicolumn{3}{|c|}{Businesses in Phoenix 2018} \\
+        \hline
+        \rowcolor{LightGray}
+        Name & Pos Sentiment & Star Average                 \\
+        \hline
+        Paco's Tacos \& Tequila     & 92.9825\%  & 4.5833 \\
+        Oak Steakhouse Charlotte    & 100.0\%    & 5.0 \\
+        The Cheesecake Factory      & 100.0\%    & 4.4615 \\
+        Block \& Grinder            & 90.0\%     & 4.3333 \\
+        Best Wok                    & 100.0\%    & 4.2 \\
+        \hline
+    \end{tabular}
+    \vspace*{5mm}
+    \caption{The result of analysis on the review data of recommended restaurants. Only results with 5 reviews or more are displayed.}
+    \label{fig:kateResult}
+\end{figure}
+
 \subsection{Review Trends in Phoenix 2018}
+\label{sec:resultReviews2018}
 
-\subsubsection{Queries}
+\todo{Discuss the performance results}
 
-\subsubsection{Query Speed}
+\todo{Show scatter plot with each load on x-axis and database as each point on the legend}
+
+The general trends shown in review data for Phoenix during 2018 have the following characteristics:
+
+\begin{itemize}
+    \item More critical, lower scoring reviews tend to be longer and most useful.
+    \item Reviews with 3 or 4 stars seem to be the funniest.
+    \item Reviews with 4 or 5 stars tend to be the coolest.
+\end{itemize}
+
+The percentage positive sentiment, when scored relatively, is ordered consistently with the average star rating. This validates the performance of the binary sentiment classifier in that one almost does not need to see the star rating and can rely on text data alone when considering a broad spectrum of reviews.
+
+This analysis could then be performed over varied year brackets and different areas to see if performance is consistent or not. The implication of this could lead to experimenting with more sophisticated machine learning models on the dataset to be more precising in that it could potentially predict the star rating as is done in \cite{reddy2017prediction} and \cite{monett2016predicting}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.49\textwidth]{img/phoenix2018/1Star.pdf}
+    \caption{Relative characteristics of 1 star reviews over reviews of restaurants in Phoenix 2018.}
+    \label{fig:1star}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.49\textwidth]{img/phoenix2018/2Stars.pdf}
+    \caption{Relative characteristics of 2 star reviews over reviews of restaurants in Phoenix 2018.}
+    \label{fig:2star}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.49\textwidth]{img/phoenix2018/3Stars.pdf}
+    \caption{Relative characteristics of 3 star reviews over reviews of restaurants in Phoenix 2018.}
+    \label{fig:3star}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.49\textwidth]{img/phoenix2018/4Stars.pdf}
+    \caption{Relative characteristics of 4 star reviews over reviews of restaurants in Phoenix 2018.}
+    \label{fig:4star}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.49\textwidth]{img/phoenix2018/5Stars.pdf}
+    \caption{Relative characteristics of 5 star reviews over reviews of restaurants in Phoenix 2018.}
+    \label{fig:5star}
+\end{figure}
 
 \subsection{Ranking Las Vegas by Friends' Sentiment}
 
-\subsubsection{Queries}
+\todo{Discuss the performance results}
 
-\subsubsection{Query Speed}
+\todo{Show scatter plot with each load on x-axis and database as each point on the legend}
 
-\subsection{Overall Performance}
-\label{sec:overallPerf}
+The result of this analysis was focused more on the performance rather than the data extracted. The results of the data analysis on this kernel does not show anything more interesting about the review data than what was already discussed in Section \ref{sec:resultReviews2018}. One notable difference in this kernel however, is that it produces a much more complex query and the databases perform accordingly.
 
-\subsubsection{Queries}
-\todo{Speak on the characteristics displayed in each query}
+The result of this kernel is simply to show that the results may vary and can be correlated depending on the relationships between different data points.
 
-\subsubsection{Query Speed}
-\todo{Check query speed overall - analysis independent}
+\begin{figure}[ht]
+    \small
+    \centering
+    \begin{tabular}{ |p{3.5cm}|p{3.5cm}|}
+        \hline
+        \rowcolor{Gray}
+        \multicolumn{2}{|c|}{Las Vegas Sentiment vs Star Average} \\
+        \hline
+        \rowcolor{LightGray}
+        Positive Sentiment (\%) & Star Average \\
+        \hline
+        70.7767 & 3.8917 \\
+        \hline
+    \end{tabular}
+    \vspace*{5mm}
+    \caption{The result of analysis on the review data of Julie's friends.}
+    \label{fig:cityResult}
+\end{figure}

@@ -52,26 +52,31 @@ Cypher is a declarative language, so there is less control over how the traverse
 
 Cypher has the advantage of being able to express complex traversals in a simple and more intuitive manner than Gremlin. Due to the open-source nature of Cypher and, how closely it is linked to Gremlin, it benefits from the same portability advantages by being able to integrate with multiple vendors. TinkerPop 3 supports Cypher\footnote{https://github.com/opencypher/cypher-for-gremlin} so any TinkerPop 3 enabled graph database can be queried with either language and thus benefits from the ability that either query language can be used depending on if a high-level traversal or simple query is required. An example of a useful query on the dataset we consider are given in Figure \ref{lst:cypher-example-1}.
 
-\begin{figure*}[h]
+\begin{figure}[h]
     \centering
     \begin{lstlisting}[language=cypher]
 CALL apoc.periodic.iterate(
     "MATCH (p1:User) RETURN p1",
-    "MATCH (p1)-[:REVIEWS]->(r1)-->()<--(r2)<-[:REVIEWS]-(p2)
-        WHERE id(p1) < id(p2)",
-    {batchSize:100, parallel:true, iterateList:true}
+    "MATCH (p1)-[:REVIEWS]->(r1)
+           -->()<--
+           (r2)<-[:REVIEWS]-(p2)
+        WHERE id(p1) < id(p2)", {
+        batchSize:100,
+        parallel:true,
+        iterateList:true
+    }
 );
     \end{lstlisting}
     \caption{Returns all users who have reviewed the same businesses as a given user. The query iterates through all users. Note how the return match verifies that the user \texttt{p1} does not match user \texttt{p2}.}
     \label{lst:cypher-example-1}
-\end{figure*}
+\end{figure}
 
 \paragraph{GSQL}
 
-GSQL is described as a SQL-like language which is the conceptual descendent from technologies such as Gremlin, Hadoop MapReduce, SQL, Cypher and SPARQL \cite{gsql-tigergraph}. GSQL, like Gremlin, is a Turing-complete graph query language that accumulates data along a traversal. One limitation that Gremlin has compared to GSQL, is that Gremlin cannot simultaneously group two tables by separate group-by attributes\footnote{\edt{Note that Gremlin is able to group two tables by separate group-by attributes but it would need to do it while using the \texttt{store} step between groupings due to the dataflow architecture of the language.}}. GSQL achieves this by providing the ability to define multiple grouping accumulators \edt{and can use these accumulators to accumulate data based on varying criteria within the same steps}.
-\comB{Seems a bit confusing - how can it be that one can not express something in Gremlin if it is indeed Turing complete.}
+GSQL is described as a SQL-like language which is the conceptual descendent from technologies such as Gremlin, Hadoop MapReduce, SQL, Cypher and SPARQL \cite{gsql-tigergraph}. GSQL, like Gremlin, is a Turing-complete graph query language that accumulates data along a traversal. One limitation that Gremlin has compared to GSQL, is that Gremlin cannot simultaneously group two tables by separate group-by attributes\footnote{Note that Gremlin is able to group two tables by separate group-by attributes, but it would need to do this while using the \texttt{store} step between groupings due to the dataflow architecture of the language.}. GSQL achieves this by providing the ability to define multiple grouping accumulators and can use these accumulators to accumulate data based on varying criteria within the same steps.
+%\comB{Seems a bit confusing - how can it be that one can not express something in Gremlin if it is indeed Turing complete.}
 
-\edt{Accumulators are variables which accumulate information over a graph traversal and come in two major groups namely, scalar and collection. Scalar accumulators such as \texttt{OrAccum} or \texttt{SumAccum} store a single value. Collection accumulators such as \texttt{ListAccum} or \texttt{SetAccum} store a set of values or, as is the case with \texttt{ListAccum}, can nest accumulators. An example of a GSQL query using accumulators can be seen in Figure \ref{lst:gsql-accum}.}
+Accumulators are variables which accumulate information over a graph traversal and come in two major groups namely, scalar and collection. Scalar accumulators such as \texttt{OrAccum} or \texttt{SumAccum} store a single value. Collection accumulators such as \texttt{ListAccum} or \texttt{SetAccum} store a set of values or, as is the case with \texttt{ListAccum}, can nest accumulators. An example of a GSQL query using accumulators can be seen in Figure \ref{lst:gsql-accum}.
 
 \begin{figure*}[h]
     \centering

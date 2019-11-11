@@ -116,22 +116,183 @@ The top 5000 occurring adjectives are kept in the bag. These informative words c
 
 All of the reviews are next processed into these feature sets and tagged. They are then given to the model to learn. Once the model has been trained, a review is classified by breaking it up into a feature set, given to the model to classify and the predicted class label is then returned.
 
-\subsubsection{Kernels}
+\subsubsection{Kernels \edt{Queries have been moved here}}
 \label{sec:kernels}
 
 \subsubsubsection{Kate's Restaurant Recommendation}
+
+\paragraph{Description}
 This analysis selects a user near the beginning of the dataset named Kate. This user has a number of reviews for restaurants in the Las Vegas area. A subset of reviews which hold a strictly greater than 3 star rating by Kate are selected, sorted by date descending, and limited by 10 reviews per user in order to take the most relevant ones. These businesses are then selected, filtered by category ``Restaurants'', and other users who have an equal or greater than star rating are then selected as the recommending users.
 
 Now assume that Kate has relocated to a new area. All businesses which have been rated strictly larger than 3 stars by the recommending users are then selected as restaurants to recommend to Kate in the new area. The text in these reviews are checked for sentiment and the percentage positive sentiment is displayed alongside the average star rating for each recommended restaurant. This sentiment vs. average star rating is used as a metric to analyse in terms of asking the question: How reliable is the star rating versus the actual sentiment found in the text?
 
 The purpose of the first part of this kernel is to test the performance of a 1-hop graph traversal pattern. This hop is demonstrated in category filtering and finding users with mutual sentiment for a given review. This type of situation is faced by many recommendation technologies and this is quite a basic technique for recommendation. The additional challenge is the relocation of Kate and seeing how responsive the database is to the spatial and temporal aspect which is the second part of this kernel. The accumulated list of users is split into a separate query for each user to test the ability of each database technology to perform concurrent reads on subsets of data which is a strength of NoSQL databases.
 
+\paragraph{SQL}
+
+Listing \ref{lst:sql1KateRest} works as follows: First, the reviews, user, and business tables are joined together to find out which businesses Kate reviewed. Once all these businesses are obtained, all users who rated these businesses above 3 stars are obtained by another review join. Finally, the categories table (and its linking table) is joined to the businesses to only include restaurants.
+
+\lstinputlisting[
+    language=sql,
+    caption={
+        A SQL query that returns all the IDs of all the users who have rated restaurants Kate has been to above 3 stars.
+    },
+    label={lst:sql1KateRest}
+]{./queries/kate1.sql}
+
+Listing \ref{lst:sql2KateRest} begins by joining the review and business tables to match all businesses reviewed by the given user. These businesses are filtered by those within the Las Vegas area (with a radius of 50km). The reviews are ordered by date and limited to return only 10, as to keep only the latest reviews from the user.
+
+\lstinputlisting[
+    language=sql,
+    caption={
+        A SQL query that returns the star rating, text and business ID for restaurants a user has reviewed above 3 stars.
+    },
+    label={lst:sql2KateRest}
+]
+{./queries/kate2.sql}
+
+
+\paragraph{Gremlin}
+
+The query in Listing \ref{lst:gremlin1KateRest} works by obtaining the vertex representing Kate and declaring the referencing for this vertex using the \texttt{as} step. The review edges leaving Kate are then filtered by those with a star rating above 3. The \texttt{inV()} step simply refers to the businesses who have the incoming review edge. The \texttt{in("REVIEWS")} step is different from the \texttt{inE} step as it skips across the edge and references the user vertices directly -- which are then selected if they are not Kate's vertex. These users are referenced and the category vertices are checked to filter out businesses which aren't restaurants. The users referenced earlier are then selected, duplicates are removed and their ID values are selected for the return.
+
+\lstinputlisting[
+    language=gremlin,
+    caption={
+        A Gremlin query that returns all the IDs of all the users who have rated restaurants Kate has been to above 3 stars.
+    },
+    label={lst:gremlin1KateRest}
+]
+{./queries/kate1.groovy}
+
+Listing \ref{lst:gremlin2KateRest} starts again at the user vertex. The reviews are once again filtered by rating and then ordered by date. The reviews are then referenced for later twice as this can be used to create a dictionary-style output later. The vertices with these incoming review edges are implicitly business vertices again and are selected by their location using the mixed spatial index from ElasticSearch. These businesses are referenced for later. The reviews are selected and limited to 10 and all the prior references are selected. The dictionary-style output is produced using a combination of the \texttt{select} and \texttt{by} step\footnote{\texttt{select} will select the prior references and the \texttt{by} step will select the attribute to display from the references in \texttt{select} respectively.}. The output will now look like a list of dictionary objects with the keys; \texttt{stars}, \texttt{text}, and \texttt{business\_id} which are easily serialized and deserialized over sockets or a REST API.
+
+\lstinputlisting[
+    language=gremlin,
+    caption={
+        A Gremlin query that returns the star rating, text and business ID for restaurants a user has reviewed above 3 stars.
+    },
+    label={lst:gremlin2KateRest}
+]
+{./queries/kate2.groovy}
+
+\paragraph{GSQL}
+
+GSQL queries work by first declaring variables and seeds, then writing the query. The GSQL query in Listing \ref{lst:gsql1KateRest} declares a \texttt{SetAccum} which does not allow duplicates and the three seeds; \texttt{categories}, \texttt{businesses}, and \texttt{PSet}. First, businesses which are categorized as restaurants are selected, then businesses which were rated by the user -- which will be Kate. The users who reviewed the intersection of these two business sets are then accumulated based on the constraints that their ratings were above 3 stars and that those users aren't Kate. The results of the accumulated users is then printed which returns a JSON string of the variable's contents when the REST endpoint is queried.
+
+\lstinputlisting[
+    language=gsql,
+    caption={
+        A GSQL query that returns all the IDs of all the users who have rated restaurants Kate has been to above 3 stars.
+    },
+    label={lst:gsql1KateRest}
+]
+{./queries/kate1.gsql}
+
+Listing \ref{lst:gsql2KateRest} begins by declaring a custom type which has a tuple format. This allows one to record only the properties one wants to, similar to the \texttt{select} and \texttt{by} steps in Listing \ref{lst:gremlin1KateRest}. A \texttt{HeapAccum} is constructed with a max size of 1000, and is used as it can order the accumulator by the properties in the custom type -- in this case the date property. Using the geo-grid, all grid IDs are obtained using the \texttt{getNearbyGridId} method, which is then converted into a vertex set by matching the grid IDs to their respective vertices in the graph. The businesses connected to these grid vertices is obtained and businesses categorized as restaurants are then intersected as before Listing \ref{lst:gsql1KateRest}. The top 10 tuples from the heap are popped and accumulated in a list which is then printed.
+
+\lstinputlisting[
+    language=gsql,
+    caption={
+        A GSQL query that returns the star rating, text and business ID for restaurants a user has reviewed above 3 stars.
+    },
+    label={lst:gsql2KateRest}
+]
+{./queries/kate2.gsql}
+
+
 \subsubsubsection{Review Trends in Phoenix 2018}
+
+\paragraph{Description}
 This analysis goes deeper into observing the trend of various characteristics of reviews versus their star ratings. This is a common analysis performed on the Yelp dataset \cite{yelp-trends-zhang}, but the version in this investigation selects a subset of reviews only within the 2018 year in the Phoenix area. The spatiotemporal boundaries placed on this subset may reveal hidden trends to be considered in future work.
 
 Reviews are extracted first by location (which results in a much smaller subset than extracting by date first) then by date. The reviews are then separated by star rating. For each star rating, the characteristics of ``funny'', ``useful'', and ``cool'' are accumulated and the text is classified as either positive or negative. For each star rating these are normalized and placed next to one another to see the characteristic of a review from each star group.
 
-\subsubsubsection{Ranking Las Vegas by Friends' Sentiment}
-\edt{The purpose of this analysis is the ability to aggregate relations from depth 1 -- 2 of a graph pattern while maintaining spatio-temporal constraints. The user story of this kernel is that a user in the dataset would like to travel to Las Vegas over the Oct -- Dec period. Instead of asking from each of the hundreds of direct friends to thousands of mutual friends, the sentiment from their reviews written during the Oct -- Dec period (irrespective of year) in the Las Vegas area will be analysed.}
+\paragraph{SQL}
 
-\edt{Both friends and mutual friends will be aggregated and all reviews written during the Oct -- Dec period will be filtered. These reviews will be filtered by the spatial constraint of whether they are connected to businesses within 30km of the Las Vegas center. The remaining reviews will have their text data extracted and returned for analysis. Using the sentiment classifier, a percentage positive sentiment will be generated and this will be the result of the data analysis.}
+This kernel is the least complex of the three as it has a single join with a spatio-temporal constraint. Listing \ref{lst:sqlReviews2018} returns selected characteristics on reviews where the date year is 2018 and reviewed businesses are within the Phoenix area.
+
+\lstinputlisting[
+    language=sql,
+    caption={
+        A SQL query that returns all the review text and ratings for businesses within 50km of the Phoenix area during 2018.
+    },
+    label={lst:sqlReviews2018}
+]
+{./queries/reviews.sql}
+
+\paragraph{Gremlin}
+
+One caveat of using mixed indexes on dates via the Gremlin Translator is highlighted in the query for this kernel. Usually, since Gremlin is designed to be embedded, one should make use of objects when appropriate. Since JanusGraph is being queried from Python\footnote{Where ideally, it would be within a JVM language which has access to the JanusGraph specific classes and functions, e.g. Groovy.}, with no support for mixed query specific parameters, date related parameters need to be parsed using static methods from the \texttt{Instant} class in Java. This can be seen in Listing \ref{lst:gremlinReviews2018} when filtering reviews by date. Alternatively, one could also use the \texttt{filter} step as is done in Listing \ref{lst:gremlinCity}.
+
+Out of the set of businesses within the Phoenix area and set of all the reviews in 2018, the businesses set would be the smaller of the two. This is important when using a dataflow language since the whole subset will be accumulated before moving to successive functions in the query. Due to this characteristic of Gremlin, businesses are accumulated before the reviews.
+
+\lstinputlisting[
+    language=gremlin,
+    caption={
+        A Gremlin query that returns all the review text and ratings for businesses within 50km of the Phoenix area during 2018.
+    },
+    label={lst:gremlinReviews2018}
+]
+{./queries/reviews.groovy}
+
+\paragraph{GSQL}
+
+Since only selected characteristics of a review are desired, a tuple is created at the beginning of Listing \ref{lst:gsqlReviews2018}. The businesses within the Phoenix area are selected first, then reviews where the date part is 2018. The review tuples are accumulated into a \texttt{ListAccum}. 
+
+\lstinputlisting[
+    language=gsql,
+    caption={
+        A GSQL query that returns all the review text and ratings for businesses within 50km of the Phoenix area during 2018.
+    },
+    label={lst:gsqlReviews2018}
+]
+{./queries/reviews.gsql}
+
+\subsubsubsection{Ranking Las Vegas by Friends' Sentiment}
+
+\paragraph{Description}
+The purpose of this analysis is the ability to aggregate relations from depth 1 -- 2 of a graph pattern while maintaining spatio-temporal constraints. The user story of this kernel is that a user in the dataset would like to travel to Las Vegas over the Nov -- Dec period. Instead of asking from each of the hundreds of direct friends to thousands of mutual friends, the sentiment from their reviews written during the Nov -- Dec period (irrespective of year) in the Las Vegas area will be analysed.
+
+Both friends and mutual friends will be aggregated and all reviews written during the Nov -- Dec period will be filtered. These reviews will be filtered by the spatial constraint of whether they are connected to businesses within 30km of the Las Vegas center. The remaining reviews will have their text data extracted and returned for analysis. Using the sentiment classifier, a percentage positive sentiment will be generated and this will be the result of the data analysis.
+
+\paragraph{SQL}
+
+Listing \ref{lst:sqlCity} begins by joining reviews and businesses before joining the two depths of friend relations. Julie's ID must be checked for at depth two as to only include mutual friends. Businesses are constrained by location and reviews by their month value under the date attribute. All reviews where the user ID matches the IDs of friends at depth 1 or 2 are selected and the text and star ratings of these reviews is returned.
+
+\lstinputlisting[
+    language=sql,
+    caption={
+        A SQL query that returns all the review text from reviews written by friends and mutual friends for businesses within 30km of the Las Vegas center.
+    },
+    label={lst:sqlCity}
+]
+{./queries/city.sql}
+
+\paragraph{Gremlin}
+
+Starting with Julie's user vertex at the beginning of Listing \ref{lst:gremlinCity}, direct friends and mutual friends are accumulated as \texttt{f1} and \texttt{f2} respectively. First, duplicate users are removed, then any instance of Julie's vertex is removed from the union of these two accumulated groups of friends.
+
+Once the traversal needs to be filtered by the temporal aspect, the same issue of having to call multiple functions due to the caveat in Listing \ref{lst:gremlinReviews2018} is encountered. The month value is extracted from each of these dates and filtered by their month values accordingly and referenced for later use. These reviews are then constrained by the locations of the business vertices by which they are connected. These reviews are then selected and their text and star rating data returned.
+
+\lstinputlisting[
+    language=gremlin,
+    caption={
+        A Gremlin query that returns all the review text from reviews written by friends and mutual friends for businesses within 30km of the Las Vegas center.
+    },
+    label={lst:gremlinCity}
+]
+{./queries/city.groovy}
+
+\paragraph{GSQL}
+
+In a similar fashion to the Gremlin variant, the users from both depths of the friend relations are aggregated before removing Julie's user vertex. The \texttt{SetAccum} is used so duplicate user vertices should not be an issue. The intersection of the nearby businesses and businesses reviewed by the accumulated friend users are then used to extract the review data. Another \texttt{SetAccum}, \texttt{@@reviews}, is used to extract the text and star rating data from each review, where the reviews are constrained by their month values. The accumulated review data in \texttt{@@reviews} is then returned.
+
+\lstinputlisting[
+    language=gsql,
+    caption={
+        A GSQL query that returns all the review text from reviews written by friends and mutual friends for businesses within 30km of the Las Vegas center.
+    },
+    label={lst:gsqlCity}
+]
+{./queries/city.gsql}

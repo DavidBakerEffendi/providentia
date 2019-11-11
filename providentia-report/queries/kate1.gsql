@@ -1,0 +1,30 @@
+CREATE QUERY getSimilarUsersBasedOnRestaurants(
+    VERTEX<User> p) FOR GRAPH MyGraph { 
+    SetAccum<STRING> @@userIds;
+    categories = { Category.* };
+    businesses = { Business.* };
+    PSet = { p };
+	
+	Restaurants =
+	  SELECT b
+	  FROM businesses:b-(In_Category)->Category:c
+	  WHERE c.id == "Restaurants";
+	
+	PRatedBusinesses =
+	  SELECT b
+	  FROM PSet-(Reviews)->Business:b
+	  WHERE r.STARS > 3;
+	
+	PRatedRestaurants = 
+	  PRatedBusinesses INTERSECT Restaurants;
+	
+	PeopleRatedSameBusinesses =
+	  SELECT tgt
+      FROM PRatedRestaurants:m
+          -(reverse_Reviews:r)->
+          User:tgt
+ 	  WHERE tgt != p AND r.STARS > 3
+	  ACCUM @@userIds += tgt.id;
+	
+  PRINT @@userIds;
+}
