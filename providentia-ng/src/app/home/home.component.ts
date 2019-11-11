@@ -64,6 +64,9 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
         if (this.serverPoll) {
             clearInterval(this.serverPoll);
         }
+        if (this.benchmarkPoll) {
+            clearInterval(this.benchmarkPoll);
+        }
     }
 
     getRecentBenchmarks() {

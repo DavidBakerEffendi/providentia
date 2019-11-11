@@ -41,7 +41,6 @@ def run(benchmark: Benchmark):
     # Update benchmark object values
     benchmark.query_time = q1_total_time
     benchmark.analysis_time = analysis_time
-    print(vegas_reviews)
 
 
 def get_lv_reviews_from_friends(database):
@@ -55,7 +54,7 @@ def get_lv_reviews_from_friends(database):
             'it.get().value("date").atZone(ZoneId.of("-07:00")).toLocalDate().getMonthValue() <= 12}'
             '.as("text").as("stars")'
             '.inV().has("location", geoWithin(Geoshape.circle(%f, %f, 30)))'
-            '.select("text", "stars").by("text", "stars")' % (julie_id, lat, lon))
+            '.select("text", "stars").by("text").by("stars")' % (julie_id, lat, lon))
     elif database == "PostgreSQL":
         result = postgres.execute_query(
             "SELECT DISTINCT R.text, R.stars FROM review R "

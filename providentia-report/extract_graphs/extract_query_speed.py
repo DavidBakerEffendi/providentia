@@ -11,11 +11,11 @@ analysis_list = {
     "julie": "05c2c642-32c0-4e6a-a0e5-c53028035fc8"  # Julies
 }
 
-QUERY = 'SELECT databases.name, AVG({}) as avg, STDDEV_SAMP({}) as stddev ' \
+QUERY = 'SELECT databases.name, AVG(query_time) as avg, STDDEV_SAMP(query_time) as stddev ' \
         'FROM benchmarks ' \
         'JOIN databases ON database_id = databases.id ' \
         'WHERE benchmarks.analysis_id = $$%s$$ ' \
-        'GROUP BY databases.name ORDER BY databases.name'.format(config.MEASURE, config.MEASURE, config.MEASURE)
+        'GROUP BY databases.name ORDER BY databases.name'
 
 
 def produce_graph_from_query(analysis_name, analysis_id):
@@ -37,56 +37,21 @@ def produce_graph_from_query(analysis_name, analysis_id):
     labels = []
     avgs = []
     devs = []
+    dbs = []
     for n, av, sd in rows:
         labels.append(n)
         avgs.append(av)
         devs.append(sd)
+        dbs.append(n)
 
     # Save results
-    save_results(file_name, analysis_name, avgs, devs)
+    save_results(file_name, dbs, analysis_name, avgs, devs)
 
-    # if config.SCALE is True:
-    #     avgs = np.array(avgs).reshape(-1, 1)
-    #     devs = np.array(devs).reshape(-1, 1)
-    #
-    #     scaler = preprocessing.MinMaxScaler()
-    #     scaler.fit(avgs)
-    #     avgs = scaler.transform(avgs)
-    #     devs = scaler.transform(devs)
-    #
-    #     plt_avgs = []
-    #     plt_dv = []
-    #
-    #     for av, dvs in zip(avgs, devs):
-    #         plt_avgs.append(av[0])
-    #         plt_dv.append(dvs[0])
-    # else:
-    #     plt_avgs = avgs
-    #     plt_dv = devs
-    #
-    # x = np.arange(len(labels))  # the label locations
-    # width = 0.5  # the width of the bars
-    #
-    # fig, ax = plt.subplots()
-    # ax.bar(x, plt_avgs, width, align='center', yerr=plt_dv, ecolor='red', capsize=7)
-    #
-    # # Add some text for labels, title and custom x-axis tick labels, etc.
-    # ax.set_ylabel('Query Speeds (Scaled)')
-    # ax.set_title('Setup {}: Query speeds by database with {}% of dataset'.format(config.SETUP, config.PERC))
-    # ax.set_xlabel('Databases')
-    # ax.set_xticks(x)
-    # ax.set_xticklabels(labels)
-    # ax.yaxis.grid(True)
-    #
-    # fig.tight_layout()
-    # plt.savefig('%s.png' % file_name)
-
-
-def save_results(file_pref, analysis, avgs, devs):
+def save_results(file_pref, dbs, analysis, avgs, devs):
     file_name = "%s.csv" % file_pref
     with open(file_name, 'a+') as f:
-        for a, d in zip(avgs, devs):
-            f.write('%s,%f,%f,%s\n' % (analysis, a, d, config.PERC))
+        for db, a, d in zip(dbs, avgs, devs):
+            f.write('%s,%f,%f,%s,%s\n' % (analysis, a, d, config.PERC, db))
 
 
 if __name__ == "__main__":
