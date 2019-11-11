@@ -17,4 +17,4 @@ g.V().has("User",
     .inV().has("location", geoWithin(
         Geoshape.circle(36.16, -115.14, 30)))
     .select("text", "stars")
-    .by("text", "stars")
+    .by("text").by("stars")

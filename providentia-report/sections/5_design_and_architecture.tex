@@ -1,4 +1,4 @@
-The design of the software, architecture, and technologies used to create the web-application and databases are described in the following section. The analysis being performed by the web-application, how it performs each analysis, and how the back end queries each database is discussed.
+The design of the software, architecture, and technologies used to create the web-application and databases are described in the following section. The analysis being performed by the web-application, how it performs each analysis, and how the backend queries each database is discussed.
 
 \subsection{Database Technologies}
 
@@ -20,13 +20,13 @@ JanusGraph is largely based on the Apache tech-stack making use of technologies 
 \begin{figure*}[h]
     \centering
     \includegraphics[width=10cm]{img/CAP-JanusGraph.png}
-    \caption{The CAP theorem illustrated using JanusGraph's three supporting storage back ends. This diagram is largely inspired from Chapter 1 in Titan's documentation and is adjusted for JanusGraph \cite{titan-cap}.}
+    \caption{The CAP theorem illustrated using JanusGraph's three supporting storage backends. This diagram is largely inspired from Chapter 1 in Titan's documentation and is adjusted for JanusGraph \cite{titan-cap}.}
     \label{fig:janusgraph-cap}
 \end{figure*}
 
-JanusGraph can store graph data via three supporting back ends; Apache Cassandra, Apache HBase, and Apache Berkeley. The CAP Theorem (Section \ref{cap}) should be referred to when considering which of the three back ends to use -- this is illustrated in Figure \ref{fig:janusgraph-cap}.
+JanusGraph can store graph data via three supporting backends; Apache Cassandra, Apache HBase, and Apache Berkeley. The CAP Theorem (Section \ref{cap}) should be referred to when considering which of the three backends to use -- this is illustrated in Figure \ref{fig:janusgraph-cap}.
 
-Examples of companies who have deployed JanusGraph in production include Netflix, Redhat, Uber, and IBM \cite{janusgraph-readme}. The professional support, documentation, and fact that one is able to leverage all these advanced features for free is why JanusGraph is one of the graph databases used in this investigation. The configuration of JanusGraph used in this report is with Apache Cassandra as the storage back end and ElasticSearch as the search engine for spatial and temporal query support.
+Examples of companies who have deployed JanusGraph in production include Netflix, Redhat, Uber, and IBM \cite{janusgraph-readme}. The professional support, documentation, and fact that one is able to leverage all these advanced features for free is why JanusGraph is one of the graph databases used in this investigation. The configuration of JanusGraph used in this report is with Apache Cassandra as the storage backend and ElasticSearch as the search engine for spatial and temporal query support.
 
 \subsubsection{TigerGraph}
 
@@ -52,7 +52,7 @@ The architecture and how each technology communicates is illustrated in Figure \
 
 JanusGraph has some Java specific features that add limitations when making use of embedded Gremlin in Python. The limitations are, when trying to make use of mixed indexing search predicates such as spatial queries, that one may only do this via Java or a superset language thereof. The workaround for this was to make use of the Gremlin Translator which takes a Gremlin query as a string and interprets it on the server side.
 
-The first motivation towards using a Python back end is that the text in the reviews can be analysed using NLTK for easily implemented sentiment analysis. The second is that a simple REST API can be easily and quickly designed and deployed using the Flask framework. Angular was subjectively chosen as the front end framework as it allows for fast front end web development. All benchmarking results are stored in a separate database within PostgreSQL.
+The first motivation towards using a Python backend is that the text in the reviews can be analysed using NLTK for easily implemented sentiment analysis. The second is that a simple REST API can be easily and quickly designed and deployed using the Flask framework. Angular was subjectively chosen as the front end framework as it allows for fast front end web development. All benchmarking results are stored in a separate database within PostgreSQL.
 
 The front end of Providentia allows a user to query each database, test the sentiment classifier, add benchmarking jobs and to review the performance and results of each analysis. Each job is run serially to avoid too much interference and competition between each database for resources. At intervals the CPU performance and memory consumption is measured and stored in PostgreSQL. The server performance and results of an analysis can be viewed together to validate that the outputs are the same and how each database utilizes the server's resources.
 
@@ -116,8 +116,10 @@ The top 5000 occurring adjectives are kept in the bag. These informative words c
 
 All of the reviews are next processed into these feature sets and tagged. They are then given to the model to learn. Once the model has been trained, a review is classified by breaking it up into a feature set, given to the model to classify and the predicted class label is then returned.
 
-\subsubsection{Kernels \edt{Queries have been moved here}}
+\subsubsection{Kernels}
 \label{sec:kernels}
+
+Each of the following kernels represent some kind of user story for data analysis. Each one has some spatio-temporal constraint which will be applied on the respective queries. Each of these kernels will be benchmarked 15 times each such that the mean and standard deviation can be considered when comparing response times.
 
 \subsubsubsection{Kate's Restaurant Recommendation}
 

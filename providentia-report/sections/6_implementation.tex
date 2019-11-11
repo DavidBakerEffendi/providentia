@@ -10,6 +10,7 @@ All experiments were run on the following two machines listed in Table \ref{tab:
 
 \begin{table*}[h]
     \centering
+    \small
     \caption{The specifications of the two machines used to benchmark database performance.}
     \vspace*{5mm}
     \begin{tabular}{ |p{1.2cm}|p{1.2cm}|p{1.2cm}|p{1.6cm}|p{1.3cm}|p{3.5cm}|p{2cm}|}
@@ -25,12 +26,13 @@ All experiments were run on the following two machines listed in Table \ref{tab:
 \end{table*}
 
 \subsubsection{Dataset}
-The dataset used is from the Yelp Dataset Challenge \cite{yelpdataset}. Due to the enormity of the dataset\footnote{Totaling in size around 8.69 gigabytes in uncompressed format.} only a subset of the data is used in increments to observe how well each database scales. \edt{These increments are percentage based and are applied per file e.g. 10\% would mean 10\% of \texttt{business.json}, \texttt{user.json}, and \texttt{review.json} applied separately}. The dataset is stored as non-valid JSON and first had to be preprocessed and converted into valid JSON.
+The dataset used is from the Yelp Dataset Challenge \cite{yelpdataset}. Due to the enormity of the dataset\footnote{Totaling in size around 8.69 gigabytes in uncompressed format.} only a subset of the data is used in increments to observe how well each database scales. These increments are percentage based and are applied per file e.g. 10\% would mean 10\% of \texttt{business.json}, \texttt{user.json}, and \texttt{review.json} applied separately. The dataset is stored as non-valid JSON and first had to be preprocessed and converted into valid JSON.
 
 During preprocessing many attributes not used in the analysis or benchmarking were removed to save on import time and storage costs. Only businesses, users, and reviews were used from the dataset. This resulted in a $\pm11.39\%$ reduction in uncompressed storage size\footnote{This results in a close to 1 gigabyte reduction, which is a significant improvement.}, significant reduction in complexity and improvement in consistency among attributes. The result of this preprocessing can be seen in Table \ref{tab:yelp-data}.
 
 \begin{table*}[h]
     \centering
+    \small
     \caption{Data used from the Yelp dataset after preprocessing.}
     \vspace*{5mm}
     \begin{tabular}{ |p{2cm}|p{2cm}||p{2cm}|p{2cm}||p{2cm}|p{2cm}|}
