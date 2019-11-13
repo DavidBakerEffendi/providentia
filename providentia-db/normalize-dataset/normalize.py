@@ -1,4 +1,5 @@
 import os
+
 from tqdm import tqdm
 
 
@@ -43,16 +44,16 @@ if __name__ == "__main__":
             print("Normalizing businesses...")
             normalize_file(norm_setting_file=config.NORMALIZE_SETTINGS["BUSINESS_FILE"],
                            norm_module=normalize_businesses)
-        # Normalize reviews
-        if config.NORMALIZE_SETTINGS["NORMALIZE_REV"] is True:
-            print("Normalizing reviews...")
-            normalize_file(norm_setting_file=config.NORMALIZE_SETTINGS["REVIEW_FILE"],
-                           norm_module=normalize_reviews)
         # Normalize users
         if config.NORMALIZE_SETTINGS["NORMALIZE_USE"] is True:
             print("Normalizing users...")
             normalize_file(norm_setting_file=config.NORMALIZE_SETTINGS["USERS_FILE"],
                            norm_module=normalize_users)
+        # Normalize reviews
+        if config.NORMALIZE_SETTINGS["NORMALIZE_REV"] is True:
+            print("Normalizing reviews...")
+            normalize_file(norm_setting_file=config.NORMALIZE_SETTINGS["REVIEW_FILE"],
+                           norm_module=normalize_reviews)
 
     if config.GEN_SUBSET is True:
         print("|--- Generating Subset of Data --|")
@@ -62,17 +63,17 @@ if __name__ == "__main__":
             sub_businesses.generate_subset(f_dir=normalize_businesses.NORM_FILE,
                                            perc=config.SUBSET_SETTINGS["PERC"])
 
-        # Subset reviews
-        if config.SUBSET_SETTINGS["SUB_REV"] is True:
-            print("Generating subset of reviews...")
-            sub_reviews.generate_subset(f_dir=normalize_reviews.NORM_FILE,
-                                        perc=config.SUBSET_SETTINGS["PERC"])
-
         # Subset users
         if config.SUBSET_SETTINGS["SUB_USE"] is True:
             print("Generating subset of users...")
             sub_users.generate_subset(f_dir=normalize_users.NORM_FILE,
                                       perc=config.SUBSET_SETTINGS["PERC"])
+
+        # Subset reviews
+        if config.SUBSET_SETTINGS["SUB_REV"] is True:
+            print("Generating subset of reviews...")
+            sub_reviews.generate_subset(f_dir=normalize_reviews.NORM_FILE,
+                                        perc=config.SUBSET_SETTINGS["PERC"])
 
     if config.PREPARE_CSV is True:
         print("|--- Generating CSV from Data Subsets --|")

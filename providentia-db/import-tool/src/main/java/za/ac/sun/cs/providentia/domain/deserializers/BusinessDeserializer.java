@@ -44,9 +44,6 @@ public class BusinessDeserializer extends JsonDeserializer<Business> {
         if (node.has("city")) {
             object.setCity(titleCaseConversion(node.get("city").asText()));
         }
-        if (node.has("review_count")) {
-            object.setReviewCount(node.get("review_count").asInt());
-        }
         if (node.has("name")) {
             object.setName(titleCaseConversion(node.get("name").asText()));
         }

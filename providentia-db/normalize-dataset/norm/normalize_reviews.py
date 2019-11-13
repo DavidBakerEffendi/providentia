@@ -7,6 +7,7 @@ def process_line(fw, line):
     review_line = dict()
 
     data = json.loads(line)
+
     review_line['review_id'] = data['review_id']
     review_line['user_id'] = data['user_id']
     review_line['business_id'] = data['business_id']

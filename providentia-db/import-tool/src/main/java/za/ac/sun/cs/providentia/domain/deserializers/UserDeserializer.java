@@ -42,9 +42,6 @@ public class UserDeserializer extends JsonDeserializer<User> {
                     DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             object.setYelpingSince(dateTime.toInstant(ZoneOffset.of("-07:00")));
         }
-        if (node.has("review_count")) {
-            object.setReviewCount(node.get("review_count").asInt());
-        }
         if (node.has("funny")) {
             object.setFunny(node.get("funny").asInt());
         }
@@ -56,9 +53,6 @@ public class UserDeserializer extends JsonDeserializer<User> {
         }
         if (node.has("useful")) {
             object.setUseful(node.get("useful").asInt());
-        }
-        if (node.has("average_stars")) {
-            object.setAverageStars(node.get("average_stars").asDouble());
         }
 
         return object;

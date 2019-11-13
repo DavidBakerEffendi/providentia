@@ -13,7 +13,6 @@ public class Business implements Serializable {
     private boolean isOpen;
     private String[] categories;
     private String city;
-    private int reviewCount;
     private String name;
     private double longitude;
     private double latitude;
@@ -71,14 +70,6 @@ public class Business implements Serializable {
         this.city = city;
     }
 
-    public int getReviewCount() {
-        return reviewCount;
-    }
-
-    public void setReviewCount(int reviewCount) {
-        this.reviewCount = reviewCount;
-    }
-
     public String getName() {
         return name;
     }
@@ -132,7 +123,6 @@ public class Business implements Serializable {
         }
         sb.append("]");
         sb.append(", \"city\":\"").append(city).append('\"');
-        sb.append(", \"reviewCount\":").append(reviewCount);
         sb.append(", \"name\":\"").append(name.replaceAll("\"", "'")).append('\"');
         sb.append(", \"location\": \"").append(latitude).append(", ").append(longitude).append("\"");
         sb.append(", \"state\":\"").append(state).append('\"');
@@ -154,7 +144,6 @@ public class Business implements Serializable {
             sb.append(", isOpen=").append(isOpen);
             sb.append(", categories=").append(categories);
             sb.append(", city='").append(city).append('\'');
-            sb.append(", reviewCount=").append(reviewCount);
             sb.append(", name='").append(name).append('\'');
             sb.append(", longitude=").append(longitude);
             sb.append(", latitude=").append(latitude);

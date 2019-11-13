@@ -32,13 +32,11 @@ CREATE TABLE city (
 CREATE TABLE users (
     id CHARACTER VARYING(22) UNIQUE,
     name CHARACTER VARYING(255) NOT NULL,
-    review_count INTEGER DEFAULT 0,
     yelping_since TIMESTAMP NOT NULL,
     useful INTEGER DEFAULT 0,
     funny INTEGER DEFAULT 0,
     cool INTEGER DEFAULT 0,
     fans INTEGER DEFAULT 0,
-    average_stars NUMERIC DEFAULT 0.0,
     PRIMARY KEY (id)
 );
 
@@ -58,7 +56,6 @@ CREATE TABLE business (
     postal_code CHARACTER VARYING(50) NOT NULL,
     location geometry(Point, 4326) NOT NULL,
     stars NUMERIC NOT NULL,
-    review_count INTEGER DEFAULT 0,
     is_open boolean DEFAULT false,
     PRIMARY KEY (id),
     FOREIGN KEY (city) REFERENCES city (id)

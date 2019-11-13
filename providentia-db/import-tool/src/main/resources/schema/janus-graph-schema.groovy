@@ -35,14 +35,12 @@ mgmt.makePropertyKey("business_id").dataType(String.class).cardinality(Cardinali
 mgmt.makePropertyKey("address").dataType(String.class).cardinality(Cardinality.SINGLE).make()
 mgmt.makePropertyKey("postal_code").dataType(String.class).cardinality(Cardinality.SINGLE).make()
 mgmt.makePropertyKey("is_open").dataType(Boolean.class).cardinality(Cardinality.SINGLE).make()
-mgmt.makePropertyKey("review_count").dataType(Integer.class).cardinality(Cardinality.SINGLE).make()
 mgmt.makePropertyKey("name").dataType(String.class).cardinality(Cardinality.SINGLE).make()
 mgmt.makePropertyKey("location").dataType(Geoshape.class).cardinality(Cardinality.SINGLE).make()
 mgmt.makePropertyKey("stars").dataType(Double.class).cardinality(Cardinality.SINGLE).make()
 
 // User properties
 mgmt.makePropertyKey("user_id").dataType(String.class).cardinality(Cardinality.SINGLE).make()
-mgmt.makePropertyKey("average_stars").dataType(Double.class).cardinality(Cardinality.SINGLE).make()
 mgmt.makePropertyKey("yelping_since").dataType(Long.class).cardinality(Cardinality.SINGLE).make()
 mgmt.makePropertyKey("cool").dataType(Integer.class).cardinality(Cardinality.SINGLE).make()
 mgmt.makePropertyKey("funny").dataType(Integer.class).cardinality(Cardinality.SINGLE).make()

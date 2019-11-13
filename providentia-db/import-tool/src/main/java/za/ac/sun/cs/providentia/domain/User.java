@@ -10,8 +10,6 @@ public class User {
 
     private String userId;
     private String name;
-    private double averageStars;
-    private int reviewCount;
     private Instant yelpingSince;
     private int cool;
     private int funny;
@@ -20,14 +18,6 @@ public class User {
     private String[] friends;
 
     public User() {
-    }
-
-    public double getAverageStars() {
-        return averageStars;
-    }
-
-    public void setAverageStars(double averageStars) {
-        this.averageStars = averageStars;
     }
 
     public String getUserId() {
@@ -60,14 +50,6 @@ public class User {
 
     public void setYelpingSince(Instant yelpingSince) {
         this.yelpingSince = yelpingSince;
-    }
-
-    public int getReviewCount() {
-        return reviewCount;
-    }
-
-    public void setReviewCount(int reviewCount) {
-        this.reviewCount = reviewCount;
     }
 
     public int getFunny() {
@@ -109,12 +91,10 @@ public class User {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("{");
-        sb.append("\"averageStars\": ").append(averageStars);
-        sb.append(", \"userId\": \"").append(userId).append('\"');
+        sb.append("\"userId\": \"").append(userId).append('\"');
         sb.append(", \"name\": \"").append(name).append('\"');
         sb.append(", \"cool\": ").append(cool);
         sb.append(", \"yelpingSince\": \"").append(yelpingSince.toString()).append('\"');
-        sb.append(", \"reviewCount\": ").append(reviewCount);
         sb.append(", \"funny\": ").append(funny);
         sb.append(", \"friends\": [");
         for (int i = 0; i < friends.length; i++) {
