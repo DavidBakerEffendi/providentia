@@ -6,7 +6,7 @@ from tqdm import tqdm
 CSV_USE = "./out/users_{}.csv".format(config.SUBSET_SETTINGS['PERC'])
 CSV_FND = "./out/friendships_{}.csv".format(config.SUBSET_SETTINGS['PERC'])
 
-USE_HEADERS = ["user_id", "name", "review_count", "yelping_since", "useful", "funny", "cool", "fans", "average_stars"]
+USE_HEADERS = ["user_id", "name", "yelping_since", "useful", "funny", "cool", "fans"]
 FND_HEADERS = ["user_id", "friend_id"]
 
 

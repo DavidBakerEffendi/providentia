@@ -16,7 +16,6 @@ def process_line(fw, line):
     business_line['latitude'] = data['latitude']
     business_line['longitude'] = data['longitude']
     business_line['stars'] = data['stars']
-    # business_line['review_count'] = data['review_count']
     business_line['categories'] = str(data['categories']).split(', ')
     if data['is_open'] == 0:
         business_line['is_open'] = False

@@ -7,7 +7,7 @@ CSV_BUS = "./out/business_{}.csv".format(config.SUBSET_SETTINGS['PERC'])
 CSV_CAT = "./out/categories_{}.csv".format(config.SUBSET_SETTINGS['PERC'])
 
 BUS_HEADERS = ["business_id", "name", "address", "city", "state", "postal_code", "latitude", "longitude", "stars",
-               "review_count", "is_open"]
+               "is_open"]
 CAT_HEADERS = ["business_id", "category"]
 
 

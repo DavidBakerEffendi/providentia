@@ -9,13 +9,11 @@ def process_line(fw, line):
     data = json.loads(line)
     user_line['user_id'] = data['user_id']
     user_line['name'] = data['name']
-    # user_line['review_count'] = data['review_count']
     user_line['yelping_since'] = data['yelping_since']
     user_line['useful'] = data['useful']
     user_line['funny'] = data['funny']
     user_line['cool'] = data['cool']
     user_line['friends'] = str(data['friends']).split(', ')
     user_line['fans'] = data['fans']
-    # user_line['average_stars'] = data['average_stars']
 
     fw.write(json.dumps(user_line) + '\n')
