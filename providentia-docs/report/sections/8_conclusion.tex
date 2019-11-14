@@ -1,0 +1,37 @@
+In this paper, we analyzed and compared the response times of three database technologies with respect to handling interconnected spatio-temporal data. The technologies compared were two open source database technologies, PostgreSQL and JanusGraph, and one enterprise level technology, TigerGraph. The linear growth in the relational model was clearly illustrated in the results whereas the graph database solutions scaled more horizontally. This alone is an advantage NoSQL databases have over traditional relational models when querying large volumes of data. These three systems were evaluated by employing a set of spatio-temporal queries similar to those that would be found in real world scenarios when analysing data in a dataset such as the Yelp Challenge Dataset. 
+
+The results show that graph database technology has been shown to outperform PostgreSQL in all three of the kernels. This result is partially due to the fact that the kernels produce complex queries due to the interconnected nature of the data. This dataset produced a dense graph which graph databases have the ability to perform effective traversals over when compared to multi-join style queries produced by the relational implementation. The spatio-temporal multi-dimensional aspect has shown to be supported well in all of the databases and evident by the response times of the queries with constraints of this nature.
+
+\paragraph{Benchmark Results}
+
+The results in Section \ref{sec:experiments} strongly suggest that graph database technology and, specifically TigerGraph, provide the faster response times when querying this dataset applied with spatio-temporal constraints. One notable observation is how inconsistent JanusGraph performed and this may be due to JanusGraph's caching implementation. JanusGraph maintains multiple levels of caching both on the transaction level and database level. This excludes the storage backend's caching -- in this case Cassandra. The cache has an expiration time and, since these experiments were run serially but chosen randomly, the JanusGraph specific jobs were run out of order and the cache could have expired at this time.
+
+Another potential reason for the inconsistent gradient between the means in each result may be due to the fact that the dataset adds unpredictable levels of complexity -- in terms of how connected the data is -- at the end of an import for a given percentage. The horizontal scaling for the graph databases suggests that the impact of this is minimal.
+
+Nevertheless, as the queries became more and more complicated, the graph databases maintained a horizontal scale whereas PostgreSQL grew linearly in these cases. When the queries were not complicated, as was the case in Section \ref{sec:resultReviews2018}, PostgreSQL responded nearly as fast as TigerGraph and outperforming JanusGraph. 
+
+\paragraph{Visualization}
+
+Graph databases have an advantage in data visualization with tools such as Cytoscape\footnote{\url{https://cytoscape.org/}} or GraphStudio which is built into TigerGraph. This can be important in use cases involving further analysis on data patterns such as those found on social datasets such as the Yelp dataset. Relational databases can have stored data processed and re-shaped into a graph structure but this requires extra overhead and configuration as it is not a native topology of this technology.
+
+\paragraph{Migration and Product Maturity}
+
+Graph database technology is currently under rapid development, each vendor with their own API and query language. Each graph query language is designed to express graph traversals in a more graph-oriented approach. The learning curve from SQL may pose an issue when migrating but languages such as Cypher or GSQL make this minimal by applying concepts from SQL a the graph traversal context.
+
+Security and reliability used to be an issue when considering migrating to graph database technology but both of these vendors can be configured to use encrypted communication and can be robust to failures. For example, TigerGraph's Rest++ API can be encrypted, integrated with Single Sign-On, and require authorization with LDAP authentication. JanusGraph transactions can be configured to be ACID-compliant when using BerkeleyDB but this is not generally the case with Cassandra or HBase. TigerGraph and Neo4j are ACID-compliant so it is in the position to compete with relational databases with regards to reliable transactions. The implication of this is that graph database technology can provide the same level of robustness and security as relational database technology can so one should not have to sacrifice either of these two properties when migrating.
+
+\paragraph{Data Structure}
+
+Before pre-processing, the Yelp dataset contains additional attributes many of which are missing or partial and this makes the dataset semi-structured. Since a relational database schema is fixed, this would increase the number of tables in a relational database for each potential attribute that could have a relationship to any other data entry. Graph databases are schemaless and are well-suited to handle such unstructured or semi-structured data. 
+
+\paragraph{Query Languages}
+
+Of the two graph querying languages, GSQL was found to be the easiest to learn and implement and, with an imperative and statically typed language, many developers may find GSQL very familiar. The Rest++ API feature was found to greatly enhance the post-query process due to any other applications only having to query a parameterized HTTP endpoint. GSQL also adds a lot of flexibility in terms of how the data is formatted and structured in the HTTP response which helps for seamless deserializing of the JSON result.
+
+\paragraph{Future Work}
+
+This paper investigated the response times and, to some degree, how effective each query language was in producing queries to return the necessary data. Neither the storage efficiency nor performance capabilities for varied limitations on hardware were measured in any sophisticated way. Investigating these issues for large-scale spatio-temporal data would only add to the findings in this paper in terms of how suitable graph database technology is.
+
+Only one dataset was used in this investigation but other spatio-temporal datasets of varying quantities should be benchmarked. Doing so would create a more robust conclusion to the suitability of graph database technology for storing and querying spatio-temporal data.
+
+It would be worthwhile to add not only more graph database technologies, but other NoSQL, SQL, and NewSQL solutions. One could, for example, investigate the performance of Cassandra with ElasticSearch and measure whether the graph abstraction provided by JanusGraph is truly beneficial or not. This would add to a more complete view on how well suited each database solution is for spatio-temporal data, or large-scale data in general. There are new relational database technologies which employ auto-sharding and other techniques to help traditional SQL technologies scale horizontally such as MySQL Cluster\footnote{\url{https://www.mysql.com/products/cluster/}} and the Citus\footnote{\url{https://www.citusdata.com/product}} extension for PostgreSQL. Using these technologies could help relational database technologies compete with NoSQL technologies when facing large-scale data in general.

@@ -1,0 +1,300 @@
+The design of the software, architecture, and technologies used to create the web-application and databases are described in the following section. The analysis being performed by the web-application, how it performs each analysis, and how the backend queries each database is discussed.
+
+\subsection{Database Technologies}
+
+This section covers the underlying technologies used to implement the databases being benchmarked. This is important to note in terms of how portable each technology is, how difficult the configuration is before each database can be used for a given project, or limitations on performance or hardware requirements due to software requirements. While each database technology has varying capabilities, in terms of being supported for a given operating system, they each provide support for being deployed in a containerized environment.
+
+\subsubsection{PostgreSQL}
+PostgreSQL is written in the C programming language, is an object-oriented relational database, and is queried via SQL commands. PostgreSQL, like many relational databases, is ACID-compliant and robust to transactional failures. It is built to be extensible with a variety of extensions one can install for additional features such as UUID or spatial indexing. PostgreSQL can deploy on a variety of major operating systems such as Windows, Mac, Linux (Redhat, Debian, and a few others), Solaris, and BSD.
+
+PostgreSQL is a mature product and has a large amount of support from its open-source community. Postgres is flexible in that it supports a variety of data types and allows the definition of own types. Founder of NewsBlur\footnote{\url{https://newsblur.com/}}, Samuel Clay, mentions using Postgres for multiple years for storing millions of sites and subscriptions. Canonical\footnote{\url{https://canonical.com/}} founder, Mark Shuttleworth, explains that, while using Postgres during the development of Launchpad, finding it ``robust, fast, and professional in every regard'' \cite{postgres-about}.
+
+Many of these features and opinions of using PostgreSQL in production environments on this scale is why PostgreSQL was a reputable relational database to benchmark against.
+
+\subsubsection{JanusGraph}
+
+JanusGraph is a highly scalable graph database that is ready to be clustered between multiple machines. It is a transactional database which supports ACID-compliance and eventual consistency \cite{janusgraph-main}. It is written in Java and thus platform independent. JanusGraph is a project under The Linux Foundation and is forked from the Titan project as a continuation of the vision in creating an open-source, scalable, highly concurrent graph database. There is support for those wishing to migrate from Titan in order to benefit from the bug fixes and additional features now supported via JanusGraph \cite{janusgraph-titan}.
+
+JanusGraph is largely based on the Apache tech-stack making use of technologies such as Apache TinkerPop\footnote{Thus makes use of the property graph model.}, Lucene, Cassandra, Hadoop, and more. This adds to complexity when configuring JanusGraph as, for each technology plugged in, there may be configuration necessary. Gremlin is the native language through which JanusGraph is queried but, as mentioned in Section \ref{subsec:lang}, can be extended for Cypher queries. JanusGraph benefits from optional support for advanced search capabilities and having no-single point of failure \cite{janusgraph-docs}.
+
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=10cm]{img/CAP.pdf}
+    \caption{The CAP theorem illustrated using JanusGraph's three supporting storage backends. This diagram is largely inspired from Chapter 1 in Titan's documentation and is adjusted for JanusGraph \cite{titan-cap}.}
+    \label{fig:janusgraph-cap}
+\end{figure*}
+
+JanusGraph can store graph data via three supporting backends; Apache Cassandra, Apache HBase, and Apache Berkeley. The CAP Theorem (Section \ref{cap}) should be referred to when considering which of the three backends to use -- this is illustrated in Figure \ref{fig:janusgraph-cap}.
+
+Examples of companies who have deployed JanusGraph in production include Netflix, Redhat, Uber, and IBM \cite{janusgraph-readme}. The professional support, documentation, and fact that one is able to leverage all these advanced features for free is why JanusGraph is one of the graph databases used in this investigation. The configuration of JanusGraph used in this report is with Apache Cassandra as the storage backend and ElasticSearch as the search engine for spatial and temporal query support.
+
+\subsubsection{TigerGraph}
+
+TigerGraph is an enterprise level graph analytics platform developed in the C++ programming language. TigerGraph was developed with hindsight from projects such as Apache TinkerPop and Neo4j and provides features such as native parallel graph processing and fast offline batch loading \cite{tigergraph-benchmark} \cite{conference-trip}. Unlike JanusGraph, TigerGraph was developed from scratch in order to effectively create the next generation of graph database technology. TigerGraph won Strata Data’s ``Most Disruptive Startup'' Award for its return in this decision \cite{tigergraph-award}.
+
+Some of the use cases explicitly mentioned by TigerGraph\footnote{\url{https://www.tigergraph.com/solutions/}} are in geospatial and time series analysis. This lends itself as a promising database technology for this investigation. TigerGraph is queried using their GSQL querying language (see Section \ref{subsec:lang}) where queries are optimized via an installation process where a REST endpoint is also generated in the process. Like JanusGraph, TigerGraph can be deployed on multi-machine clusters but this is limited to the enterprise version of this product. TigerGraph uses Apache Zookeeper for cluster management and Apache Kafka for message queuing.
+
+GraphStudio is a web interface which is packaged along with TigerGraph which provides an interface to write, install and visualize queries, design and export one's graph schema, and monitor database performance. This makes use of an Nginx web server \cite{tigergraph-infoworld}.
+
+For all intents and purposes, the developer edition is more than capable to perform the investigation of this paper. There is an enterprise version that allows for additional features such as multi-machine clustering.
+
+\subsection{Web-application Simulation}
+The web-application, called Providentia\footnote{The name of the web-application is a nod to JanusGraph and Titan's theme of Roman mythology. Providentia is associated with provision and forethought \cite{providentia-meaning}. This was thought to be fitting due to the nature of our experiments designed to find the best database for storing and modeling our particular data.}, is used to queue analysis in a pipeline on which each benchmark is to be run, server performance measured, and accumulated results be displayed. This is deployed on target hardware and will import a subset of the data determined by a configurable percentage. Then one will be able to use the web-based interface to perform all necessary benchmarking tasks.
+
+The architecture and how each technology communicates is illustrated in Figure \ref{fig:providentia-architecture}. The databases are containerized using Docker\footnote{\url{https://www.docker.com/}}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.49\textwidth]{img/providentia-architecture.pdf}
+    \caption{The architecture of Providentia.}
+    \label{fig:providentia-architecture}
+\end{figure}
+
+JanusGraph has some Java specific features that add limitations when making use of embedded Gremlin in Python. The limitations are, when trying to make use of mixed indexing search predicates such as spatial queries, that one may only do this via Java or a superset language thereof. The workaround for this was to make use of the Gremlin Translator which takes a Gremlin query as a string and interprets it on the server side.
+
+The first motivation towards using a Python backend is that the text in the reviews can be analysed using NLTK for easily implemented sentiment analysis. The second is that a simple REST API can be easily and quickly designed and deployed using the Flask framework. Angular was subjectively chosen as the front end framework as it allows for fast front end web development. All benchmarking results are stored in a separate database within PostgreSQL.
+
+The front end of Providentia allows a user to query each database, test the sentiment classifier, add benchmarking jobs and to review the performance and results of each analysis. Each job is run serially to avoid too much interference and competition between each database for resources. At intervals the CPU performance and memory consumption is measured and stored in PostgreSQL. The server performance and results of an analysis can be viewed together to validate that the outputs are the same and how each database utilizes the server's resources.
+
+\subsection{Data Analysis}
+Using each of the databases, a number of data analysis jobs are performed on the data. This section describes what each analysis aims to do and how they align to a typical real world use case. Each of these jobs have some kind of spatiotemporal aspect to test the accessibility of the data to demonstrate how well the given database handles the data.
+
+These analysis are run over different percentages of the data loaded in each database and the performance is then measured and discussed in Section \ref{sec:experiments}. This section goes into more detail about the types of queries written and how well each language expresses each
+query.
+
+\subsubsection{Sentiment Analysis}
+One application for graph analytic platforms is in machine learning. In order to further build context around each of the kernels mentioned in the next section, a simple binary sentiment classifier is used to classify the text of reviews as representing either a positive or negative sentiment. Sentiment analysis is a class of natural language processing where subjective information is extracted from a given text \cite{sentiment-analysis-gupta}.
+
+Although this investigation does not explore the applications of machine learning models on spatiotemporal data, it will explore how it could reveal interesting information alongside patterns among the data. All natural language processing is done using the Natural Language Toolkit (NLTK)
+\footnote{\url{https://www.nltk.org/}} for Python.
+
+\subsubsubsection{Machine Learning Model}
+NLTK's Na\"ive Bayes classifier\footnote{\texttt{nltk.NaiveBayesClassifier}} was used as the model to train and classify sentiment. Na\"ive Bayes is a probabilistic machine learning model which has proven very effective in text classification. A limitation of this model, on a binary classification problem, includes only being able to perform linear separability. This should not be an issue regarding the use of adjectives as feature vectors, since the most informative adjectives seem to be verbose and particular to a specific sentiment e.g. words such as horrible, disgusting, perfect, and wonderful \cite{rish2001empirical}.
+
+One problem faced by sentiment analysis is that of negation which may make certain adjectives less information e.g. good vs not good \cite{blanco2011some}. Nevertheless, the model performs well in terms of separating the two classes and, given the training and validation data (see Section \ref{sec:trainingProcess}), has shown to have good generalization performance. The model used in the experiments  produce the results discussed in Section \ref{sec:experiments} and has a training and validation accuracy of 94.15\% and 91.35\% respectively.
+
+\subsubsubsection{Training Process}
+\label{sec:trainingProcess}
+
+% The data used is from this dataset and is extracted with the following assumption -- 1 star reviews hold negative sentiment and 5 star reviews hold positive sentiment. 
+
+The data used to train and validate the Na\"ive Bayes classifier was extracted from the Yelp dataset. The data is extracted with the following assumption: 1 star reviews hold negative sentiment and 5 star reviews positive sentiment. Training and validation data are split by a 70\% training and 30\% validation ratio.
+
+%\comB{Not clear what ``this dataset'' refers to. Also, do not start a sentence with ``10 000''. \edt{I've trained the model on half the original size as there was a insignificant difference in accuracy. The model is serialized and on the repo.}}
+The extracted data is then tagged as follows: 5000 reviews with a 1 star rating are tagged as ``negative'' and 5000 reviews with a 5 star rating as ``positive''.
+
+The data pre-processing and training of the Na\"ive Bayes model used in this investigation is based on the process described by Munir \cite{SamiraMunir}. Using NLTK, one can separate different parts of speech within a given sentence or paragraph. First, a bag of words is created from both classes of
+the training data. For a given review, punctuation is removed, words are tokenized, stop words removed, and only adjectives are kept and these adjectives are added to our bag. A frequency distribution is then used to determine the most informative words for a given label.
+
+The top 5000 occurring adjectives are kept in the bag. These informative words can be seen as 5000 attributes where a review has the value ``true'' under an attribute found in the text and ``false'' when a review does not have that attribute contained within its text. This will be how a feature set will be constructed for a review. A Python dictionary is constructed with these 5000 attributes as keys and their value as the respective state as a boolean. This is then the first element of a tuple and the tag is the second. A trivial example of a feature set can be seen in Figure \ref{fig:bog-attri}.
+
+\begin{figure*}[h]
+    \centering
+    \begin{tabular}{ |p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|p{2cm}|}
+        \hline
+        \rowcolor{Gray}
+        \multicolumn{6}{|c|}{Review Text}                                                                                                       \\
+        \hline
+        \multicolumn{6}{|c|}{I just ate the most yummy pizza at this restaurant! The setting was wonderful with outdoor seating on a patio}     \\
+        \multicolumn{6}{|c|}{ with a beautiful view. Service was incredible!}                                     \\
+        \hline
+        \rowcolor{Gray}
+        \multicolumn{6}{|c|}{Feature Set}                                                                                                       \\
+        \hline
+        \textbf{Horrible}         & \textbf{Dirty}                 & \textbf{Worst} & \textbf{Wonderful} & \textbf{Yummy} & \textbf{Perfection} \\
+        \hline
+        false                     & false                          & false          & true               & true           & false               \\
+        \hline
+        \rowcolor{LightGray}
+        \multicolumn{1}{|c|}{Tag} & \multicolumn{5}{|c|}{Positive}                                                                              \\
+        \hline
+    \end{tabular}
+    \vspace*{5mm}
+    \caption{An example of a review tagged as positive with it's feature set.}
+    \label{fig:bog-attri}
+\end{figure*}
+
+All of the reviews are next processed into these feature sets and tagged. They are then given to the model to learn. Once the model has been trained, a review is classified by breaking it up into a feature set, given to the model to classify and the predicted class label is then returned.
+
+\subsubsection{Kernels}
+\label{sec:kernels}
+
+Each of the following kernels represent some kind of user story for data analysis. Each one has some spatio-temporal constraint which will be applied on the respective queries. Each of these kernels will be benchmarked 15 times each such that the mean and standard deviation can be considered when comparing response times.
+
+\subsubsubsection{Kate's Restaurant Recommendation}
+
+\paragraph{Description}
+This analysis selects a user near the beginning of the dataset named Kate. This user has a number of reviews for restaurants in the Las Vegas area. A subset of reviews which hold a strictly greater than 3 star rating by Kate are selected, sorted by date descending, and limited by 10 reviews per user in order to take the most relevant ones. These businesses are then selected, filtered by category ``Restaurants'', and other users who have an equal or greater than star rating are then selected as the recommending users.
+
+Now assume that Kate has relocated to a new area. All businesses which have been rated strictly larger than 3 stars by the recommending users are then selected as restaurants to recommend to Kate in the new area. The text in these reviews are checked for sentiment and the percentage positive sentiment is displayed alongside the average star rating for each recommended restaurant. This sentiment vs. average star rating is used as a metric to analyse in terms of asking the question: How reliable is the star rating versus the actual sentiment found in the text?
+
+The purpose of the first part of this kernel is to test the performance of a 1-hop graph traversal pattern. This hop is demonstrated in category filtering and finding users with mutual sentiment for a given review. This type of situation is faced by many recommendation technologies and this is quite a basic technique for recommendation. The additional challenge is the relocation of Kate and seeing how responsive the database is to the spatial and temporal aspect which is the second part of this kernel. The accumulated list of users is split into a separate query for each user to test the ability of each database technology to perform concurrent reads on subsets of data which is a strength of NoSQL databases.
+
+\paragraph{SQL}
+
+Listing \ref{lst:sql1KateRest} works as follows: First, the reviews, user, and business tables are joined together to find out which businesses Kate reviewed. Once all these businesses are obtained, all users who rated these businesses above 3 stars are obtained by another review join. Finally, the categories table (and its linking table) is joined to the businesses to only include restaurants.
+
+\lstinputlisting[
+    language=sql,
+    caption={
+        A SQL query that returns all the IDs of all the users who have rated restaurants Kate has been to above 3 stars.
+    },
+    label={lst:sql1KateRest}
+]{./queries/kate1.sql}
+
+Listing \ref{lst:sql2KateRest} begins by joining the review and business tables to match all businesses reviewed by the given user. These businesses are filtered by those within the Las Vegas area (with a radius of 50km). The reviews are ordered by date and limited to return only 10, as to keep only the latest reviews from the user.
+
+\lstinputlisting[
+    language=sql,
+    caption={
+        A SQL query that returns the star rating, text and business ID for restaurants a user has reviewed above 3 stars.
+    },
+    label={lst:sql2KateRest}
+]
+{./queries/kate2.sql}
+
+
+\paragraph{Gremlin}
+
+The query in Listing \ref{lst:gremlin1KateRest} works by obtaining the vertex representing Kate and declaring the referencing for this vertex using the \texttt{as} step. The review edges leaving Kate are then filtered by those with a star rating above 3. The \texttt{inV()} step simply refers to the businesses who have the incoming review edge. The \texttt{in("REVIEWS")} step is different from the \texttt{inE} step as it skips across the edge and references the user vertices directly -- which are then selected if they are not Kate's vertex. These users are referenced and the category vertices are checked to filter out businesses which aren't restaurants. The users referenced earlier are then selected, duplicates are removed and their ID values are selected for the return.
+
+\lstinputlisting[
+    language=gremlin,
+    caption={
+        A Gremlin query that returns all the IDs of all the users who have rated restaurants Kate has been to above 3 stars.
+    },
+    label={lst:gremlin1KateRest}
+]
+{./queries/kate1.groovy}
+
+Listing \ref{lst:gremlin2KateRest} starts again at the user vertex. The reviews are once again filtered by rating and then ordered by date. The reviews are then referenced for later twice as this can be used to create a dictionary-style output later. The vertices with these incoming review edges are implicitly business vertices again and are selected by their location using the mixed spatial index from ElasticSearch. These businesses are referenced for later. The reviews are selected and limited to 10 and all the prior references are selected. The dictionary-style output is produced using a combination of the \texttt{select} and \texttt{by} step\footnote{\texttt{select} will select the prior references and the \texttt{by} step will select the attribute to display from the references in \texttt{select} respectively.}. The output will now look like a list of dictionary objects with the keys; \texttt{stars}, \texttt{text}, and \texttt{business\_id} which are easily serialized and deserialized over sockets or a REST API.
+
+\lstinputlisting[
+    language=gremlin,
+    caption={
+        A Gremlin query that returns the star rating, text and business ID for restaurants a user has reviewed above 3 stars.
+    },
+    label={lst:gremlin2KateRest}
+]
+{./queries/kate2.groovy}
+
+\paragraph{GSQL}
+
+GSQL queries work by first declaring variables and seeds, then writing the query. The GSQL query in Listing \ref{lst:gsql1KateRest} declares a \texttt{SetAccum} which does not allow duplicates and the three seeds; \texttt{categories}, \texttt{businesses}, and \texttt{PSet}. First, businesses which are categorized as restaurants are selected, then businesses which were rated by the user -- which will be Kate. The users who reviewed the intersection of these two business sets are then accumulated based on the constraints that their ratings were above 3 stars and that those users aren't Kate. The results of the accumulated users is then printed which returns a JSON string of the variable's contents when the REST endpoint is queried.
+
+\lstinputlisting[
+    language=gsql,
+    caption={
+        A GSQL query that returns all the IDs of all the users who have rated restaurants Kate has been to above 3 stars.
+    },
+    label={lst:gsql1KateRest}
+]
+{./queries/kate1.gsql}
+
+Listing \ref{lst:gsql2KateRest} begins by declaring a custom type which has a tuple format. This allows one to record only the properties one wants to, similar to the \texttt{select} and \texttt{by} steps in Listing \ref{lst:gremlin1KateRest}. A \texttt{HeapAccum} is constructed with a max size of 1000, and is used as it can order the accumulator by the properties in the custom type -- in this case the date property. Using the geo-grid, all grid IDs are obtained using the \texttt{getNearbyGridId} method, which is then converted into a vertex set by matching the grid IDs to their respective vertices in the graph. The businesses connected to these grid vertices is obtained and businesses categorized as restaurants are then intersected as before Listing \ref{lst:gsql1KateRest}. The top 10 tuples from the heap are popped and accumulated in a list which is then printed.
+
+\lstinputlisting[
+    language=gsql,
+    caption={
+        A GSQL query that returns the star rating, text and business ID for restaurants a user has reviewed above 3 stars.
+    },
+    label={lst:gsql2KateRest}
+]
+{./queries/kate2.gsql}
+
+
+\subsubsubsection{Review Trends in Phoenix 2018}
+
+\paragraph{Description}
+This analysis goes deeper into observing the trend of various characteristics of reviews versus their star ratings. This is a common analysis performed on the Yelp dataset \cite{yelp-trends-zhang}, but the version in this investigation selects a subset of reviews only within the 2018 year in the Phoenix area. The spatiotemporal boundaries placed on this subset may reveal hidden trends to be considered in future work.
+
+Reviews are extracted first by location (which results in a much smaller subset than extracting by date first) then by date. The reviews are then separated by star rating. For each star rating, the characteristics of ``funny'', ``useful'', and ``cool'' are accumulated and the text is classified as either positive or negative. For each star rating these are normalized and placed next to one another to see the characteristic of a review from each star group.
+
+\paragraph{SQL}
+
+This kernel is the least complex of the three as it has a single join with a spatio-temporal constraint. Listing \ref{lst:sqlReviews2018} returns selected characteristics on reviews where the date year is 2018 and reviewed businesses are within the Phoenix area.
+
+\lstinputlisting[
+    language=sql,
+    caption={
+        A SQL query that returns all the review text and ratings for businesses within 50km of the Phoenix area during 2018.
+    },
+    label={lst:sqlReviews2018}
+]
+{./queries/reviews.sql}
+
+\paragraph{Gremlin}
+
+One caveat of using mixed indexes on dates via the Gremlin Translator is highlighted in the query for this kernel. Usually, since Gremlin is designed to be embedded, one should make use of objects when appropriate. Since JanusGraph is being queried from Python\footnote{Where ideally, it would be within a JVM language which has access to the JanusGraph specific classes and functions, e.g. Groovy.}, with no support for mixed query specific parameters, date related parameters need to be parsed using static methods from the \texttt{Instant} class in Java. This can be seen in Listing \ref{lst:gremlinReviews2018} when filtering reviews by date. Alternatively, one could also use the \texttt{filter} step as is done in Listing \ref{lst:gremlinCity}.
+
+Out of the set of businesses within the Phoenix area and set of all the reviews in 2018, the businesses set would be the smaller of the two. This is important when using a dataflow language since the whole subset will be accumulated before moving to successive functions in the query. Due to this characteristic of Gremlin, businesses are accumulated before the reviews.
+
+\lstinputlisting[
+    language=gremlin,
+    caption={
+        A Gremlin query that returns all the review text and ratings for businesses within 50km of the Phoenix area during 2018.
+    },
+    label={lst:gremlinReviews2018}
+]
+{./queries/reviews.groovy}
+
+\paragraph{GSQL}
+
+Since only selected characteristics of a review are desired, a tuple is created at the beginning of Listing \ref{lst:gsqlReviews2018}. The businesses within the Phoenix area are selected first, then reviews where the date part is 2018. The review tuples are accumulated into a \texttt{ListAccum}. 
+
+\lstinputlisting[
+    language=gsql,
+    caption={
+        A GSQL query that returns all the review text and ratings for businesses within 50km of the Phoenix area during 2018.
+    },
+    label={lst:gsqlReviews2018}
+]
+{./queries/reviews.gsql}
+
+\subsubsubsection{Ranking Las Vegas by Friends' Sentiment}
+
+\paragraph{Description}
+The purpose of this analysis is the ability to aggregate relations from depth 1 -- 2 of a graph pattern while maintaining spatio-temporal constraints. The user story of this kernel is that a user in the dataset would like to travel to Las Vegas over the Nov -- Dec period. Instead of asking from each of the hundreds of direct friends to thousands of mutual friends, the sentiment from their reviews written during the Nov -- Dec period (irrespective of year) in the Las Vegas area will be analysed.
+
+Both friends and mutual friends will be aggregated and all reviews written during the Nov -- Dec period will be filtered. These reviews will be filtered by the spatial constraint of whether they are connected to businesses within 30km of the Las Vegas center. The remaining reviews will have their text data extracted and returned for analysis. Using the sentiment classifier, a percentage positive sentiment will be generated and this will be the result of the data analysis.
+
+\paragraph{SQL}
+
+Listing \ref{lst:sqlCity} begins by joining reviews and businesses before joining the two depths of friend relations. Julie's ID must be checked for at depth two as to only include mutual friends. Businesses are constrained by location and reviews by their month value under the date attribute. All reviews where the user ID matches the IDs of friends at depth 1 or 2 are selected and the text and star ratings of these reviews is returned.
+
+\lstinputlisting[
+    language=sql,
+    caption={
+        A SQL query that returns all the review text from reviews written by friends and mutual friends for businesses within 30km of the Las Vegas center.
+    },
+    label={lst:sqlCity}
+]
+{./queries/city.sql}
+
+\paragraph{Gremlin}
+
+Starting with Julie's user vertex at the beginning of Listing \ref{lst:gremlinCity}, direct friends and mutual friends are accumulated as \texttt{f1} and \texttt{f2} respectively. First, duplicate users are removed, then any instance of Julie's vertex is removed from the union of these two accumulated groups of friends.
+
+Once the traversal needs to be filtered by the temporal aspect, the same issue of having to call multiple functions due to the caveat in Listing \ref{lst:gremlinReviews2018} is encountered. The month value is extracted from each of these dates and filtered by their month values accordingly and referenced for later use. These reviews are then constrained by the locations of the business vertices by which they are connected. These reviews are then selected and their text and star rating data returned.
+
+\lstinputlisting[
+    language=gremlin,
+    caption={
+        A Gremlin query that returns all the review text from reviews written by friends and mutual friends for businesses within 30km of the Las Vegas center.
+    },
+    label={lst:gremlinCity}
+]
+{./queries/city.groovy}
+
+\paragraph{GSQL}
+
+In a similar fashion to the Gremlin variant, the users from both depths of the friend relations are aggregated before removing Julie's user vertex. The \texttt{SetAccum} is used so duplicate user vertices should not be an issue. The intersection of the nearby businesses and businesses reviewed by the accumulated friend users are then used to extract the review data. Another \texttt{SetAccum}, \texttt{@@reviews}, is used to extract the text and star rating data from each review, where the reviews are constrained by their month values. The accumulated review data in \texttt{@@reviews} is then returned.
+
+\lstinputlisting[
+    language=gsql,
+    caption={
+        A GSQL query that returns all the review text from reviews written by friends and mutual friends for businesses within 30km of the Las Vegas center.
+    },
+    label={lst:gsqlCity}
+]
+{./queries/city.gsql}

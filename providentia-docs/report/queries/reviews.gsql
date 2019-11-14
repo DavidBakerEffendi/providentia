@@ -1,0 +1,32 @@
+CREATE QUERY getReviewsFromPhoenix2018()
+    FOR GRAPH MyGraph { 
+    TYPEDEF tuple<STRING text, INT stars, 
+        INT cool, INT funny,
+        INT useful> review;
+	
+    DOUBLE lat = 33.45;
+    DOUBLE lon = -112.56;
+    INT distKm = 50;
+    ListAccum<review> @@reviewList;
+    Grids = to_vertex_set(
+        getNearbyGridId(distKm, lat, lon),
+        "Geo_Grid");
+	
+    NearbyBusinesses =
+	    SELECT b
+	    FROM Grids:s-(Business_Geo:e)-Business:b 
+	    WHERE geoDistance(lat, lon,
+	        e.LATITUDE, e.LONGITUDE) <= distKm;
+	
+    ReviewsForBusinesses = 
+        SELECT b
+        FROM NearbyBusinesses:b
+            -(reverse_Reviews:r)-
+            User
+        WHERE YEAR(r.REVIEW_DATE) == 2018
+        ACCUM @@reviewList += 
+	        review(r.TEXT, r.STARS,
+	        r.COOL, r.FUNNY, r.USEFUL);
+	
+	PRINT @@reviewList;
+}

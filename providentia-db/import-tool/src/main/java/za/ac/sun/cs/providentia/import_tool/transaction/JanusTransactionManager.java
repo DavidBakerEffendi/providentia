@@ -91,14 +91,12 @@ public class JanusTransactionManager implements TransactionManager {
         mgmt.makePropertyKey("address").dataType(String.class).cardinality(Cardinality.SINGLE).make();
         mgmt.makePropertyKey("postal_code").dataType(String.class).cardinality(Cardinality.SINGLE).make();
         mgmt.makePropertyKey("is_open").dataType(Boolean.class).cardinality(Cardinality.SINGLE).make();
-        mgmt.makePropertyKey("review_count").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
         mgmt.makePropertyKey("name").dataType(String.class).cardinality(Cardinality.SINGLE).make();
         mgmt.makePropertyKey("location").dataType(Geoshape.class).cardinality(Cardinality.SINGLE).make();
         mgmt.makePropertyKey("stars").dataType(Double.class).cardinality(Cardinality.SINGLE).make();
 
         // User properties
         mgmt.makePropertyKey("user_id").dataType(String.class).cardinality(Cardinality.SINGLE).make();
-        mgmt.makePropertyKey("average_stars").dataType(Double.class).cardinality(Cardinality.SINGLE).make();
         mgmt.makePropertyKey("yelping_since").dataType(Instant.class).cardinality(Cardinality.SINGLE).make();
         mgmt.makePropertyKey("cool").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
         mgmt.makePropertyKey("funny").dataType(Integer.class).cardinality(Cardinality.SINGLE).make();
@@ -198,7 +196,6 @@ public class JanusTransactionManager implements TransactionManager {
         if (b.getAddress() != null) bVert.property("address", b.getAddress());
         if (b.getPostalCode() != null) bVert.property("postal_code", b.getPostalCode());
         bVert.property("is_open", b.isOpen());
-        bVert.property("review_count", b.getReviewCount());
         bVert.property("name", b.getName());
         bVert.property("location", Geoshape.point(b.getLatitude(), b.getLongitude()));
         bVert.property("stars", b.getStars());
@@ -328,8 +325,6 @@ public class JanusTransactionManager implements TransactionManager {
         JanusGraphVertex uVert = tx.addVertex("User");
         uVert.property("user_id", u.getUserId());
         uVert.property("name", u.getName());
-        uVert.property("review_count", u.getReviewCount());
-        uVert.property("average_stars", u.getAverageStars());
         uVert.property("yelping_since", u.getYelpingSince());
         uVert.property("cool", u.getCool());
         uVert.property("funny", u.getFunny());

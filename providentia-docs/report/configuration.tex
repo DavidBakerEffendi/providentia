@@ -1,0 +1,130 @@
+% Define colours for table cell shading
+
+\definecolor{Gray}{gray}{0.85} % the gray used in table headers
+\definecolor{LightGray}{gray}{0.95} % the gray used in table subheaders
+
+% Custom subsection commands
+%% Source: https://tex.stackexchange.com/questions/60209/how-to-add-an-extra-level-of-sections-with-headings-below-subsubsection
+
+\titleclass{\subsubsubsection}{straight}[\subsection]
+
+\newcounter{subsubsubsection}[subsubsection]
+\renewcommand\thesubsubsubsection{\thesubsubsection.\arabic{subsubsubsection}}
+\renewcommand\theparagraph{\thesubsubsubsection.\arabic{paragraph}} % optional; useful if paragraphs are to be numbered
+
+\titleformat{\subsubsubsection}
+{\normalfont\normalsize\bfseries}{\thesubsubsubsection}{1em}{}
+\titlespacing*{\subsubsubsection}
+{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\makeatletter
+\renewcommand\paragraph{\@startsection{paragraph}{5}{\z@}%
+  {3.25ex \@plus1ex \@minus.2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries}}
+\renewcommand\subparagraph{\@startsection{subparagraph}{6}{\parindent}%
+  {3.25ex \@plus1ex \@minus .2ex}%
+  {-1em}%
+  {\normalfont\normalsize\bfseries}}
+\def\toclevel@subsubsubsection{4}
+\def\toclevel@paragraph{5}
+\def\toclevel@paragraph{6}
+\def\l@subsubsubsection{\@dottedtocline{4}{7em}{4em}}
+\def\l@paragraph{\@dottedtocline{5}{10em}{5em}}
+\def\l@subparagraph{\@dottedtocline{6}{14em}{6em}}
+\makeatother
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+
+% Make listing keep verbatim style font
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  keepspaces=true,
+}
+
+
+\definecolor{keyword}{HTML}{2771a3}
+\definecolor{pattern}{HTML}{b53c2f}
+\definecolor{string}{HTML}{be681c}
+\definecolor{relation}{HTML}{7e4894}
+\definecolor{variable}{HTML}{107762}
+\definecolor{comment}{HTML}{8d9094}
+
+\lstset{
+	numbers=none,
+	stepnumber=1,
+	numbersep=5pt,
+	basicstyle=\small\ttfamily,
+	keywordstyle=\color{keyword}\bfseries\ttfamily,
+	commentstyle=\color{comment}\ttfamily,
+	stringstyle=\color{string}\ttfamily,
+	identifierstyle=\color{black},
+	showstringspaces=false,
+	aboveskip=3pt,
+	belowskip=3pt,
+	columns=flexible,
+	keepspaces=true,
+	breaklines=true,	
+	captionpos=b,
+	tabsize=2,
+	frame=none,
+}
+
+\lstset{upquote=true}
+
+% Listing rules for Cypher
+
+\lstdefinelanguage{cypher}
+{
+    morekeywords={
+		MATCH, OPTIONAL, WHERE, NOT, AND, OR, XOR, RETURN, DISTINCT, ORDER, BY, ASC, ASCENDING, DESC, DESCENDING, UNWIND, AS, UNION, WITH, ALL, CREATE, DELETE, DETACH, REMOVE, SET, MERGE, SET, SKIP, LIMIT, IN, CASE, WHEN, THEN, ELSE, END, INDEX, DROP, UNIQUE, CONSTRAINT, EXPLAIN, PROFILE, START, CALL
+	},
+    ndkeywords={pageRank, iterate},
+    keywordstyle={\color{keyword}\bfseries},
+    ndkeywordstyle= {\color{relation}},
+    sensitive=true
+}
+
+% Listing rules for Gremlin
+
+\lstdefinelanguage{gremlin}
+{
+    keywordstyle = {\color{keyword}},
+    morekeywords = {
+        has, outE, order, by, desc, asc, inV, select, circle, gt, lt, leq, as, geoWithin, hasLabel, out, except, V, where, values, neq, eq, valueMap, limit, in, dedup, fold, unfold, inE, between, union, filter, get, value, atZone, of, getMonthValue, toLocalDate
+    },
+    ndkeywords={Geoshape, ZoneId},
+    ndkeywordstyle= {\color{relation}},
+    sensitive=true,
+    morestring=*[d]{"},
+}
+
+% Listing rules for GSQL
+
+\lstdefinelanguage{gsql}
+{
+	morekeywords={
+		CREATE, QUERY, FOR, GRAPH, SELECT, FROM, WHERE, PRINT, ACCUM, INTERSECT, TYPEDEF, LIMIT, DO, FOREACH, RANGE, DO, IN, END, YEAR, MONTH
+	},
+	keywordstyle=\color{keyword}\bfseries,
+	ndkeywords={SetAccum, ListAccum, HeapAccum, STRING, INT, DOUBLE, VERTEX, EDGE, tuple, DATETIME},
+    ndkeywordstyle=\color{relation},
+    sensitive=true,
+    morestring=*[d]{"},
+}
+
+% Image frame rules
+\mdfdefinestyle{GraphFrame}{%
+    linecolor=black,
+    outerlinewidth=2pt,
+    %roundcorner=20pt,
+    innertopmargin=4pt,
+    innerbottommargin=4pt,
+    innerrightmargin=4pt,
+    innerleftmargin=4pt,
+        leftmargin = 4pt,
+        rightmargin = 4pt
+    %backgroundcolor=gray!50!white}
+        }

@@ -182,29 +182,22 @@ public class PostgresTransactionManager implements TransactionManager {
         insertCity(b.getCity(), b.getState());
 
         try {
-            String sql = "SELECT id FROM business WHERE id = ?";
-            PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            String sql = "INSERT INTO business " +
+                    "(id, name, address, city, postal_code, location, stars, is_open) " +
+                    "VALUES (?, ?, ?, ?, ?, ST_SetSRID(ST_MakePoint(?, ?), 4326), ?, ?)";
+            PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             p.setString(1, b.getBusinessId());
-            ResultSet rs = p.executeQuery();
-            if (!rs.first()) {
-                sql = "INSERT INTO business " +
-                        "(id, name, address, city, postal_code, location, stars, review_count, is_open) " +
-                        "VALUES (?, ?, ?, ?, ?, ST_SetSRID(ST_MakePoint(?, ?), 4326), ?, ?, ?)";
-                p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                p.setString(1, b.getBusinessId());
-                p.setString(2, b.getName());
-                p.setString(3, b.getAddress());
-                p.setObject(4, b.getCity());
-                p.setString(5, b.getPostalCode());
-                p.setDouble(6, b.getLongitude());
-                p.setDouble(7, b.getLatitude());
-                p.setDouble(8, b.getStars());
-                p.setInt(9, b.getReviewCount());
-                p.setBoolean(10, b.isOpen());
+            p.setString(2, b.getName());
+            p.setString(3, b.getAddress());
+            p.setObject(4, b.getCity());
+            p.setString(5, b.getPostalCode());
+            p.setDouble(6, b.getLongitude());
+            p.setDouble(7, b.getLatitude());
+            p.setDouble(8, b.getStars());
+            p.setBoolean(9, b.isOpen());
 
-                if (p.executeUpdate() == 0) {
-                    throw new SQLException("Creating '" + b.getName() + "' failed, no rows affected.");
-                }
+            if (p.executeUpdate() == 0) {
+                throw new SQLException("Creating '" + b.getName() + "' failed, no rows affected.");
             }
         } catch (SQLException e) {
             LOG.error("Error creating '" + b.getName() + "' for table 'business'.", e);
@@ -257,18 +250,16 @@ public class PostgresTransactionManager implements TransactionManager {
     public void insertUser(User u) {
         try {
             String sql = "INSERT INTO users (" +
-                        "id, name, review_count, yelping_since, useful, funny, cool, fans, average_stars) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "id, name, yelping_since, useful, funny, cool, fans) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             p.setString(1, u.getUserId());
             p.setString(2, u.getName());
-            p.setInt(3, u.getReviewCount());
-            p.setTimestamp(4, new Timestamp(u.getYelpingSince().toEpochMilli()));
-            p.setInt(5, u.getUseful());
-            p.setInt(6, u.getFunny());
-            p.setInt(7, u.getCool());
-            p.setInt(8, u.getFans());
-            p.setDouble(9, u.getAverageStars());
+            p.setTimestamp(3, new Timestamp(u.getYelpingSince().toEpochMilli()));
+            p.setInt(4, u.getUseful());
+            p.setInt(5, u.getFunny());
+            p.setInt(6, u.getCool());
+            p.setInt(7, u.getFans());
 
             if (p.executeUpdate() == 0) {
                 throw new SQLException("Creating '" + u.getName() + "' failed, no rows affected.");
@@ -292,53 +283,22 @@ public class PostgresTransactionManager implements TransactionManager {
      * @param r the review POJO containing the data to insert.
      */
     public void insertReview(Review r) {
-        // Does user exist?
         try {
-            String sql = "SELECT id FROM users WHERE id = ?";
-            PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            p.setObject(1, r.getUserId());
-            ResultSet rs = p.executeQuery();
-            if (!rs.first()) {
-                return;
-            }
-        } catch (SQLException e) {
-            LOG.error("Error selecting " + r.getUserId() + " from table 'friends'.", e);
-        }
-        // Does business exist?
-        try {
-            String sql = "SELECT id FROM business WHERE id = ?";
-            PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            p.setObject(1, r.getBusinessId());
-            ResultSet rs = p.executeQuery();
-            if (!rs.first()) {
-                return;
-            }
-        } catch (SQLException e) {
-            LOG.error("Error selecting " + r.getBusinessId() + " from table 'business'.", e);
-        }
-
-        try {
-            String sql = "SELECT id FROM review WHERE id = ?";
-            PreparedStatement p = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            String sql = "INSERT INTO review (id, user_id, business_id, stars, useful, funny, cool, text, date) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             p.setString(1, r.getReviewId());
-            ResultSet rs = p.executeQuery();
-            if (!rs.first()) {
-                sql = "INSERT INTO review (id, user_id, business_id, stars, useful, funny, cool, text, date) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                p.setString(1, r.getReviewId());
-                p.setString(2, r.getUserId());
-                p.setString(3, r.getBusinessId());
-                p.setDouble(4, r.getStars());
-                p.setInt(5, r.getUseful());
-                p.setInt(6, r.getFunny());
-                p.setInt(7, r.getCool());
-                p.setString(8, r.getText());
-                p.setTimestamp(9, new Timestamp(r.getDate().toEpochMilli()));
+            p.setString(2, r.getUserId());
+            p.setString(3, r.getBusinessId());
+            p.setDouble(4, r.getStars());
+            p.setInt(5, r.getUseful());
+            p.setInt(6, r.getFunny());
+            p.setInt(7, r.getCool());
+            p.setString(8, r.getText());
+            p.setTimestamp(9, new Timestamp(r.getDate().toEpochMilli()));
 
-                if (p.executeUpdate() == 0) {
-                    throw new SQLException("Creating '" + r.getReviewId() + "' failed, no rows affected.");
-                }
+            if (p.executeUpdate() == 0) {
+                throw new SQLException("Creating '" + r.getReviewId() + "' failed, no rows affected.");
             }
         } catch (SQLException e) {
             LOG.error("Error creating '" + r.getReviewId() + "' for table 'review'.", e);
