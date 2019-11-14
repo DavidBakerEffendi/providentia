@@ -19,9 +19,9 @@ def normalize(file_dir, out_dir, process_line):
 
 def normalize_file(norm_setting_file, norm_module):
     if not os.path.isfile(norm_setting_file) is True:
-        print(norm_setting_file, ' is not a file! Skipping...')
+        print('[WARN]', norm_setting_file, ' is not a file! Skipping...')
     else:
-        print("Normalizing {}".format(norm_setting_file))
+        print("[INFO] Normalizing {}".format(norm_setting_file))
         normalize(file_dir=norm_setting_file,
                   out_dir=norm_module.NORM_FILE,
                   process_line=norm_module.process_line)
@@ -41,17 +41,17 @@ if __name__ == "__main__":
         print("|--- Normalizing Original Data --|")
         # Normalize businesses
         if config.NORMALIZE_SETTINGS["NORMALIZE_BUS"] is True:
-            print("Normalizing businesses...")
+            print("[INFO] Normalizing businesses...")
             normalize_file(norm_setting_file=config.NORMALIZE_SETTINGS["BUSINESS_FILE"],
                            norm_module=normalize_businesses)
         # Normalize users
         if config.NORMALIZE_SETTINGS["NORMALIZE_USE"] is True:
-            print("Normalizing users...")
+            print("[INFO] Normalizing users...")
             normalize_file(norm_setting_file=config.NORMALIZE_SETTINGS["USERS_FILE"],
                            norm_module=normalize_users)
         # Normalize reviews
         if config.NORMALIZE_SETTINGS["NORMALIZE_REV"] is True:
-            print("Normalizing reviews...")
+            print("[INFO] Normalizing reviews...")
             normalize_file(norm_setting_file=config.NORMALIZE_SETTINGS["REVIEW_FILE"],
                            norm_module=normalize_reviews)
 
@@ -59,19 +59,19 @@ if __name__ == "__main__":
         print("|--- Generating Subset of Data --|")
         # Subset businesses
         if config.SUBSET_SETTINGS["SUB_BUS"] is True:
-            print("Generating subset of businesses...")
+            print("[INFO] Generating subset of businesses...")
             sub_businesses.generate_subset(f_dir=normalize_businesses.NORM_FILE,
                                            perc=config.SUBSET_SETTINGS["PERC"])
 
         # Subset users
         if config.SUBSET_SETTINGS["SUB_USE"] is True:
-            print("Generating subset of users...")
+            print("[INFO] Generating subset of users...")
             sub_users.generate_subset(f_dir=normalize_users.NORM_FILE,
                                       perc=config.SUBSET_SETTINGS["PERC"])
 
         # Subset reviews
         if config.SUBSET_SETTINGS["SUB_REV"] is True:
-            print("Generating subset of reviews...")
+            print("[INFO] Generating subset of reviews...")
             sub_reviews.generate_subset(f_dir=normalize_reviews.NORM_FILE,
                                         perc=config.SUBSET_SETTINGS["PERC"])
 
@@ -79,13 +79,13 @@ if __name__ == "__main__":
         print("|--- Generating CSV from Data Subsets --|")
         # CSV businesses
         if config.PREPARE_SETTINGS["PREPARE_BUS"] is True:
-            print("Preparing businesses as CSV...")
+            print("[INFO] Preparing businesses as CSV...")
             csv_businesses.write_csv(sub_businesses.SUB_FILE)
         # CSV reviews
         if config.PREPARE_SETTINGS["PREPARE_REV"] is True:
-            print("Preparing reviews as CSV...")
+            print("[INFO] Preparing reviews as CSV...")
             csv_reviews.write_csv(sub_reviews.SUB_FILE)
         # CSV users
         if config.PREPARE_SETTINGS["PREPARE_USE"] is True:
-            print("Preparing users as CSV...")
+            print("[INFO] Preparing users as CSV...")
             csv_users.write_csv(sub_users.SUB_FILE)
