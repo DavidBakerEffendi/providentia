@@ -2,15 +2,15 @@ USE GRAPH MyGraph
 
 DROP JOB loadYelp
 CREATE LOADING JOB loadYelp FOR GRAPH MyGraph {
-    DEFINE FILENAME fBus = "~/tigergraph/loadingData/business_0.13.csv";
-    DEFINE FILENAME fCat = "~/tigergraph/loadingData/categories_0.13.csv";
-    DEFINE FILENAME fUse = "~/tigergraph/loadingData/users_0.13.csv";
-    DEFINE FILENAME fFnd = "~/tigergraph/loadingData/friendships_0.13.csv";
-    DEFINE FILENAME fRev = "~/tigergraph/loadingData/reviews_0.13.csv";
+    DEFINE FILENAME fBus = "~/tigergraph/loadingData/business_0.03.csv";
+    DEFINE FILENAME fCat = "~/tigergraph/loadingData/categories_0.03.csv";
+    DEFINE FILENAME fUse = "~/tigergraph/loadingData/users_0.03.csv";
+    DEFINE FILENAME fFnd = "~/tigergraph/loadingData/friendships_0.03.csv";
+    DEFINE FILENAME fRev = "~/tigergraph/loadingData/reviews_0.03.csv";
 
     # Load data from business files
     LOAD fBus
-        TO VERTEX Business VALUES ($"business_id", $"address", $"postal_code", $"stars", $"review_count", $"is_open", $"name")
+        TO VERTEX Business VALUES ($"business_id", $"address", $"postal_code", $"stars", $"is_open", $"name")
         USING header="true", separator=",";
     LOAD fBus
         TO EDGE Business_Geo VALUES ($"business_id", getGridId($"latitude", $"longitude"), $"latitude", $"longitude")
@@ -36,7 +36,7 @@ CREATE LOADING JOB loadYelp FOR GRAPH MyGraph {
 
     # Load data from users files
     LOAD fUse
-        TO VERTEX User VALUES ($"user_id", $"name", $"review_count", $"yelping_since", $"useful", $"funny", $"cool", $"fans", $"average_stars")
+        TO VERTEX User VALUES ($"user_id", $"name", $"yelping_since", $"useful", $"funny", $"cool", $"fans")
         USING header="true", separator=",";
     LOAD fFnd
         TO EDGE Friends VALUES ($"user_id", $"friend_id")
