@@ -1,0 +1,53 @@
+<mat-card>
+    <mat-card-title>
+        <mat-toolbar>Performance</mat-toolbar>
+    </mat-card-title>
+
+    <div *ngIf="showError" class="alert alert-danger" role="alert">
+        Error while communicating to server:
+        <mat-list>
+            <mat-list-item>{{ errorMsg }}</mat-list-item>
+        </mat-list>
+    </div>
+
+    <!-- Warning messages -->
+    <div *ngIf="showWarn" class="alert alert-warning" role="alert">
+        <mat-list-item>{{ warnMsg }}</mat-list-item>
+    </div>
+
+    <!-- Success messages -->
+    <div *ngIf="showSuccess" class="alert alert-success" role="alert">
+        <mat-list-item>{{ successMsg }}</mat-list-item>
+        </div>
+
+    <mat-content>
+            <mat-accordion *ngIf="analysiss">
+                    <mat-expansion-panel *ngFor="let analysis of analysiss; let i = index">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                {{ analysis.name }}
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+        
+                        <p>{{ analysis.description }}</p>
+                        <div [hidden]="showSpinner[i] !== true">
+                            <mat-spinner [diameter]="50" style="margin-left:auto;margin-right:auto;"></mat-spinner>
+                        </div>
+                        <div *ngIf="errResponses.has(analysis.name)" [hidden]="showSpinner[i] === true">
+                            <p class="code elegant-color-dark text-white p-3">{{ errResponses.get(analysis.name) }}</p>
+                        </div>
+
+                        <!-- TODO: Do stuff here-->
+                        <div class="col-12 row" style="margin-right: 0; margin-left: 0;" *ngIf="!errResponses.has(analysis.name)">
+                            <h4 class="col-12">Database Response Times (ms)</h4>
+                            <div class="col-10" style="display: block;" *ngIf="perfResponses.has(analysis.analysis_id)">
+                                <canvas mdbChart [chartType]="'bar'" [datasets]="perfResponses.get(analysis.analysis_id)" [colors]="perfDataColors"
+                                    [options]="perfDataOptions" [legend]="true" [labels]="perfDataLabels">
+                                </canvas>
+                            </div>
+                        </div>
+    
+                    </mat-expansion-panel>
+                </mat-accordion>
+    </mat-content>
+</mat-card>

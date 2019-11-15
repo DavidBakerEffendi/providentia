@@ -7,6 +7,12 @@ export interface IAnalysis {
     description?: String;
 }
 
+export interface IAnalysisPerf {
+    name?: String;
+    avg?: number;
+    stddev?: number;
+}
+
 export class Analysis implements IAnalysis {
 
     constructor(
@@ -14,6 +20,16 @@ export class Analysis implements IAnalysis {
         public dataset?: IDataset,
         public name?: String,
         public description?: String
+    ) {}
+
+}
+
+export class AnalysisPerf implements IAnalysisPerf {
+
+    constructor(
+        public name?: String,
+        public avg?: number,
+        public stddev?: number
     ) {}
 
 }

@@ -45,9 +45,9 @@ def result_find(benchmark_id):
         benchmark = tbl_benchmark.find(benchmark_id)
     except Exception as e:
         logging.error(str(e))
-        return Response({"message": "Unexpected error while querying database!"}, status=500)
+        return Response({"Unexpected error while querying database!"}, status=500)
 
     if benchmark is None:
-        return Response({"message": "Benchmark not found!"}, status=404)
+        return Response({"Benchmark not found!"}, status=404)
 
     return Response(json.dumps(benchmark, default=model_encoder), status=200, mimetype='application/json')

@@ -18,9 +18,9 @@ def get():
         results = tbl_datasets.query_results()
     except Exception as e:
         logging.error(str(e))
-        return Response({"message": "Unexpected error while querying database!"}, status=500)
+        return Response({"Unexpected error while querying database!"}, status=500)
 
     if results is None:
-        return Response({"message": "Database empty."}, status=200)
+        return Response({"Database empty."}, status=200)
 
     return Response(json.dumps(results, default=model_encoder), status=200, mimetype='application/json')

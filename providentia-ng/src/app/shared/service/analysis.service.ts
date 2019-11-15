@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { createRequestOption } from '../../shared/util/request-util';
 
 import APP_CONFIG from '../../app.config';
-import { IAnalysis } from '../model/analysis.model';
+import { IAnalysis, IAnalysisPerf } from '../model/analysis.model';
 
 type EntityResponseType = HttpResponse<IAnalysis>;
 type EntityArrayResponseType = HttpResponse<IAnalysis[]>;
@@ -25,6 +25,10 @@ export class AnalysisService {
 
     find(id: string): Observable<EntityResponseType> {
         return this.http.get<IAnalysis>(`${this.resourceUrl}${id}`, { observe: 'response' });
+    }
+
+    performance(id: string): Observable<HttpResponse<IAnalysisPerf[]>> {
+        return this.http.get<IAnalysisPerf[]>(`${this.resourceUrl}performance/${id}`, { observe: 'response' })
     }
 
     query(req?: any): Observable<EntityArrayResponseType> {

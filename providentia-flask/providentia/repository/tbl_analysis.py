@@ -56,3 +56,25 @@ def find_name(row_name):
             return None
 
         return analysis_decoder(result)
+
+
+def get_performance(analysis_id):
+    with current_app.app_context():
+        cur = get_db().cursor()
+        query = 'SELECT databases.name, AVG(query_time) as avg, STDDEV_SAMP(query_time) as stddev ' \
+                'FROM benchmarks ' \
+                'JOIN databases ON database_id = databases.id ' \
+                'WHERE benchmarks.analysis_id = %s ' \
+                'GROUP BY databases.name ORDER BY databases.name'
+        cur.execute(query, (analysis_id,))
+
+        perf_headings = ['name', 'avg', 'stddev']
+
+        rows = []
+        if cur.rowcount > 0:
+            for row in cur.fetchall():
+                rows.append(dict(zip(perf_headings, row)))
+        else:
+            return "No analysis results!"
+
+        return rows

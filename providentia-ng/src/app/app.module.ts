@@ -13,6 +13,7 @@ import { ProvidentiaDatabasesModule } from './databases';
 import { ProvidentiaHistoryModule } from './history';
 import { ProvidentiaBenchmarkModule } from './benchmark';
 import { ProvidentiaClassifierModule } from './classifier';
+import { ProvidentiaPerformanceModule } from './performance';
 import { AngularMaterialModule } from './material.module';
 import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { ProvidentiaAppRoutingModule } from './app-routing.module';
@@ -51,6 +52,7 @@ import { NavbarComponent, FooterComponent, ErrorComponent, SidenavbarComponent }
     ProvidentiaHistoryModule,
     ProvidentiaBenchmarkModule,
     ProvidentiaClassifierModule,
+    ProvidentiaPerformanceModule,
     ProvidentiaAppRoutingModule,
     MDBBootstrapModule.forRoot()
   ],
