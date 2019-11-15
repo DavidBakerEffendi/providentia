@@ -1,6 +1,7 @@
 # Python
 venv
-*/__pycache__/
+__pycache__
+*/__pycache__
 # Data files
 *.json
 *.csv

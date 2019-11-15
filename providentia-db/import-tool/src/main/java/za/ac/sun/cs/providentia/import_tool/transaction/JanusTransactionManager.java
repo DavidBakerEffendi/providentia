@@ -487,12 +487,12 @@ public class JanusTransactionManager implements TransactionManager {
                 } catch (JanusGraphException | IllegalStateException e) {
                     failures++;
                     try {
-                        Thread.sleep(failures * waitTime);
+                        Thread.sleep(waitTime);
                         if (tx != null)
                             tx.rollback();
                     } catch (Exception ignored) {
                     }
-                    if (waitTime * 2 > 0) {
+                    if (waitTime * 2 > 0 && waitTime < 1000) {
                         waitTime *= 2;
                     }
                     if (failures > 1000) {
