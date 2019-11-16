@@ -71,8 +71,6 @@ def get_lv_reviews_from_friends(database):
         req = tigergraph.execute_query('getFriendReviewsInArea?p={}&lat={}&lon={}'.format(julie_id, lat, lon))
         if req is not None:
             result = req[0]['@@reviews']
-        else:
-            result = []
     return result
 
 
