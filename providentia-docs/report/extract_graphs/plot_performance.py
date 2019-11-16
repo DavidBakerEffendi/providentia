@@ -26,7 +26,7 @@ scaler = preprocessing.MinMaxScaler()
 
 all_val = np.array([])
 
-with open('setup%d_%s.csv' % (config.SETUP, ANALYSIS)) as csvfile:
+with open('./setup%d_results/setup%d_%s.csv' % (config.SETUP, config.SETUP, ANALYSIS)) as csvfile:
     reader =  csv.reader(csvfile, delimiter=",")
     for row in reader:
         avg = float(row[0])

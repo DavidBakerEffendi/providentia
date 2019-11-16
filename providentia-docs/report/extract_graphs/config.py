@@ -1,6 +1,6 @@
 PERC = '7'
-SETUP = 2
-KERN = 3
+SETUP = 1
+KERN = 1
 
 if SETUP == 1:
     CONN = 'postgres://postgres:docker@0.0.0.0:5432/providentia'

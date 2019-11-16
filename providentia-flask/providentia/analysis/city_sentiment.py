@@ -45,6 +45,7 @@ def run(benchmark: Benchmark):
 
 def get_lv_reviews_from_friends(database):
     lat, lon = coords
+    result = []
     if database == 'JanusGraph':
         result = janus_graph.execute_query(
             'g.V().has("User", "user_id", "%s").as("julie")'
