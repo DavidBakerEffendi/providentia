@@ -3,10 +3,11 @@ A web-based bench marking tool for testing query speeds of graph databases vs re
 
 ## Project Structure
 
-![Providentia Structure](providentia-assets/providentia-architecture.png "Providentia Structure")
+![Providentia Structure](providentia-docs/assets/providentia-architecture.png "Providentia Structure")
 
 * Client is based on Angular7+.
-* API is Flask and is used to communicate with the client for analysis using NLTK and other statistic techniques to simulate 'real' analysis.
+* The REST API is a Flask based backend. It is used to communicate with the client for analysis using NLTK and other statistic techniques to simulate 'real-world' analysis.
+* The Flask backend communicates with the databases.
 
 ## Databases
 The following databases are being benchmarked:
@@ -21,8 +22,17 @@ The following are my minimum hardware requirements in terms of a full production
 
 * Intel i5 / AMD Ryzen 5
 * 32 GB RAM
-* 12 GB storage for training data and the Yelp challenge dataset
+* 18 GB storage for training data and the Yelp challenge dataset
 
-## Development
+## Setting Up
 
-Before you start, first make sure your databases are setup. Navigate to `providentia-db` to have a look at how to start the Docker containers and use the `normalize-yelp` script to clean up the Yelp challenge data a bit. After that is done, import the data using the `import-tool` (which is where you can find my database schemas). Once that's complete you should then be ready to spin up the web application.
+The following are the steps on how to prepare and run Providentia:
+
+* First go to `providentia-db` and follow the steps there in order to launch each database, preprocess and import the dataset.
+* Go to `providentia-flask` to configure the Flask backend.
+* Go to `providentia-ng` to configure the Angular frontend.
+* Once all of the databases are ready and the web application is configured, run `docker-compose up` in this directory to begin the web application.
+
+## Project Documentation and Presentation
+
+The document report, poster, and presentation source code can be found under `providenta-docs`.

@@ -1,0 +1,285 @@
+% \documentclass[12pt,aspectratio=169]{beamer}
+\documentclass[10pt]{beamer}
+
+\mode<presentation>
+
+% import packages
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{pdfrender}
+\usepackage{setspace}
+\usepackage{array}
+\usepackage{minted}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+\usetikzlibrary{arrows,shapes}
+
+\newminted{python}{fontsize=\scriptsize, 
+                   linenos,
+                   numbersep=8pt,
+                   gobble=4,
+                   frame=lines,
+                   bgcolor=bg,
+                   framesep=3mm} 
+
+% set up fonts
+\usepackage[bitstream-charter]{mathdesign}
+\usepackage[sfdefault,lining]{FiraSans}
+\usepackage{FiraMono}
+\usepackage[T1]{fontenc}
+\usepackage{parnotes}
+
+% define colours
+\definecolor{MatiesMaroon}{RGB}{96,34,59}
+\definecolor{MatiesGold}{RGB}{150,113,64}
+\definecolor{MatiesYellow}{RGB}{240,179,54}
+\definecolor{MatiesScienceRed}{RGB}{180,22,44}
+\definecolor{MatiesAgriScienceGreen}{RGB}{61,138,26}
+\definecolor{MatiesEducationBlue}{RGB}{34,61,113}
+\definecolor{MatiesLightGrey}{HTML}{FAFAFA}
+\definecolor{MatiesDarkGrey}{HTML}{212121}
+
+\definecolor{DarkPurple}{HTML}{871f78}
+\definecolor{darkgray}{rgb}{.4,.4,.4}
+\definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+
+% colours for listings
+\definecolor{keyword}{HTML}{2771a3}
+\definecolor{pattern}{HTML}{b53c2f}
+\definecolor{string}{HTML}{be681c}
+\definecolor{relation}{HTML}{7e4894}
+\definecolor{variable}{HTML}{107762}
+\definecolor{comment}{HTML}{8d9094}
+
+\lstset{
+	numbers=none,
+	stepnumber=1,
+	numbersep=5pt,
+	basicstyle=\small\ttfamily,
+	keywordstyle=\color{keyword}\bfseries\ttfamily,
+	commentstyle=\color{comment}\ttfamily,
+	stringstyle=\color{string}\ttfamily,
+	identifierstyle=\color{black},
+	showstringspaces=false,
+	aboveskip=3pt,
+	belowskip=3pt,
+	columns=flexible,
+	keepspaces=true,
+	breaklines=true,	
+	captionpos=b,
+	tabsize=2,
+	frame=none
+}
+
+% Listing rules for Cypher
+
+\lstdefinelanguage{cypher}
+{
+    morekeywords={
+		MATCH, OPTIONAL, WHERE, NOT, AND, OR, XOR, RETURN, DISTINCT, ORDER, BY, ASC, ASCENDING, DESC, DESCENDING, UNWIND, AS, UNION, WITH, ALL, CREATE, DELETE, DETACH, REMOVE, SET, MERGE, SET, SKIP, LIMIT, IN, CASE, WHEN, THEN, ELSE, END, INDEX, DROP, UNIQUE, CONSTRAINT, EXPLAIN, PROFILE, START, CALL
+	},
+    ndkeywords={pageRank, iterate},
+    keywordstyle={\color{keyword}\bfseries},
+    ndkeywordstyle= {\color{relation}},
+    sensitive=true
+}
+
+% Listing rules for Gremlin
+
+\lstdefinelanguage{gremlin}
+{
+    keywordstyle = {\color{keyword}},
+    morekeywords = {
+        has, outE, order, by, desc, asc, inV, select, circle, gt, lt, leq, as, geoWithin, hasLabel, out, except, V, where, values, neq, eq, valueMap, limit, in, dedup, fold, unfold, inE, between, union, filter, get, value, atZone, of, getMonthValue, toLocalDate
+    },
+    ndkeywords={Geoshape, ZoneId},
+    ndkeywordstyle= {\color{relation}},
+    sensitive=true,
+    morestring=*[d]{"},
+}
+
+% Listing rules for GSQL
+
+\lstdefinelanguage{gsql}
+{
+	morekeywords={
+		CREATE, QUERY, FOR, GRAPH, SELECT, FROM, WHERE, PRINT, ACCUM, INTERSECT, TYPEDEF, LIMIT, DO, FOREACH, RANGE, DO, IN, END, YEAR, MONTH
+	},
+	keywordstyle=\color{keyword}\bfseries,
+	ndkeywords={SetAccum, ListAccum, HeapAccum, STRING, INT, DOUBLE, VERTEX, EDGE, tuple, DATETIME},
+    ndkeywordstyle=\color{relation},
+    sensitive=true,
+    morestring=*[d]{"},
+}
+
+
+\lstset{
+   extendedchars=true,
+   basicstyle=\footnotesize\ttfamily,
+   showstringspaces=false,
+   showspaces=false,
+   numbers=left,
+   numberstyle=\footnotesize,
+   numbersep=9pt,
+   tabsize=2,
+   breaklines=true,
+   showtabs=false,
+   captionpos=b
+}
+
+\usefonttheme{serif}
+
+% remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% colours for markers
+\newcommand{\markerone}[1]{\textcolor{MatiesYellow}{#1}}
+\newcommand{\markertwo}[1]{\textcolor{DarkPurple}{#1}}
+\newcommand{\markerthree}[1]{\textcolor{MatiesScienceRed}{#1}}
+\newcommand{\markerfour}[1]{\textcolor{MatiesEducationBlue}{#1}}
+\newcommand{\markerfive}[1]{\textcolor{MatiesDarkGrey}{#1}}
+\newcommand{\markersix}[1]{\textcolor{MatiesAgriScienceGreen}{#1}}
+\newcommand{\markerseven}[1]{\textcolor{MatiesLightGrey}{#1}}
+\newcommand{\markereight}[1]{\textcolor{MatiesMaroon}{#1}}
+\newcommand{\red}[1]{\textcolor{MatiesScienceRed}{#1}}
+\newcommand{\blue}[1]{\textcolor{MatiesEducationBlue}{#1}}
+
+% \newcommand{\markerone}[1]{\textcolor[HTML]{FFAEB9}{#1}}
+% \newcommand{\markertwo}[1]{\textcolor[HTML]{EE7AE9}{#1}}
+% \newcommand{\markerthree}[1]{\textcolor[HTML]{B0C4DE}{#1}}
+% \newcommand{\markerfour}[1]{\textcolor[HTML]{63B8FF}{#1}}
+% \newcommand{\markerfive}[1]{\textcolor[HTML]{00FA9A}{#1}}
+% \newcommand{\markersix}[1]{\textcolor[HTML]{CAFF70}{#1}}
+
+% set up colours
+\setbeamercolor{background canvas}{bg=MatiesLightGrey}
+\setbeamercolor{normal text}{fg=MatiesDarkGrey}
+%\setbeamercolor*{structure}{fg=MatiesScienceRed}
+\setbeamercolor*{structure}{fg=MatiesDarkGrey}
+\setbeamercolor{alerted text}{fg=MatiesScienceRed}
+\setbeamercolor{example text}{fg=MatiesAgriScienceGreen}
+\setbeamercolor{palette primary}{%
+	use=normal text,%
+	fg=normal text.bg,%
+	bg=MatiesMaroon,%
+}
+
+% emphasise text
+\newcommand{\concept}[1]{\alert{#1}}
+
+% define shortcuts
+\newcommand{\Cfin}{\ensuremath{C_\text{fin}}}
+\newcommand{\capgroup}[2]{$[_{#1}$#2$]_{#1}$}
+\newcommand{\capture}[1]{\texttt{#1}}
+%\newcommand{\calloutsm}[1]{\colorbox{MatiesYellow}{\strong{\scriptsize\color{MatiesScienceRed}\MakeUppercase{#1}}}}
+\newcommand{\calloutsm}[1]{{\scriptsize\setlength{\fboxsep}{2pt}\colorbox{MatiesYellow!70}{\strong{\color{MatiesScienceRed}\MakeUppercase{#1}}}}}
+\newcommand{\hl}[1]{\colorbox{yellow}{#1}}
+\newcommand{\inputstring}[1]{``\texttt{#1}''}
+\newcommand{\lof}[1]{\ensuremath{\mathcal{L}(#1)}}
+\newcommand{\precB}{\prec_{B}}
+\newcommand{\regex}[1]{{\underline{\texttt{#1}}}}
+\newcommand{\regroup}[2]{($_{#1}$#2)$_{#1}$}
+\newcommand{\strong}[1]{\textsf{\bfseries #1}}
+
+\newcommand{\Reggy}{\textsc{Reggy}\xspace}
+\newcommand{\reggy}{\textsc{reggy}\xspace}
+
+\newcommand{\Inferrer}{\textsc{Inferrer}\xspace}
+\newcommand{\inferrer}{\textsc{inferrer}\xspace}
+
+% define new symbols
+\newcommand*{\boldcheckmark}{%
+	\textpdfrender{
+		TextRenderingMode=FillStroke,
+		LineWidth=.5pt, % half of the line width is outside the normal glyph
+	}{\checkmark}%
+}
+\newcommand{\emptyregex}{\ensuremath{\varnothing}}
+\newcommand{\emptylanguage}{\ensuremath{\varnothing}}
+\newcommand{\emptystringregex}{\ensuremath{\varepsilon}}
+\newcommand{\emptystring}{\ensuremath{\varepsilon}}
+
+% change template
+\logo{\includegraphics[height=16pt]{USlogo.pdf}\vspace{240pt}}
+\setbeamertemplate{frametitle}{%
+	\vspace{0.40em}%
+	\noindent%
+	\hspace{-1.47em}%
+	\tikz[overlay,remember picture,baseline=0.3em]{%
+		\fill[fill=MatiesMaroon]  (-0.3,0.05) rectangle (0,0.9);%
+	}%
+	\sffamily\bfseries\color{MatiesMaroon}~~\insertframetitle%
+}
+\setbeamercolor{framecountcolor}{bg=MatiesMaroon,fg=MatiesLightGrey}
+\setbeamertemplate{footline}{%
+	\leavevmode%
+	\hspace*{1pt}
+	\sffamily%
+	\color{MatiesMaroon}%
+	\insertshortauthor: %
+	\emph{\insertshorttitle}, %
+	\insertshortdate%
+	\hfill%
+	\bfseries%
+	%\begin{beamercolorbox}[wd=2em,ht=0.9em,dp=0.3em]{framecountcolor}%
+		\insertframenumber{} / 16%
+	%\end{beamercolorbox}%
+	\hspace*{3pt}%
+	\vspace{1pt}
+}
+\setbeamertemplate{title page}{%
+	\insertauthor\par%
+	\vspace{1em}%
+	\bgroup%
+		\color{MatiesMaroon}%
+		\sffamily\LARGE\bfseries
+		\inserttitle\par%
+	\egroup%
+	\vspace{2em}%
+	\insertsubtitle\par%
+	\vspace{1ex}
+	\insertdate\par%
+	\vspace{2em}
+	\includegraphics[width=.7\textwidth]{img/SU100_ID_HorBrandMark.pdf}
+}
+
+\newcommand{\Simley}[1]{%
+\begin{tikzpicture}[scale=0.41]
+    \newcommand*{\SmileyRadius}{1.0}%
+    \draw [fill=brown!10] (0,0) circle (\SmileyRadius)% outside circle
+        %node [yshift=-0.22*\SmileyRadius cm] {\tiny #1}% uncomment this to see the smile factor
+        ;  
+
+    \pgfmathsetmacro{\eyeX}{0.5*\SmileyRadius*cos(30)}
+    \pgfmathsetmacro{\eyeY}{0.5*\SmileyRadius*sin(30)}
+    \draw [fill=cyan,draw=none] (\eyeX,\eyeY) circle (0.15cm);
+    \draw [fill=cyan,draw=none] (-\eyeX,\eyeY) circle (0.15cm);
+
+    \pgfmathsetmacro{\xScale}{2*\eyeX/180}
+    \pgfmathsetmacro{\yScale}{1.0*\eyeY}
+    \draw[color=red, domain=-\eyeX:\eyeX]   
+        plot ({\x},{
+            -0.1+#1*0.15 % shift the smiley as smile decreases
+            -#1*1.75*\yScale*(sin((\x+\eyeX)/\xScale))-\eyeY});
+\end{tikzpicture}%
+}%
+% set up the title slide
+\author[Baker Effendi and van der Merwe]{S.D~Baker Effendi and A.B.~van der Merwe}
+\title[Honours Project Presentation]{An investigation into the suitability of graph database technology in the analysis of spatio-temporal data}
+\institute{University of Stellenbosch}
+\date[21 November 2019]{21 November 2019, Stellenbosch, South Africa}
+
+\captionsetup[figure]{labelformat=empty}
+
+\begin{document}
+
+\frame[plain]{\titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{slides.tex}
+
+\end{document}

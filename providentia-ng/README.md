@@ -1,6 +1,10 @@
-# ProvidentiaNg
+# Providentia-ng
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.9.
+## Configuration
+
+The configuration file for the Angular frontend can be found under `src/app/app.config.ts`.
+
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.9. To run the project baremetal, see the following headers.
 
 ## Development server
 

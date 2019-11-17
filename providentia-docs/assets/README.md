@@ -1,5 +1,7 @@
 # Providentia Assets
 
+This folder contains all the images and `xcf` sources used to modify the images into their final logos used in the project.
+
 # Logos
 Links to authors for the images:
 * [providentia-logo-1](https://www.freepng.es/png-d9vlbr/) (License: Personal Use)

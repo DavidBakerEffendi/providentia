@@ -1,6 +1,6 @@
 # Docker Containers
 
-The following directory contains example scripts (especially useful for development) to pull/compose/run Docker containers hosting each of the databases. They all have a modular design where the scripts are meant to simplify the setting of various flags when starting containers such as Elassandra or making use of docker-compose for JanusGraph.
+The following directory contains example scripts (especially useful for development) to pull/compose/run Docker containers hosting each of the databases. Each of the databases use Docker compose and some have convenience scripts to connect to each container.
 
 ## Instructions for each of the databases
 
@@ -22,7 +22,7 @@ The Postgres docker container is built from the official PostgreSQL image with P
 The TigerGraph docker container is build from the official TigerGraph image. Original instructions can be found [here](https://github.com/tigergraph/ecosys/blob/master/guru_scripts/docker/README.md).
 * `tigergraph/docker-compose.yml`: The docker-compose for the TigerGraph container. This container does not give output.
 TigerGraph is a bit more advanced in terms of accessing GSQL shell and the Graph Studio admin panel. Cheatsheet from the above source is below:
-* Open a shell to the TigerGraph server using the following command: `ssh -p 14022 tigergraph@localhost` with password `tigergraph`.
+* Open a shell to the TigerGraph server using the following command: `ssh -p 14022 tigergraph@localhost` with password `tigergraph`. A convience script called `connect` calls this command.
 * Start the TigerGraph service under bash shell (may take up to 1 minute) using `gadmin start`.
 
 Now one will have access to the following:

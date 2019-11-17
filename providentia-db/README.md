@@ -1,13 +1,12 @@
 # Providentia-DB
 
-The following are import tools to import the respective dataset to analyse into each of the back end storage solutions.
+The following three directories host tools and scripts to launch each database, preprocess and import the dataset.
 
 ## Getting started
 
-First normalize Yelp files in the `normalize-yelp` directory. Once business.json, review.json, and user.json have been normalized, navigate to the `import-tool` directory to start importing data into the various databases.
+The following is the order in which each directory should be visited:
 
-## Docker Instructions
+* `docker-containers` will contain the Docker compose files to run each database.
+* `normalize-dataset` will contain a Python script to preprocess the Yelp Challenge 2019 dataset.
+* `import-tool` will import the dataset into JanusGraph and PostgreSQL. For importing to TigerGraph see `docker-containers/tigergraph`.
 
-Inside of the `docker-containers` directory you will find `docker-compose` scripts to Dockerize each database.
-
-For more information, find the README in the `docker-containers` directory.
