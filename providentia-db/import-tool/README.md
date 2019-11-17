@@ -1,6 +1,14 @@
 # Import Tool
 Import Yelp (round 13's) dataset into various databases.
 
+## Quick start
+
+Once the project is configured and the dataset and databases are ready, run the following:
+
+```bash
+$ mvn clean install
+$ ./bin/run.sh
+```
 
 ## Yelp JanusGraph Schema
 
