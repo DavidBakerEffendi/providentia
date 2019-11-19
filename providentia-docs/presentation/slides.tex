@@ -6,9 +6,12 @@
     What is spatio-temporal data?
     \vfill
     \begin{quote}
-        Spatio-temporal data is data which contains both \textbf{time and space information}.
+        Spatio-temporal data is data which contains both \textbf{time and space information}. This kind of data is often \textbf{highly relational} and \textbf{interconnected}.
     \end{quote}
     \vfill
+\end{frame}
+
+\begin{frame}{Introduction}
     Why spatio-temporal data?
     \vfill
     \begin{quote}
@@ -18,6 +21,7 @@
         
         Spatio-temporal data is inherently \textbf{multi-dimensional} which requires creative ways to \textbf{effectively store and query} these kinds of records.
     \end{quote}
+    \vfill
 \end{frame}
 
 \begin{frame}{Introduction}
@@ -27,6 +31,9 @@
         \textbf{Abstracts data} from a storage backend \textbf{as a graph}. Data is stored on the vertices and edges as key-value pairs.
     \end{quote}
     \vfill
+\end{frame}
+
+\begin{frame}{Introduction}
     Why do we think graph databases will be more suitable?
     \vfill
     \begin{quote}
@@ -43,14 +50,14 @@
 \end{frame}
 
 \begin{frame}{Introduction}
-    \textbf{Final question:} How do we go about measuring suitability?
+    \textbf{Finally}, how do we go about measuring suitability?
     \vfill
     \begin{itemize}
-        \item Choose a suitable diversity and number of database models to compare.
+        \item Choose a number of diverse database models to compare.
         \item Apply a sufficiently large, spatio-temporal dataset.
         \item Investigate and compare each query language.
+        \item Apply ``real-world'' applications of each database on the dataset.
         \item Measure query response times.
-        \item Investigate the guarantees of each technology with regards to ACID-compliance, CAP theorem, and real-world application.
     \end{itemize}
 \end{frame}
 
@@ -59,7 +66,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}{Databases}
-    Three database models were considered in this investigation:
+    \textbf{Three} database models were considered in this investigation:
     \vfill
     \begin{itemize}
         \item \textbf{PostgreSQL}: Open-source, relational, and object-oriented database with PostGIS extension.
@@ -71,7 +78,7 @@
     \hfill
     \includegraphics[width=.25\textwidth]{img/database-logos/januslogo.png}
     \hfill
-    \includegraphics[width=.25\textwidth]{img/database-logos/tigergraph.png}database-logos/tigergraph.png
+    \includegraphics[width=.25\textwidth]{img/database-logos/tigergraph.png}
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -79,14 +86,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}{Dataset}
-    The dataset applied to these databases is the \textbf{Yelp Challenge Dataset}\parnote{\url{www.yelp.com/dataset/challenge/}}.
+    The dataset applied used is the \textbf{Yelp Challenge Dataset}\parnote{\url{www.yelp.com/dataset/challenge/}}.
     \vfill
     \begin{columns}
         \begin{column}{.6\textwidth}
         The dataset contains
             \begin{itemize}
-                \item \textbf{coordinates} of each business,
-                \item the \textbf{timestamps} of each review, and
+                \item \strong{coordinates} of each business,
+                \item the \strong{timestamps} of each review, and
                 \item users and their friend relations.
             \end{itemize}
             \end{column}%
@@ -115,9 +122,8 @@
                 \item Learning the NoSQL database domain and each technology.
                 \item Writing complex queries in each query language.
                 \item Database design.
-                \item Applying suitable, real-world data analysis.
                 \item Multi-dimensional indexing.
-                \item Hardware limitations.
+                \item Applying suitable, real-world data analysis.
             \end{itemize}
             \end{column}%
             \hfill%
@@ -133,10 +139,10 @@
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{NoSQL}
+\section{NoSQL Technology}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{NoSQL}
+\begin{frame}{NoSQL Technology}
     In order of least to most structured:
     \vfill
     \begin{tabular}{p{2.4cm}|p{7.5cm}}
@@ -152,7 +158,7 @@
         Graph & Graph abstraction of storage backend. Backed usually a column-family store or relational database.\\
     \end{tabular}
     \vfill
-    NoSQL aims to relax on consistency constraints to improve \textbf{partition tolerance} and \textbf{availability}.
+    NoSQL aims to relax on enforcing \textbf{consistency} and \textbf{structure} to improve \textbf{partition tolerance} and \textbf{availability}.
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -199,7 +205,7 @@
     \lstinputlisting[
     language=gremlin,
     caption={
-        A Gremlin query that returns all the IDs of all the users who have rated restaurants a user has been to above 3 stars.
+        A Gremlin query that returns recommending users of ``Kate''. These are users who have rated restaurants that Kate has been to above 3 stars.
     },
     label={lst:gremlin1}
     ]
@@ -238,7 +244,7 @@
     \begin{columns}
         \begin{column}{.6\textwidth}
             \begin{itemize}
-                \item SQL-like language that takes after Gremlin and Cypher.
+                \item SQL-like language similar to Gremlin and Cypher.
                 \item Queries can be both imperative or declarative.
                 \item Can accumulate data simultaneously.
                 \item Procedural and parameterized queries.
@@ -257,7 +263,7 @@
     An example of the GSQL implementation of Listing \ref{lst:gremlin1}.
 \lstinputlisting[
     language=gsql,
-    caption={A Gremlin query that returns all the IDs of all the users who have rated restaurants a user has been to above 3 stars.},
+    caption={A GSQL query that returns recommending users of ``Kate''. These are users who have rated restaurants that Kate has been to above 3 stars.},
     label={lst:gsql1}
     ]
     {./queries/kate1-1.gsql}
@@ -267,7 +273,191 @@
     Listing \ref{lst:gsql1} continued.
 \lstinputlisting[
     language=gsql,
-    caption={A Gremlin query that returns all the IDs of all the users who have rated restaurants a user has been to above 3 stars.}
+    caption={A GSQL query that returns recommending users of ``Kate''. These are users who have rated restaurants that Kate has been to above 3 stars.}
     ]
     {./queries/kate1-2.gsql}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Indexing Techniques}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Indexing Techniques}
+    The following types of indexing were used to speed up data retrieval:
+    \vfill
+    \begin{itemize}
+        \item \textbf{B-tree}: Single-dimensional indexing.
+        \item \textbf{R-tree}: Multi-dimensional indexing.
+        \item \textbf{Geo-grid}: Geohash implementation on a graph.
+    \end{itemize}
+    \vfill
+    \includegraphics[width=.25\textwidth]{img/index/btree.png}
+    \hfill
+    \includegraphics[width=.35\textwidth]{img/index/400px-R-tree.png}
+    \hfill
+    \includegraphics[width=.35\textwidth]{img/index/geogrid.png}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Data Analysis}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Data Analysis}
+    \begin{columns}
+        \begin{column}{.7\textwidth}
+            \begin{itemize}
+                \item Large amounts of \textbf{text data} in dataset from restaurant/business reviews.
+                \item \textbf{Sentiment analysis} is performed with NLTK\parnote{The Natural Language Toolkit. Written in Python. \url{www.nltk.org}.} -- extract additional information from review data.
+                \item A \textbf{Na\"ive Bayes classifier} used for binary classification.
+                \item \textbf{Kernels} represent some ``real-world'' data analysis and associated database operation(s).
+                \item Database \textbf{performance} measured during each kernel.
+            \end{itemize}
+            \end{column}%
+            \hfill%
+            \begin{column}{.29\textwidth}
+            \centering
+            \includegraphics[width=\columnwidth]{img/nltk-logo.png}
+        \end{column}%
+    \end{columns}
+    \vfill
+    \parnotes
+\end{frame}
+
+
+%%
+% I'm wondering if I should just add a brief hint at this to draw more attention to
+% to the demo and further add to the amount of work that was done in this project
+%
+% Also, front-end/frontend/front end seems be a debate online and change depending
+% on how they are used. Compound noun seems to be the best for this instance.
+%%
+\begin{frame}{Implementation}
+    The kernels were implemented in a web application context with the following technologies:
+    \vfill
+    \begin{itemize}
+        \item \textbf{Angular} front-end framework to start kernel jobs and view results.
+        \item \textbf{Flask} back-end to schedule jobs, call queries, and perform analysis.
+        \item \textbf{Docker} to containerize databases and web application.
+    \end{itemize}
+    \vfill
+    \includegraphics[width=.25\textwidth]{img/webapp/angular-logo.png}
+    \hfill
+    \includegraphics[width=.25\textwidth]{img/webapp/flask-logo.png}
+    \hfill
+    \includegraphics[width=.25\textwidth]{img/webapp/docker-whale.png}
+\end{frame}
+
+\begin{frame}{Kernel 1: Kate's Restaurant Recommendations}
+    \textbf{User story}
+    \begin{quote}
+        A user, called Kate, would like recommendations for restaurants in an area she does not frequent. Similar users are gathered and restaurants they held in high regard (recently and in that area) are recommended.
+    \end{quote}
+    \textbf{Query Complexity and Constraints}
+    \begin{itemize}
+        \item 5 joins
+        \item 1-hop -- check that a business belongs to ``Restaurants'' category.
+        \item 1 spatial constraint per user -- 5km radius
+        \item a \emph{range} and \emph{limit} temporal constraint per user
+    \end{itemize}
+    
+    \medskip
+    
+    Relative complexity: \textbf{HIGH}
+\end{frame}
+
+\begin{frame}{Kernel 2: Phoenix Business Reviews 2018}
+    \textbf{User story}
+    \begin{quote}
+        Characteristics of reviews (per star) are compared for businesses during the 2018 year in the Phoenix area.
+    \end{quote}
+    \textbf{Query Complexity and Constraints}
+    \begin{itemize}
+        \item 1 join
+        \item 1 spatial query -- 50km radius
+        \item 1 \emph{equality} temporal constraint
+    \end{itemize}
+    
+    \medskip
+    
+    Relative complexity: \textbf{LOW}
+\end{frame}
+
+\begin{frame}{Kernel 3: Julie's Holiday Destination Analysis}
+    \textbf{User story}
+    \begin{quote}
+        A user with many friends, called Julie, is going to Las Vegas over the Nov -- Dec period. Instead of asking all her friends for their opinions, the reviews her direct and mutual friends wrote will be used to gauge their opinion of businesses in Las Vegas during the Nov -- Dec period.
+    \end{quote}
+    \textbf{Query Complexity and Constraints}
+    \begin{itemize}
+        \item 3 joins
+        \item 2-hop -- friends-of-friends query
+        \item 1 spatial query -- 30km radius
+        \item 1 \emph{range} temporal constraint
+    \end{itemize}
+    
+    \medskip
+    
+    Relative complexity: \textbf{MEDIUM}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Query Response Times}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Kernel 1: Response Times}
+    TODO: Show graph with increasing data size
+\end{frame}
+
+\begin{frame}{Kernel 2: Response Times}
+    TODO: Show graph with increasing data size
+\end{frame}
+
+\framepic{./img/graphs/kern2.png}
+
+\begin{frame}{Kernel 3: Response Times}
+    TODO: Show graph with increasing data size
+\end{frame}
+
+\framepic{./img/graphs/cityGraph.png}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Conclusion}
+    This investigation demonstrated that:
+    \vfill
+    \begin{itemize}
+        \item For complex, spatio-temporal queries graph databases are \textbf{superior} to relational databases in terms of query response times
+        \item Graph query languages\dots
+        \begin{itemize}
+            \item aren't necessarily more difficult to learn than SQL
+            \item are often \textbf{more concise or expressive} than SQL when writing graph traversals
+        \end{itemize}
+        \item Data can be \textbf{visualized} as a graph for an additional analysis advantage
+        \item Modern graph databases support\dots
+        \begin{itemize}
+            \item ACID-compliance
+            \item web security measures e.g. SSO and LDAP authentication
+        \end{itemize}
+    \end{itemize}
+    \vfill
+    Graph databases are \textbf{suitable} for use in the \textbf{analysis of spatio-temporal data} in  enterprise-level applications.
+\end{frame}
+
+\begin{frame}{Future Work}
+    Add an additional\dots
+    \begin{itemize}
+        \item spatio-temporal dataset
+        \item NewSQL database e.g. MySQL Cluster, Citus for PostgreSQL, etc.
+        \item less or more structured NoSQL database e.g. HBase, Facebook's Tao, etc.
+        \item search engine e.g. Solr, Lucene, etc.
+    \end{itemize}
+    \vfill
+    Compare server resource consumption \dots
+    \begin{itemize}
+        \item storage
+        \item memory
+        \item CPU
+    \end{itemize}
 \end{frame}

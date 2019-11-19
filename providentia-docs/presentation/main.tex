@@ -203,6 +203,19 @@
 \newcommand{\emptystringregex}{\ensuremath{\varepsilon}}
 \newcommand{\emptystring}{\ensuremath{\varepsilon}}
 
+% define new command
+\newcommand{\framepic}[3][1]{
+  {
+    \usebackgroundtemplate{%
+    \tikz[overlay,remember picture] \node[opacity=#1, at=(current page.center)] {
+      \includegraphics[width=\paperwidth]{#2}};
+    }
+    \begin{frame}
+    #3
+    \end{frame}
+  }
+}
+
 % change template
 \logo{\includegraphics[height=16pt]{USlogo.pdf}\vspace{240pt}}
 \setbeamertemplate{frametitle}{%
@@ -226,7 +239,7 @@
 	\hfill%
 	\bfseries%
 	%\begin{beamercolorbox}[wd=2em,ht=0.9em,dp=0.3em]{framecountcolor}%
-		\insertframenumber{} / 16%
+		\insertframenumber{} / 31%
 	%\end{beamercolorbox}%
 	\hspace*{3pt}%
 	\vspace{1pt}
