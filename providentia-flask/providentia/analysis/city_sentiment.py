@@ -1,8 +1,6 @@
 import logging
 from datetime import datetime
 from time import perf_counter_ns
-from sklearn.preprocessing import StandardScaler
-import numpy as np
 
 from providentia.classifier import sentiment
 from providentia.db import janus_graph, postgres, tigergraph
