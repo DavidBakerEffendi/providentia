@@ -13,8 +13,8 @@ def test_connection(app):
         response = requests.get(conn_string + 'version')
         response.raise_for_status()
         return True
-    except HTTPError as http_err:
-        logging.warn('Could not connect to TigerGraph! TigerGraph will not be available for benchmarking. %s', http_err)
+    except Exception as e:
+        logging.warning('Could not connect to TigerGraph! TigerGraph will not be available for benchmarking. %s', e)
         return False
 
 
