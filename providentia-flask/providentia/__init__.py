@@ -89,20 +89,20 @@ def create_app():
 
     # apply the blueprints to Providentia
     logging.debug('Applying blueprints to routes.')
-    from providentia.views import home, new_job, dataset, database, benchmark, analysis, classifier, logs, queries, \
-        kate, review_trends
+    from providentia.views import new_job, dataset, database, benchmark, analysis, classifier, logs, queries, \
+        kate, review_trends, city_sentiment
 
     app.register_blueprint(benchmark.bp, url_prefix='/api/benchmark')
     app.register_blueprint(dataset.bp, url_prefix='/api/dataset')
     app.register_blueprint(database.bp, url_prefix='/api/database')
     app.register_blueprint(analysis.bp, url_prefix='/api/analysis')
-    app.register_blueprint(home.bp, url_prefix='/api/home')
     app.register_blueprint(new_job.bp, url_prefix='/api/new-job')
     app.register_blueprint(classifier.bp, url_prefix='/api/classifier')
     app.register_blueprint(logs.bp, url_prefix='/api/logs')
     app.register_blueprint(queries.bp, url_prefix="/api/queries")
     app.register_blueprint(kate.bp, url_prefix="/api/result/kate")
     app.register_blueprint(review_trends.bp, url_prefix="/api/result/review-trends")
+    app.register_blueprint(city_sentiment.bp, url_prefix="/api/result/city-sentiment")
 
     # establish analysis database for this app
     logging.debug('Establishing database connections.')

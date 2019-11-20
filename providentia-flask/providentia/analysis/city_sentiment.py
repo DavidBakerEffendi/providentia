@@ -45,8 +45,27 @@ def run(benchmark: Benchmark):
     # Insert results into database
     city_sentiment = CitySentimentResult()
     city_sentiment.benchmark = benchmark
-    city_sentiment.stars = vegas_reviews.get_stars()
-    city_sentiment.sentiment = vegas_reviews.get_sentiment()
+    l = [vegas_reviews.get_stars(), vegas_reviews.get_sentiment()]
+
+    def scale_column(l: list):
+        """From the given list, returns the scaled version of the list."""
+        min_v = l[0]
+        max_v = l[0]
+        for e in l:
+            if min_v > e:
+                min_v = e
+            if max_v < e:
+                max_v = e
+        nl = []
+        for x in l:
+            new_val = (x - min_v) / float(max_v - min_v)
+            nl.append(new_val)
+        return nl
+
+    l = scale_column(l)
+    city_sentiment.stars = l[0]
+    city_sentiment.sentiment = l[1]
+
     tbl_city_sentiment.insert(city_sentiment)
 
 
@@ -99,10 +118,10 @@ class VegasReviews(object):
             self.negative_count += 1
 
     def get_sentiment(self):
-        return (self.positive_count / self.review_count) * 100
+        return float((self.positive_count / self.review_count) * 100)
 
     def get_stars(self):
-        return self.stars / self.review_count
+        return float(self.stars / self.review_count)
 
     def __str__(self):
         return "{{'stars': '{}', 'sentiment':{}}}" \

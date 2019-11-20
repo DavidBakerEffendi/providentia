@@ -7,7 +7,7 @@ TABLE = 'city_analysis'
 COLUMNS = ("id", "benchmark_id", "stars", "sentiment")
 
 
-def get_results(benchmark_id):
+def get_result(benchmark_id):
     with current_app.app_context():
         cur = get_db().cursor()
         query = "SELECT id, benchmark_id, stars, sentiment " \
@@ -15,14 +15,12 @@ def get_results(benchmark_id):
 
         cur.execute(query, (benchmark_id,))
 
-        rows = []
         if cur.rowcount > 0:
-            for row in cur.fetchall():
-                rows.append(dict(zip(COLUMNS, row)))
+            result = dict(zip(COLUMNS, cur.fetchone()))
         else:
             return None
 
-        return [city_sentiment_decoder(row) for row in rows]
+        return city_sentiment_decoder(result)
 
 
 def insert(review_trend: CitySentimentResult):
@@ -44,7 +42,7 @@ def insert(review_trend: CitySentimentResult):
             values += "%s, "
             values_arr.append(review_trend.stars)
         if review_trend.sentiment is not None:
-            insert_into += "{}, ".format(COLUMNS[7])
+            insert_into += "{}, ".format(COLUMNS[3])
             values += "%s, "
             values_arr.append(review_trend.sentiment)
 
