@@ -31,6 +31,13 @@ export class CitySentimentComponent implements OnInit {
         },
         tooltips: {
             enabled: false
+        },
+        scales: {
+            yAxes: [{
+                gridLines: {
+                    offsetGridLines: true
+                }
+            }]
         }
     };
     public chartClicked(e: any): void { }

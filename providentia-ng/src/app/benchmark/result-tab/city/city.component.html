@@ -1,7 +1,7 @@
 <div style="display: block" *ngIf="chartDatasets.length > 0">
+    <p class="text-center">City Positive Sentiment vs Mean Star Rating (Scaled)</p>
+    <br/>
     <canvas mdbChart [chartType]="'bar'" [datasets]="chartDatasets" [colors]="chartColors"
         [options]="chartOptions" [legend]="true" [labels]="chartLabels">
     </canvas>
-    <br/>
-    <p class="text-center">City Positive Sentiment vs Mean Star Rating (Scaled)</p>
 </div>
