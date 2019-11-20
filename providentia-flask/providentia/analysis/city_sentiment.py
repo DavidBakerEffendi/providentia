@@ -1,6 +1,8 @@
 import logging
 from datetime import datetime
 from time import perf_counter_ns
+from sklearn.preprocessing import StandardScaler
+import numpy as np
 
 from providentia.classifier import sentiment
 from providentia.db import janus_graph, postgres, tigergraph
@@ -45,26 +47,8 @@ def run(benchmark: Benchmark):
     # Insert results into database
     city_sentiment = CitySentimentResult()
     city_sentiment.benchmark = benchmark
-    l = [vegas_reviews.get_stars(), vegas_reviews.get_sentiment()]
-
-    def scale_column(l: list):
-        """From the given list, returns the scaled version of the list."""
-        min_v = l[0]
-        max_v = l[0]
-        for e in l:
-            if min_v > e:
-                min_v = e
-            if max_v < e:
-                max_v = e
-        nl = []
-        for x in l:
-            new_val = (x - min_v) / float(max_v - min_v)
-            nl.append(new_val)
-        return nl
-
-    l = scale_column(l)
-    city_sentiment.stars = l[0]
-    city_sentiment.sentiment = l[1]
+    city_sentiment.stars = vegas_reviews.get_stars() / 5 * 100
+    city_sentiment.sentiment = vegas_reviews.get_sentiment()
 
     tbl_city_sentiment.insert(city_sentiment)
 
