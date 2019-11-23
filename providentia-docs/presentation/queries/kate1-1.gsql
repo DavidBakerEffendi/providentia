@@ -5,13 +5,13 @@ CREATE QUERY getSimilarUsersBasedOnRestaurants(VERTEX<User> p)
     businesses = { Business.* };
     PSet = { p };
 	
-	Restaurants =
-	  SELECT b
-	  FROM businesses:b-(In_Category)->Category:c
-	  WHERE c.id == "Restaurants";
+    Restaurants =
+        SELECT b
+        FROM businesses:b-(In_Category)->Category:c
+        WHERE c.id == "Restaurants";
 	
-	PRatedBusinesses =
-	  SELECT b
-	  FROM PSet-(Reviews)->Business:b
-	  WHERE r.STARS > 3;
+    PRatedBusinesses =
+        SELECT b
+        FROM PSet-(Reviews)->Business:b
+        WHERE r.STARS > 3;
 ...

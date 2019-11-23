@@ -56,7 +56,7 @@
         \item Choose a number of diverse database models to compare.
         \item Apply a sufficiently large, spatio-temporal dataset.
         \item Investigate and compare each query language.
-        \item Apply ``real-world'' applications of each database on the dataset.
+        \item Apply ``real world'' applications of each database on the dataset.
         \item Measure query response times.
     \end{itemize}
 \end{frame}
@@ -123,7 +123,7 @@
                 \item Writing complex queries in each query language.
                 \item Database design.
                 \item Multi-dimensional indexing.
-                \item Applying suitable, real-world data analysis.
+                \item Applying suitable, real world data analysis.
             \end{itemize}
             \end{column}%
             \hfill%
@@ -138,28 +138,28 @@
     \parnotes
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{NoSQL Technology}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{NoSQL Technology}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{NoSQL Technology}
-    In order of least to most structured:
-    \vfill
-    \begin{tabular}{p{2.4cm}|p{7.5cm}}
-        \textbf{Category} & \textbf{Description} \\
-        \hline
-        \hline
-        Key-value store & Keys as identifiers to values as a data object or collection of data objects. \\
-        \hline
-        Document store & A key-value store but values are document types e.g. JSON, XML. Both keys and values are fully searchable. \\
-        \hline
-        Column family & Store data along columns as column-families. Column-families are grouped together in keyspaces. \\
-        \hline
-        Graph & Graph abstraction of storage backend. Backed usually a column-family store or relational database.\\
-    \end{tabular}
-    \vfill
-    NoSQL aims to relax on enforcing \textbf{consistency} and \textbf{structure} to improve \textbf{partition tolerance} and \textbf{availability}.
-\end{frame}
+% \begin{frame}{NoSQL Technology}
+%     In order of least to most structured:
+%     \vfill
+%     \begin{tabular}{p{2.4cm}|p{7.5cm}}
+%         \textbf{Category} & \textbf{Description} \\
+%         \hline
+%         \hline
+%         Key-value store & Keys as identifiers to values as a data object or collection of data objects. \\
+%         \hline
+%         Document store & A key-value store but values are document types e.g. JSON, XML. Both keys and values are fully searchable. \\
+%         \hline
+%         Column family & Store data along columns as column-families. Column-families are grouped together in keyspaces. \\
+%         \hline
+%         Graph & Graph abstraction of storage backend. Backed usually a column-family store or relational database.\\
+%     \end{tabular}
+%     \vfill
+%     NoSQL aims to relax on enforcing \textbf{consistency} and \textbf{structure} to improve \textbf{partition tolerance} and \textbf{availability}.
+% \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Graph Query Languages}
@@ -205,40 +205,40 @@
     \lstinputlisting[
     language=gremlin,
     caption={
-        A Gremlin query that returns recommending users of ``Kate''. These are users who have rated restaurants that Kate has been to above 3 stars.
+        A Gremlin query that returns ``recommending users'' of Kate (a user in the dataset). These are users who have reviewed restaurants that Kate has also been to with a rating above 3 stars.
     },
     label={lst:gremlin1}
     ]
     {./queries/kate.groovy}
 \end{frame}
 
-\begin{frame}{Cypher}
-    \begin{columns}
-        \begin{column}{.6\textwidth}
-            \begin{itemize}
-                \item Declarative pattern matching query language.
-                \item Can compile into other graph query languages e.g. Gremlin, GSQL.
-                \item Makes use of ASCII-art in syntax.
-                \item SQL-like and aims to be concise and easy to learn.
-                \item Not Turing-complete.
-            \end{itemize}
-            \end{column}%
-            \hfill%
-            \begin{column}{.39\textwidth}
-            \centering
-            \includegraphics[width=0.7\columnwidth]{img/graph-lang/neo4j.png}
-        \end{column}%
-    \end{columns}
-\end{frame}
+% \begin{frame}{Cypher}
+%     \begin{columns}
+%         \begin{column}{.6\textwidth}
+%             \begin{itemize}
+%                 \item Declarative pattern matching query language.
+%                 \item Can compile into other graph query languages e.g. Gremlin, GSQL.
+%                 \item Makes use of ASCII-art in syntax.
+%                 \item SQL-like and aims to be concise and easy to learn.
+%                 \item Not Turing-complete.
+%             \end{itemize}
+%             \end{column}%
+%             \hfill%
+%             \begin{column}{.39\textwidth}
+%             \centering
+%             \includegraphics[width=0.7\columnwidth]{img/graph-lang/neo4j.png}
+%         \end{column}%
+%     \end{columns}
+% \end{frame}
 
-\begin{frame}{Cypher}
-    An example of an application of Cypher on this dataset:
-\lstinputlisting[
-    language=cypher,
-    caption={Returns all users who have reviewed the same businesses as a given user. The query iterates through all users. Note how the return match verifies that the user \texttt{p1} does not match user \texttt{p2}.}
-    ]
-    {./queries/reviews.cql}
-\end{frame}
+% \begin{frame}{Cypher}
+%     An example of an application of Cypher on this dataset:
+% \lstinputlisting[
+%     language=cypher,
+%     caption={Returns all users who have reviewed the same businesses as a given user. The query iterates through all users. Note how the return match verifies that the user \texttt{p1} does not match user \texttt{p2}.}
+%     ]
+%     {./queries/reviews.cql}
+% \end{frame}
 
 \begin{frame}{GSQL}
     \begin{columns}
@@ -263,17 +263,15 @@
     An example of the GSQL implementation of Listing \ref{lst:gremlin1}.
 \lstinputlisting[
     language=gsql,
-    caption={A GSQL query that returns recommending users of ``Kate''. These are users who have rated restaurants that Kate has been to above 3 stars.},
-    label={lst:gsql1}
+    label={lst:gsql}
     ]
     {./queries/kate1-1.gsql}
 \end{frame}
 
 \begin{frame}{GSQL}
-    Listing \ref{lst:gsql1} continued.
 \lstinputlisting[
     language=gsql,
-    caption={A GSQL query that returns recommending users of ``Kate''. These are users who have rated restaurants that Kate has been to above 3 stars.}
+    caption={A GSQL query that returns ``recommending users'' of Kate (a user in the dataset). These are users who have reviewed restaurants that Kate has also been to with a rating above 3 stars.}
     ]
     {./queries/kate1-2.gsql}
 \end{frame}
@@ -309,7 +307,7 @@
                 \item Large amounts of \textbf{text data} in dataset from restaurant/business reviews.
                 \item \textbf{Sentiment analysis} is performed with NLTK\parnote{The Natural Language Toolkit. Written in Python. \url{www.nltk.org}.} -- extract additional information from review data.
                 \item A \textbf{Na\"ive Bayes classifier} used for binary classification.
-                \item \textbf{Kernels} represent some ``real-world'' data analysis and associated database operation(s).
+                \item \textbf{Kernels} represent some ``real world'' data analysis and associated database operation(s).
                 \item Database \textbf{performance} measured during each kernel.
             \end{itemize}
             \end{column}%
@@ -404,19 +402,13 @@
 \section{Query Response Times}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{Kernel 1: Response Times}
-    TODO: Show graph with increasing data size
-\end{frame}
+\framepic{img/results/katePlotSetup1.pdf}
 
-\begin{frame}{Kernel 2: Response Times}
-    TODO: Show graph with increasing data size
-\end{frame}
+\framepic{img/results/reviewsPlotSetup1.pdf}
 
 \framepic{./img/graphs/kern2.png}
 
-\begin{frame}{Kernel 3: Response Times}
-    TODO: Show graph with increasing data size
-\end{frame}
+
 
 \framepic{./img/graphs/cityGraph.png}
 
@@ -428,13 +420,13 @@
     This investigation demonstrated that:
     \vfill
     \begin{itemize}
-        \item For complex, spatio-temporal queries graph databases are \textbf{superior} to relational databases in terms of query response times
+        \item For complex, spatio-temporal queries our two graph databases were \textbf{superior} to our relational database in terms of query response times
         \item Graph query languages\dots
         \begin{itemize}
             \item aren't necessarily more difficult to learn than SQL
             \item are often \textbf{more concise or expressive} than SQL when writing graph traversals
         \end{itemize}
-        \item Data can be \textbf{visualized} as a graph for an additional analysis advantage
+        \item Data patterns can be \textbf{visualized} as a graph for an additional analysis advantage
         \item Modern graph databases support\dots
         \begin{itemize}
             \item ACID-compliance
@@ -442,7 +434,7 @@
         \end{itemize}
     \end{itemize}
     \vfill
-    Graph databases are \textbf{suitable} for use in the \textbf{analysis of spatio-temporal data} in  enterprise-level applications.
+    Graph databases are \textbf{suitable} for use in the \textbf{analysis of spatio-temporal data} in enterprise-level applications.
 \end{frame}
 
 \begin{frame}{Future Work}
@@ -460,4 +452,17 @@
         \item memory
         \item CPU
     \end{itemize}
+\end{frame}
+
+% \framepic{./img/results/cityPlotSetup1.pdf}
+
+\begin{frame}[plain,c]
+    \begin{center}
+    \Huge Questions?
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \tikz[overlay,remember picture] \node[opacity=1, at=(current page.center)] {
+      \includegraphics[width=\paperwidth]{./img/results/cityPlotSetup1.pdf}};
 \end{frame}

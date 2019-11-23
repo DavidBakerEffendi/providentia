@@ -1,0 +1,16 @@
+CREATE QUERY getNearbyBusinessesByLatLon
+    (DOUBLE lat, DOUBLE lon, DOUBLE distKm) 
+    FOR GRAPH YelpGraph {
+    SetAccum<STRING> @@vSet;
+	
+    @@vSet += getNearbyGridId(distKm, lat, lon);
+    Grids = to_vertex_set(@@vSet, "Geo_Grid");
+	
+    businesses =
+	    SELECT b
+        FROM Grids:s-(Business_Geo:e)-Business:b 
+	    WHERE geoDistance(lat, lon,
+                e.LATITUDE, e.LONGITUDE) 
+                <= distKm;
+    PRINT businesses;
+}
