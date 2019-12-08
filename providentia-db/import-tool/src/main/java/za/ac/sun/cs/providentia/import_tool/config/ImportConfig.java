@@ -63,9 +63,13 @@ public class ImportConfig {
 
     public static final class DataConfig {
 
+        public final boolean importYelp;
+        public final boolean importSim;
+
         public final String businessDir;
         public final String userDir;
         public final String reviewDir;
+        public final String simDir;
 
         public final boolean importJanusGraph;
         public final boolean importPostgres;
@@ -91,9 +95,13 @@ public class ImportConfig {
             Properties props = new Properties();
             props.load(propertyStream);
 
+            boolean tempImportYelp;
+            boolean tempImportSim;
+
             String tempBusinessDir;
             String tempUserDir;
             String tempReviewDir;
+            String tempSimDir;
 
             boolean tempImportJanusGraph;
             boolean tempImportPostgres;
@@ -101,6 +109,17 @@ public class ImportConfig {
 
             double tempSectorSize = 0.3;
             int tempQueueSize = 100;
+
+            try {
+                tempImportYelp = Boolean.parseBoolean(props.getProperty("yelp.import"));
+            } catch (Exception e) {
+                tempImportYelp = false;
+            }
+            try {
+                tempImportSim = Boolean.parseBoolean(props.getProperty("sim.import"));
+            } catch (Exception e) {
+                tempImportSim = false;
+            }
 
             try {
                 tempBusinessDir = props.getProperty("yelp.business");
@@ -116,6 +135,11 @@ public class ImportConfig {
                 tempReviewDir = props.getProperty("yelp.review");
             } catch (Exception e) {
                 tempReviewDir = null;
+            }
+            try {
+                tempSimDir = props.getProperty("sim.data");
+            } catch (Exception e) {
+                tempSimDir = null;
             }
 
             try {
@@ -145,12 +169,16 @@ public class ImportConfig {
             } catch (Exception ignored) {
             }
 
+            this.importYelp = tempImportYelp;
+            this.importSim = tempImportSim;
+
             this.sectorSize = tempSectorSize;
             this.queueSize = tempQueueSize;
 
             this.businessDir = tempBusinessDir;
             this.userDir = tempUserDir;
             this.reviewDir = tempReviewDir;
+            this.simDir = tempSimDir;
 
             this.importJanusGraph = tempImportJanusGraph;
             this.importPostgres = tempImportPostgres;

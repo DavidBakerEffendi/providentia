@@ -23,7 +23,7 @@ public class ImportTool {
     private final ImportConfig config;
 
     /**
-     * Attempts to import_tool Yelp data into database.
+     * Attempts to import Yelp data into database.
      */
     private void importYelpData() {
         ImportConfig.DataConfig dataConfig = config.dataConfig;
@@ -63,13 +63,23 @@ public class ImportTool {
         }
     }
 
+    /**
+     * Attempts to import simulation data into database.
+     */
+    private void importSimData() {
+        // TODO code
+    }
+
     private final Logger LOG = (Logger) LoggerFactory.getLogger(ImportTool.class);
 
     public ImportTool() {
         // Pass properties into configuration object
         config = ImportConfig.getInstance();
         // Import Yelp data
-        importYelpData();
+        if (config.dataConfig.importYelp)
+            importYelpData();
+        if (config.dataConfig.importSim)
+            importSimData();
         // Close connection to JanusGraph server
         LOG.info("Closing connections.");
         config.closeAll();
