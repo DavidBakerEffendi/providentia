@@ -3,11 +3,17 @@ package za.ac.sun.cs.providentia.import_tool.util;
 import ch.qos.logback.classic.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import org.slf4j.LoggerFactory;
 import za.ac.sun.cs.providentia.domain.Business;
 import za.ac.sun.cs.providentia.domain.Review;
+import za.ac.sun.cs.providentia.domain.SimResponse;
 import za.ac.sun.cs.providentia.domain.User;
 import za.ac.sun.cs.providentia.domain.deserializers.BusinessDeserializer;
+import za.ac.sun.cs.providentia.domain.deserializers.PHOSimDeserializer;
 import za.ac.sun.cs.providentia.domain.deserializers.ReviewDeserializer;
 import za.ac.sun.cs.providentia.domain.deserializers.UserDeserializer;
 
@@ -22,6 +28,7 @@ public class FileReaderWrapper {
     private BufferedReader br;
     private boolean closed;
     private static final ObjectMapper objectMapper;
+    private static CSVParser csvParser;
 
     static {
         // Deserializer
@@ -32,6 +39,7 @@ public class FileReaderWrapper {
                 .addDeserializer(User.class, new UserDeserializer())
                 .addDeserializer(Review.class, new ReviewDeserializer());
         objectMapper.registerModule(module);
+        csvParser = new CSVParserBuilder().withSeparator(',').withIgnoreQuotations(true).build();
     }
 
     public FileReaderWrapper(File f) {
@@ -109,7 +117,7 @@ public class FileReaderWrapper {
     }
 
     /**
-     * Deserializes a given line interpreted as being in JSON format to the given Yelp class.
+     * Deserializes a given line interpreted as being in JSON format to the given class.
      *
      * @param line     the JSON string.
      * @param selectedClass the class to deserialize to.
@@ -129,8 +137,20 @@ public class FileReaderWrapper {
         return null;
     }
 
+    public static Object processCSV(String line, Class<?> selectedClass) {
+        try {
+            String[] record = csvParser.parseLine(line);
+            if (selectedClass == SimResponse.class) {
+                return PHOSimDeserializer.deserialize(record);
+            }
+        } catch (Exception e) {
+            LOG.error("Error processing CSV.", e);
+        }
+        return null;
+    }
+
     /**
-     * @return True if file readers closed, false if otherwise.
+     * @return True if file reader is closed, false if otherwise.
      */
     public boolean isClosed() {
         return closed;

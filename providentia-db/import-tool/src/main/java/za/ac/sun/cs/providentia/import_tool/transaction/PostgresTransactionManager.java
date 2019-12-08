@@ -5,6 +5,7 @@ import jline.internal.Log;
 import org.slf4j.LoggerFactory;
 import za.ac.sun.cs.providentia.domain.Business;
 import za.ac.sun.cs.providentia.domain.Review;
+import za.ac.sun.cs.providentia.domain.SimResponse;
 import za.ac.sun.cs.providentia.domain.User;
 import za.ac.sun.cs.providentia.import_tool.util.FileReaderWrapper;
 
@@ -50,6 +51,8 @@ public class PostgresTransactionManager implements TransactionManager {
                         insertUserFriends((User) obj);
                 } else if (selectedClass == Review.class) {
                     insertReview((Review) obj);
+                } else if (selectedClass == SimResponse.class) {
+                    insertSimResponse((SimResponse) obj);
                 }
             }
             conn.commit();
@@ -303,6 +306,11 @@ public class PostgresTransactionManager implements TransactionManager {
         } catch (SQLException e) {
             LOG.error("Error creating '" + r.getReviewId() + "' for table 'review'.", e);
         }
+    }
+
+    @Override
+    public void insertSimResponse(SimResponse obj) {
+        // TODO
     }
 
     @Override

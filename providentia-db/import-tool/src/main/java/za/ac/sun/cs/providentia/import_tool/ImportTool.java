@@ -5,6 +5,7 @@ import me.tongfei.progressbar.ProgressBar;
 import org.slf4j.LoggerFactory;
 import za.ac.sun.cs.providentia.domain.Business;
 import za.ac.sun.cs.providentia.domain.Review;
+import za.ac.sun.cs.providentia.domain.SimResponse;
 import za.ac.sun.cs.providentia.domain.User;
 import za.ac.sun.cs.providentia.import_tool.config.ImportConfig;
 import za.ac.sun.cs.providentia.import_tool.transaction.TransactionManager;
@@ -67,7 +68,23 @@ public class ImportTool {
      * Attempts to import simulation data into database.
      */
     private void importSimData() {
-        // TODO code
+        ImportConfig.DataConfig dataConfig = config.dataConfig;
+        if (dataConfig.importJanusGraph) {
+            // JanusGraph import speed is enhanced if vertices are inserted before edges
+            LOG.info("Importing pre-hospital optimization simulation data into JanusGraph.");
+            // Adds all simulation response vertices to JanusGraph
+            insertDataClass(SimResponse.class, DATABASE.JANUS_GRAPH, VERTEX_MODE);
+            // Adds all simulation response edges to JanusGraph
+            insertDataClass(SimResponse.class, DATABASE.JANUS_GRAPH, EDGE_MODE);
+        }
+        if (dataConfig.importPostgres) {
+            LOG.info("Importing pre-hospital optimization simulation data into PostgreSQL.");
+            // Adds all simulation response data to PostgreSQL
+            insertDataClass(SimResponse.class, DATABASE.POSTGRESQL);
+        }
+        if (dataConfig.importCassandra) {
+            LOG.warn("Importing pre-hospital optimization simulation data into Cassandra is not yet supported!.");
+        }
     }
 
     private final Logger LOG = (Logger) LoggerFactory.getLogger(ImportTool.class);

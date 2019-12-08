@@ -46,7 +46,7 @@ public final class JanusGraphConfig implements DBConfig {
         // If user has set drop and load schema property, then drop and recreate the graph
         if (this.loadSchema) {
             // Load Yelp schema
-            tm.loadSchema();
+            tm.loadYelpSchema();
         }
     }
 

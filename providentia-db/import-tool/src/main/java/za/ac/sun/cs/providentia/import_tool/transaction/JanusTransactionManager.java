@@ -14,6 +14,7 @@ import org.janusgraph.core.schema.JanusGraphManagement;
 import org.slf4j.LoggerFactory;
 import za.ac.sun.cs.providentia.domain.Business;
 import za.ac.sun.cs.providentia.domain.Review;
+import za.ac.sun.cs.providentia.domain.SimResponse;
 import za.ac.sun.cs.providentia.domain.User;
 import za.ac.sun.cs.providentia.import_tool.util.FileReaderWrapper;
 
@@ -52,6 +53,11 @@ public class JanusTransactionManager implements TransactionManager {
         addReviewEdge(currentTx, obj);
     }
 
+    @Override
+    public void insertSimResponse(SimResponse obj) {
+        // TODO
+    }
+
     private final JanusGraph janusGraph;
 
     private final Logger LOG = (Logger) LoggerFactory.getLogger(JanusTransactionManager.class);
@@ -66,7 +72,7 @@ public class JanusTransactionManager implements TransactionManager {
     /**
      * Loads the necessary vertex and edge labels representing the different vertex and edge types as well as sets indexes.
      */
-    public void loadSchema() {
+    public void loadYelpSchema() {
         JanusGraphManagement mgmt = janusGraph.openManagement();
 
         // === Create labels ===
@@ -175,6 +181,10 @@ public class JanusTransactionManager implements TransactionManager {
         } catch (Exception e) {
             LOG.error("Error committing schema.", e);
         }
+    }
+
+    public void loadSimSchema() {
+        // TODO
     }
 
     /**
@@ -514,6 +524,8 @@ public class JanusTransactionManager implements TransactionManager {
                     insertUser((User) obj);
                 } else if (obj instanceof Review) {
                     insertReview((Review) obj);
+                } else if (obj instanceof SimResponse) {
+                    insertSimResponse((SimResponse) obj);
                 }
             }
             // Commit all changes
