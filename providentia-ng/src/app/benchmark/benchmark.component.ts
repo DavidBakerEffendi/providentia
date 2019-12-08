@@ -172,6 +172,11 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
      * @param stats the stats object to set found information to.
      */
     setStats(data: Array<any>, stats: Stats) {
+        if (data.length === 0) {
+            stats.mean = 0;
+            stats.max = 0;
+            stats.min = 0;
+        }
         let totalPercentage = 0;
         let totalEntries = 0;
         let max = Number.MIN_SAFE_INTEGER;
@@ -186,7 +191,7 @@ export class BenchmarkComponent extends InfoMessage implements OnInit {
             if (e.y < min) min = e.y;
             // Median
             if (i == Math.floor(flattened.length / 2)) {
-                if (flattened.length % 2 == 0) stats.median = (flattened[i].y + flattened[i + 1].y) / 2
+                if (flattened.length % 2 == 0 && i + 1 < flattened.length) stats.median = (flattened[i].y + flattened[i + 1].y) / 2
                 else stats.median = flattened[i].y;
             }
         });

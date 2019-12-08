@@ -37,7 +37,7 @@
                             <p class="code elegant-color-dark text-white p-3">{{ errResponses.get(analysis.name) }}</p>
                         </div>
 
-                        <!-- TODO: Do stuff here-->
+                        <!-- Performance results -->
                         <div class="col-12 row" style="margin-right: 0; margin-left: 0;" *ngIf="!errResponses.has(analysis.name)">
                             <h4 class="col-12">Database Response Times (ms)</h4>
                             <div class="col-10" style="display: block;" *ngIf="perfResponses.has(analysis.analysis_id)">

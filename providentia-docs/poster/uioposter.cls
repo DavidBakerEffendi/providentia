@@ -154,7 +154,7 @@
 
 \setbeamerfont{block body}{family = \rmfamily,
                            series = \normalfont,
-                           size   = \normalsize}
+                           size   = \small}
 \setbeamerfont{block body example}{family = \rmfamily,
                                    series = \normalfont,
                                    size   = \normalsize}
@@ -191,7 +191,7 @@
         \usebeamercolor{title in headline}
         \color{fg}
         % \vskip0ex
-         \vspace{2.5cm}
+         \vspace{1.5cm}
         % \hskip-0.01ex
 
         \begin{columns}[totalwidth=\textwidth]
@@ -215,9 +215,9 @@
             \end{column}
             \begin{column}{0.2\textwidth}
                 \begin{center}
-                \vspace{3cm}
+                \vspace{8cm}
                 \raisebox{0mm}[0pt][0pt]{%
-                \makebox[\textwidth][c]{\includegraphics[scale=1]{matiesBrandImages/SU100_CustomWhiteVert.png}}
+                \makebox[\textwidth][c]{\includegraphics[scale=1.2]{matiesBrandImages/SU100_CustomWhiteVert.png}}
                 }
                  \end{center}
             \end{column}
@@ -234,11 +234,20 @@
 \setbeamertemplate{footline}
 {
     \leavevmode
-    \begin{beamercolorbox}[wd = \paperwidth]{footline}
-        \vskip2cm
-        \hskip4.1cm
-        \includegraphics[scale = 0.4]{matiesBrandImages/SU100_ID_SubGraphic.pdf}
-        \vskip2cm
+    \begin{beamercolorbox}[wd = 0.8\paperwidth]{footline}
+        \vskip1.77cm
+        \hskip4cm
+        \includegraphics[height=6.2cm]{matiesBrandImages/SU100_ID_SubGraphic.pdf}
+        \vskip1.77cm
+    \end{beamercolorbox}
+    \begin{beamercolorbox}[wd = 0.2\paperwidth]{footline}
+        \vspace{0.56cm}
+        \begin{figure}
+          \centering
+          \includegraphics[height=7cm]{img/providentia.png}
+          \caption*{\sffamily \tiny Source Code}
+        \end{figure}
+        \vspace{-0.09cm}
     \end{beamercolorbox}
 }
 

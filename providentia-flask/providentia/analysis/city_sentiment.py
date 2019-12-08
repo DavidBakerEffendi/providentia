@@ -4,7 +4,8 @@ from time import perf_counter_ns
 
 from providentia.classifier import sentiment
 from providentia.db import janus_graph, postgres, tigergraph
-from providentia.models import Benchmark
+from providentia.models import Benchmark, CitySentimentResult
+from providentia.repository.analysis_tables import tbl_city_sentiment
 
 analysis_id = "05c2c642-32c0-4e6a-a0e5-c53028035fc8"
 julie_id = "7weuSPSSqYLUFga6IYP4pg"
@@ -41,6 +42,13 @@ def run(benchmark: Benchmark):
     # Update benchmark object values
     benchmark.query_time = q1_total_time
     benchmark.analysis_time = analysis_time
+    # Insert results into database
+    city_sentiment = CitySentimentResult()
+    city_sentiment.benchmark = benchmark
+    city_sentiment.stars = vegas_reviews.get_stars() / 5 * 100
+    city_sentiment.sentiment = vegas_reviews.get_sentiment()
+
+    tbl_city_sentiment.insert(city_sentiment)
 
 
 def get_lv_reviews_from_friends(database):
@@ -92,10 +100,10 @@ class VegasReviews(object):
             self.negative_count += 1
 
     def get_sentiment(self):
-        return (self.positive_count / self.review_count) * 100
+        return float((self.positive_count / self.review_count) * 100)
 
     def get_stars(self):
-        return self.stars / self.review_count
+        return float(self.stars / self.review_count)
 
     def __str__(self):
         return "{{'stars': '{}', 'sentiment':{}}}" \
