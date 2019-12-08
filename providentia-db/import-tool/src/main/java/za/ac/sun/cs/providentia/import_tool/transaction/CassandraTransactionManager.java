@@ -7,6 +7,7 @@ import org.elasticsearch.client.RestClient;
 import org.slf4j.LoggerFactory;
 import za.ac.sun.cs.providentia.domain.Business;
 import za.ac.sun.cs.providentia.domain.Review;
+import za.ac.sun.cs.providentia.domain.SimResponse;
 import za.ac.sun.cs.providentia.domain.User;
 import za.ac.sun.cs.providentia.import_tool.util.FileReaderWrapper;
 
@@ -135,6 +136,11 @@ public class CassandraTransactionManager implements TransactionManager {
             }
             System.exit(1);
         }
+    }
+
+    @Override
+    public void insertSimResponse(SimResponse obj) {
+        throw new UnsupportedOperationException();
     }
 
     public String getDataDescriptorShort(Class<?> classType, boolean... optional) {
