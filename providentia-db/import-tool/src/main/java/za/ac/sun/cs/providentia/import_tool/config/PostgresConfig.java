@@ -17,6 +17,7 @@ import java.util.Properties;
 public class PostgresConfig implements DBConfig {
 
     private static final Logger LOG = (Logger) LoggerFactory.getLogger(PostgresConfig.class);
+
     public final PostgresTransactionManager tm;
     private final String PROPERTIES = "postgres.properties";
     private final Properties props;
@@ -61,6 +62,8 @@ public class PostgresConfig implements DBConfig {
         LOG.info("Connecting to PostgreSQL server.");
         db = connect();
         this.tm = new PostgresTransactionManager(db);
+
+        propertyStream.close();
     }
 
     /**

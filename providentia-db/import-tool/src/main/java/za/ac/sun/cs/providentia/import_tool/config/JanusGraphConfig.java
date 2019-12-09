@@ -34,8 +34,13 @@ public final class JanusGraphConfig implements DBConfig {
         props.load(propertyStream);
 
         boolean tempLoadSchema = false;
+        String importSchema = "yelp";
         try {
             tempLoadSchema = Boolean.parseBoolean(props.getProperty("import.load-schema"));
+        } catch (Exception ignored) {
+        }
+        try {
+            importSchema = props.getProperty("import.schema");
         } catch (Exception ignored) {
         }
         this.loadSchema = tempLoadSchema;
@@ -45,9 +50,15 @@ public final class JanusGraphConfig implements DBConfig {
         this.tm = new JanusTransactionManager(this.db);
         // If user has set drop and load schema property, then drop and recreate the graph
         if (this.loadSchema) {
-            // Load Yelp schema
-            tm.loadYelpSchema();
+            if ("yelp".equals(importSchema)) this.tm.loadYelpSchema();
+            else if ("phosim".equals(importSchema)) this.tm.loadSimSchema();
+            else {
+                LOG.error("There is no such database schema '" + importSchema + "' to load!");
+                System.exit(1);
+            }
         }
+
+        propertyStream.close();
     }
 
     /**

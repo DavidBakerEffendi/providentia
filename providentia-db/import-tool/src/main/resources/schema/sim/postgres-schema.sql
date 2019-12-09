@@ -23,6 +23,21 @@ DROP INDEX IF EXISTS response_tts_ind;
 DROP INDEX IF EXISTS response_origin_ind;
 DROP INDEX IF EXISTS response_dest_ind;
 
+CREATE TABLE response
+(
+    id                       INTEGER UNIQUE,
+    origin                   geometry(Point, 4326) NOT NULL,
+    destination              geometry(Point, 4326) NOT NULL,
+    t                        INTEGER               NOT NULL,
+    time_to_ambulance_starts NUMERIC               NOT NULL,
+    on_scene_duration        NUMERIC               NOT NULL,
+    time_at_hospital         NUMERIC               NOT NULL,
+    travel_time_patient      NUMERIC               NOT NULL,
+    travel_time_hospital     NUMERIC               NOT NULL,
+    resource_ready_time      NUMERIC               NOT NULL,
+    PRIMARY KEY (id)
+);
+
 CREATE TABLE transfer
 (
     response_id         INTEGER NOT NULL,
@@ -43,21 +58,6 @@ CREATE TABLE priority
     response_id INTEGER      NOT NULL,
     description CHARACTER(8) NOT NULL, -- High, moderate, low
     FOREIGN KEY (response_id) REFERENCES response (id)
-);
-
-CREATE TABLE response
-(
-    id                       INTEGER UNIQUE,
-    origin                   geometry(Point, 4326) NOT NULL,
-    destination              geometry(Point, 4326) NOT NULL,
-    t                        INTEGER               NOT NULL,
-    time_to_ambulance_starts NUMERIC               NOT NULL,
-    on_scene_duration        NUMERIC               NOT NULL,
-    time_at_hospital         NUMERIC               NOT NULL,
-    travel_time_patient      NUMERIC               NOT NULL,
-    travel_time_hospital     NUMERIC               NOT NULL,
-    resource_ready_time      NUMERIC               NOT NULL,
-    PRIMARY KEY (id)
 );
 
 -- Index spatio-temporal data
