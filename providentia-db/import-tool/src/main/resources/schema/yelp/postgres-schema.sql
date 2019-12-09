@@ -1,7 +1,6 @@
 -- From the psql bash, run the following to create the database and schema:
 
 -- To create and connect to the database, run from here
-DROP DATABASE IF EXISTS yelp;
 CREATE DATABASE yelp;
 \c yelp;
 

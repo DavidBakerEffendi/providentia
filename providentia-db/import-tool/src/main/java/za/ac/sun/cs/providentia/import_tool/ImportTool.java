@@ -104,7 +104,7 @@ public class ImportTool {
     }
 
     private void insertDataClass(Class<?> classType, DATABASE db, boolean... optional) {
-        File f = getYelpFile(classType);
+        File f = getDataFile(classType);
         TransactionManager tm;
         ImportConfig.DataConfig dataConfig = this.config.dataConfig;
 
@@ -183,7 +183,7 @@ public class ImportTool {
 
     private enum DATABASE {JANUS_GRAPH, POSTGRESQL, CASSANDRA, TIGER_GRAPH}
 
-    private File getYelpFile(Class<?> classType) {
+    private File getDataFile(Class<?> classType) {
         File f = null;
         if (classType == Business.class) {
             f = new File(config.dataConfig.businessDir);
@@ -191,6 +191,8 @@ public class ImportTool {
             f = new File(config.dataConfig.userDir);
         } else if (classType == Review.class) {
             f = new File(config.dataConfig.reviewDir);
+        } else if (classType == SimResponse.class) {
+            f = new File(config.dataConfig.simDir);
         }
         return f;
     }

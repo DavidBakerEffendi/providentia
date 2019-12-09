@@ -5,7 +5,7 @@ public class SimResponse {
     private float x;
     private float y;
     private int t;
-    private short prio;
+    private int prio;
     private float timeToAmbulanceStarts;
     private float onSceneDuration;
     private boolean transfer;
@@ -47,11 +47,11 @@ public class SimResponse {
         this.t = t;
     }
 
-    public short getPrio() {
+    public int getPrio() {
         return prio;
     }
 
-    public void setPrio(short prio) {
+    public void setPrio(int prio) {
         this.prio = prio;
     }
 

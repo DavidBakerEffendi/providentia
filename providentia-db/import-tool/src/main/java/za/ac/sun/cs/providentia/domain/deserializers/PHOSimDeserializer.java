@@ -10,7 +10,7 @@ public class PHOSimDeserializer {
         sim.setX(Float.parseFloat(line[0]));
         sim.setY(Float.parseFloat(line[1]));
         sim.setT(Integer.parseInt(line[2]));
-        sim.setPrio(Short.parseShort(line[3]));
+        sim.setPrio(Integer.parseInt(line[3]));
         sim.setTimeToAmbulanceStarts(Float.parseFloat(line[4]));
         sim.setOnSceneDuration(Float.parseFloat(line[5]));
         sim.setTransfer("1".equals(line[6]));

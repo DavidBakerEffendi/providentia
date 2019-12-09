@@ -40,7 +40,12 @@ public class PostgresTransactionManager implements TransactionManager {
         try {
             stmt = conn.createStatement();
             for (String row : records) {
-                Object obj = FileReaderWrapper.processJSON(row, selectedClass);
+                Object obj;
+                if (selectedClass != SimResponse.class) {
+                    obj = FileReaderWrapper.processJSON(row, selectedClass);
+                } else {
+                    obj = FileReaderWrapper.processCSV(row, selectedClass);
+                }
                 if (obj == null) continue;
                 if (selectedClass == Business.class) {
                     insertBusiness((Business) obj);
@@ -310,7 +315,93 @@ public class PostgresTransactionManager implements TransactionManager {
 
     @Override
     public void insertSimResponse(SimResponse obj) {
-        // TODO
+        try {
+            String sql = "INSERT INTO response (" +
+                    "id, origin, destination, t, time_to_ambulance_starts, on_scene_duration, time_at_hospital, " +
+                    "travel_time_patient, travel_time_hospital, resource_ready_time" +
+                    ") VALUES (?,  ST_SetSRID(ST_MakePoint(?, ?), 4326),  ST_SetSRID(ST_MakePoint(?, ?), 4326), " +
+                    "?, ?, ?, ?, ?, ?, ?)" +
+                    "ON CONFLICT (id) DO NOTHING";
+            PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            p.setInt(1, obj.getId());
+            p.setDouble(2, obj.getX());
+            p.setDouble(3, obj.getY());
+            p.setDouble(4, obj.getxDest());
+            p.setDouble(5, obj.getyDest());
+            p.setInt(6, obj.getT());
+            p.setFloat(7, obj.getTimeToAmbulanceStarts());
+            p.setFloat(8, obj.getOnSceneDuration());
+            p.setFloat(9, obj.getTimeAtHospital());
+            p.setFloat(10, obj.getTravelTimePatient());
+            p.setFloat(11, obj.getTravelTimeHospital());
+            p.setDouble(12, obj.getResourceReadyTime());
+
+            if (p.executeUpdate() == 0) {
+                throw new SQLException("Creating '" + obj.getId() + "' failed, no rows affected.");
+            }
+        } catch (SQLException e) {
+            LOG.error("Error creating '" + obj.getId() + "' for table 'response'.", e);
+        }
+
+        if (obj.isTransfer()) {
+            try {
+                String sql = "INSERT INTO transfer (" +
+                        "response_id, travel_time_station" +
+                        ") VALUES (?, ?)" +
+                        "ON CONFLICT (response_id) DO NOTHING";
+                PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                p.setInt(1, obj.getId());
+                p.setDouble(2, obj.getTravelTimeStation());
+
+                if (p.executeUpdate() == 0) {
+                    throw new SQLException("Creating '" + obj.getId() + "' failed, no rows affected.");
+                }
+            } catch (SQLException e) {
+                LOG.error("Error creating '" + obj.getId() + "' for table 'transfer'.", e);
+            }
+        }
+
+        try {
+            String sql = "INSERT INTO resource (" +
+                    "id, response_id" +
+                    ") VALUES (?, ?)" +
+                    "ON CONFLICT (response_id) DO NOTHING";
+            PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            p.setInt(1, obj.getResource());
+            p.setDouble(2, obj.getId());
+
+            if (p.executeUpdate() == 0) {
+                throw new SQLException("Creating '" + obj.getId() + "' failed, no rows affected.");
+            }
+        } catch (SQLException e) {
+            LOG.error("Error creating '" + obj.getId() + "' for table 'resource'.", e);
+        }
+
+        try {
+            String sql = "INSERT INTO priority (" +
+                    "id, response_id, description" +
+                    ") VALUES (?, ?, ?)" +
+                    "ON CONFLICT (response_id) DO NOTHING";
+            PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            p.setInt(1, obj.getPrio());
+            p.setDouble(2, obj.getId());
+            switch (obj.getPrio()) {
+                case 1:
+                    p.setString(3, "HIGH");
+                    break;
+                case 2:
+                    p.setString(3, "MODERATE");
+                    break;
+                case 3:
+                    p.setString(3, "LOW");
+                    break;
+                case 5:
+                    p.setString(3, "TEST");
+                    break;
+            }
+        } catch (SQLException e) {
+            LOG.error("Error creating '" + obj.getId() + "' for table 'resource'.", e);
+        }
     }
 
     @Override
@@ -325,6 +416,8 @@ public class PostgresTransactionManager implements TransactionManager {
             return "USR";
         else if (classType == Review.class)
             return "REV";
+        else if (classType == SimResponse.class)
+            return "SIM";
         else
             return "UNKNWN";
     }
@@ -337,6 +430,8 @@ public class PostgresTransactionManager implements TransactionManager {
             return "user and friend tables";
         else if (classType == Review.class)
             return "review table";
+        else if (classType == SimResponse.class)
+            return "simulation tables";
         else
             return "unknown";
     }

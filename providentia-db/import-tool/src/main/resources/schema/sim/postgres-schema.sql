@@ -1,7 +1,6 @@
 -- From the psql bash, run the following to create the database and schema:
 
 -- To create and connect to the database, run from here
-DROP DATABASE IF EXISTS phosim;
 CREATE DATABASE phosim;
 \c phosim;
 
@@ -40,23 +39,23 @@ CREATE TABLE response
 
 CREATE TABLE transfer
 (
-    response_id         INTEGER NOT NULL,
-    travel_time_station NUMERIC NOT NULL,
+    response_id         INTEGER UNIQUE NOT NULL,
+    travel_time_station NUMERIC        NOT NULL,
     FOREIGN KEY (response_id) REFERENCES response (id)
 );
 
 CREATE TABLE resource
 (
-    id          INTEGER UNIQUE,
-    response_id INTEGER NOT NULL,
+    id          INTEGER        NOT NULL,
+    response_id INTEGER UNIQUE NOT NULL,
     FOREIGN KEY (response_id) REFERENCES response (id)
 );
 
 CREATE TABLE priority
 (
-    id          INTEGER UNIQUE,
-    response_id INTEGER      NOT NULL,
-    description CHARACTER(8) NOT NULL, -- High, moderate, low
+    id          INTEGER        NOT NULL,
+    response_id INTEGER UNIQUE NOT NULL,
+    description CHARACTER(8)   NOT NULL, -- High, moderate, low
     FOREIGN KEY (response_id) REFERENCES response (id)
 );
 
