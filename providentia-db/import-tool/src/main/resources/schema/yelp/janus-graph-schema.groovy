@@ -1,3 +1,4 @@
+package schema.yelp
 // NOTE: This can be loaded automatically by setting 'import.load-schema' to true in 'janus-graph.properties'
 
 import org.apache.tinkerpop.gremlin.structure.Direction
