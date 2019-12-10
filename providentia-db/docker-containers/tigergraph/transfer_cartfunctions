@@ -1,0 +1,4 @@
+# !/bin/bash
+docker cp ./cartesian-functions/ExprFunctions.hpp prv-tigergraph:/home/tigergraph/tigergraph/dev/gdk/gsql/src/QueryUdf/
+docker cp ./cartesian-functions/ExprUtil.hpp prv-tigergraph:/home/tigergraph/tigergraph/dev/gdk/gsql/src/QueryUdf/
+docker cp ./cartesian-functions/TokenBank.cpp prv-tigergraph:/home/tigergraph/tigergraph/dev/gdk/gsql/src/TokenBank/

@@ -1,0 +1,25 @@
+USE GRAPH MyGraph
+
+DROP JOB loadSim
+CREATE LOADING JOB loadSim FOR GRAPH MyGraph {
+    DEFINE FILENAME alarmsFile = "~/tigergraph/loadingData/alarms.csv";
+    
+    ###################
+    # LOAD ALARM DATA #
+    ###################
+
+    # Load all alarms
+    LOAD alarmsFile
+        TO VERTEX Alarm VALUES ($"ID", $"t", $"Prio", $"TimeToAmbulanceStarts", $"OnSceneDuration", $"Transfer",
+            $"TimeAtHospital", $"TravelTimePatient", $"TravelTimeHospital", $"TravelTimeStation", $"Resource")
+        USING header="true", separator=",";
+
+    # Connect all start and destination geos
+    LOAD alarmsFile
+        TO EDGE Start_Geo VALUES ($"ID", getGridId($"X", $"Y"), $"X", $"Y") USING header="true", separator=",";
+    LOAD alarmsFile
+        TO EDGE Destination_Geo VALUES ($"ID", getGridId($"X_DEST", $"Y_DEST"), $"X_DEST", $"Y_DEST") USING header="true", separator=",";
+}
+
+
+RUN LOADING JOB loadSim
