@@ -53,15 +53,6 @@ public class ImportTool {
             // Adds all reviews
             insertDataClass(Review.class, DATABASE.POSTGRESQL);
         }
-        if (dataConfig.importCassandra) {
-            LOG.info("Importing Yelp data into Cassandra.");
-            // Adds all business, city, categories, and states
-            insertDataClass(Business.class, DATABASE.CASSANDRA);
-            // Adds all users.
-            insertDataClass(User.class, DATABASE.CASSANDRA);
-            // Adds all reviews
-            insertDataClass(Review.class, DATABASE.CASSANDRA);
-        }
     }
 
     /**
@@ -81,9 +72,6 @@ public class ImportTool {
             LOG.info("Importing pre-hospital optimization simulation data into PostgreSQL.");
             // Adds all simulation response data to PostgreSQL
             insertDataClass(SimResponse.class, DATABASE.POSTGRESQL);
-        }
-        if (dataConfig.importCassandra) {
-            LOG.warn("Importing pre-hospital optimization simulation data into Cassandra is not yet supported!.");
         }
     }
 
@@ -114,9 +102,6 @@ public class ImportTool {
                 break;
             case POSTGRESQL:
                 tm = this.config.postgresConfig.tm;
-                break;
-            case CASSANDRA:
-                tm = this.config.cassandraConfig.tm;
                 break;
             default:
                 LOG.error("No valid database selected! Dataclass '" + classType + "' will not be inserted.");
@@ -181,7 +166,7 @@ public class ImportTool {
         }
     }
 
-    private enum DATABASE {JANUS_GRAPH, POSTGRESQL, CASSANDRA, TIGER_GRAPH}
+    private enum DATABASE {JANUS_GRAPH, POSTGRESQL}
 
     private File getDataFile(Class<?> classType) {
         File f = null;
