@@ -55,7 +55,10 @@ public class JanusTransactionManager implements TransactionManager {
 
     @Override
     public void insertSimResponse(SimResponse obj) {
-        // TODO
+        if (currentMode == VERTEX_MODE)
+            addSimulationVertex(currentTx, obj);
+        else if (currentMode == EDGE_MODE)
+            addSimulationEdge(currentTx, obj);
     }
 
     private final JanusGraph janusGraph;
@@ -496,6 +499,82 @@ public class JanusTransactionManager implements TransactionManager {
         review.property("text", r.getText());
     }
 
+    private void addSimulationVertex(JanusGraphTransaction tx, SimResponse o) {
+        GraphTraversalSource g = tx.traversal();
+
+        // Add response vertex
+        if (g.V().has("Response", "response_id", o.getId()).hasNext()) {
+            return;
+        }
+        Vertex responseV = tx.addVertex("Response");
+        responseV.property("response_id", o.getId());
+        responseV.property("origin", Geoshape.point(o.getX(), o.getY()));
+        responseV.property("destination", Geoshape.point(o.getxDest(), o.getyDest()));
+        responseV.property("t", o.getT());
+        responseV.property("time_to_ambulance_starts", o.getTimeToAmbulanceStarts());
+        responseV.property("on_scene_duration", o.getOnSceneDuration());
+        responseV.property("time_at_hospital", o.getTimeAtHospital());
+        responseV.property("travel_time_patient", o.getTimeAtHospital());
+        responseV.property("travel_time_hospital", o.getTimeAtHospital());
+        responseV.property("travel_time_station", o.getTimeAtHospital());
+        responseV.property("resource_ready_time", o.getTimeAtHospital());
+
+        // Add and connect transfer vertex
+        if (o.isTransfer()) {
+            Vertex transV = tx.addVertex("Transfer");
+            transV.property("travel_time_station", o.getTravelTimeStation());
+        }
+
+        // Add and connect resource
+        Vertex resourceV;
+        if (!g.V().has("Resource", "resource_id", o.getResource()).hasNext()) {
+            resourceV = tx.addVertex("Resource");
+            resourceV.property("resource_id", o.getResource());
+        }
+
+        // Add and connect priority
+        Vertex priorityV;
+        if (!g.V().has("Priority", "priority_id", o.getPrio()).hasNext()) {
+            priorityV = tx.addVertex("Priority");
+            priorityV.property("priority_id", o.getPrio());
+            switch (o.getPrio()) {
+                case 1:
+                    priorityV.property("description", "HIGH");
+                    break;
+                case 2:
+                    priorityV.property("description", "MODERATE");
+                    break;
+                case 3:
+                    priorityV.property("description", "LOW");
+                    break;
+                case 5:
+                    priorityV.property("description", "TEST");
+                    break;
+            }
+        }
+    }
+
+    private void addSimulationEdge(JanusGraphTransaction tx, SimResponse o) {
+        GraphTraversalSource g = tx.traversal();
+
+        Vertex responseV = g.V().has("Response", "response_id", o.getId()).next();
+
+        // Add and connect transfer vertex
+        if (o.isTransfer()) {
+            Vertex transV = tx.addVertex("Transfer");
+            transV.property("travel_time_station", o.getTravelTimeStation());
+            responseV.addEdge("RESPONSE_TRANSFER", transV);
+        }
+
+        // Add and connect resource
+        Vertex resourceV = g.V().has("Resource", "resource_id", o.getResource()).next();
+        resourceV.addEdge("RESPONSE_RESOURCE", responseV);
+
+        // Add and connect priority
+        Vertex priorityV = g.V().has("Priority", "priority_id", o.getPrio()).next();
+        priorityV.addEdge("RESPONSE_PRIORITY", priorityV);
+    }
+
     /**
      * Depending on data type and insert mode selected, a code identifying the operation is returned.
      *
@@ -522,6 +601,12 @@ public class JanusTransactionManager implements TransactionManager {
             }
         } else if (classType == Review.class) {
             return "REV_EDGE";
+        } else if (classType == SimResponse.class) {
+            if (currentMode == VERTEX_MODE) {
+                return "SIM_VERT";
+            } else if (currentMode == EDGE_MODE) {
+                return "SIM_EDGE";
+            }
         }
         return "UNKNWN";
     }
@@ -552,6 +637,12 @@ public class JanusTransactionManager implements TransactionManager {
             }
         } else if (classType == Review.class) {
             return "user to business review edge";
+        } else if (classType == SimResponse.class) {
+            if (currentMode == VERTEX_MODE) {
+                return "simulation vertices";
+            } else if (currentMode == EDGE_MODE) {
+                return "simulation edges";
+            }
         }
         return "unknown";
     }
