@@ -7,11 +7,12 @@ NORMALIZE_SETTINGS = {
     "NORMALIZE_USE": True,
     "BUSINESS_FILE": "./business.json",
     "REVIEW_FILE": "./review.json",
-    "USERS_FILE": "./user.json"
+    "USERS_FILE": "./user.json",
+    "SIM_FILE": "./out/alarms-headers.csv"
 }
 
 # Generate subset of data and clean user friends that aren't in table
-GEN_SUBSET = True
+GEN_SUBSET = False
 SUBSET_SETTINGS = {
     "SUB_BUS": True,
     "SUB_REV": True,
@@ -24,7 +25,8 @@ SUBSET_SETTINGS = {
 # NORMALIZE_SETTINGS.
 PREPARE_CSV = True
 PREPARE_SETTINGS = {
-    "PREPARE_BUS": True,
-    "PREPARE_REV": True,
-    "PREPARE_USE": True
+    "PREPARE_BUS": False,
+    "PREPARE_REV": False,
+    "PREPARE_USE": False,
+    "PREPARE_SIM": True
 }

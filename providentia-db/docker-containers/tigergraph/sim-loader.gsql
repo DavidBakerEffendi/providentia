@@ -2,23 +2,74 @@ USE GRAPH MyGraph
 
 DROP JOB loadSim
 CREATE LOADING JOB loadSim FOR GRAPH MyGraph {
-    DEFINE FILENAME alarmsFile = "~/tigergraph/loadingData/alarms.csv";
+    DEFINE FILENAME alarmsFile = "~/tigergraph/loadingData/alarms-headers.csv";
+    DEFINE FILENAME transferFile = "~/tigergraph/loadingData/alarms_transf.csv";
+    DEFINE FILENAME onSceneFile = "~/tigergraph/loadingData/alarms_scene.csv";
+    DEFINE FILENAME priorityFile = "~/tigergraph/loadingData/alarms_prio.csv";
     
-    ###################
-    # LOAD ALARM DATA #
-    ###################
+    ######################
+    # LOAD RESPONSE DATA #
+    ######################
 
-    # Load all alarms
-    LOAD alarmsFile
-        TO VERTEX Alarm VALUES ($"ID", $"t", $"Prio", $"TimeToAmbulanceStarts", $"OnSceneDuration", $"Transfer",
-            $"TimeAtHospital", $"TravelTimePatient", $"TravelTimeHospital", $"TravelTimeStation", $"Resource")
-        USING header="true", separator=",";
+    # Load all responses
+    LOAD alarmsFile TO VERTEX Response VALUES (
+        $"ID", $"t", $"TimeToAmbulanceStarts", $"OnSceneDuration", $"TimeAtHospital",
+        $"TravelTimePatient", $"resourceReadyTime"
+    ) USING header="true", separator=",";
 
-    # Connect all start and destination geos
-    LOAD alarmsFile
-        TO EDGE Start_Geo VALUES ($"ID", getGridId($"X", $"Y"), $"X", $"Y") USING header="true", separator=",";
-    LOAD alarmsFile
-        TO EDGE Destination_Geo VALUES ($"ID", getGridId($"X_DEST", $"Y_DEST"), $"X_DEST", $"Y_DEST") USING header="true", separator=",";
+    # Connect responses start and destination geos
+    LOAD alarmsFile TO EDGE Origin_Geo VALUES (
+        $"ID", getGridId($"X", $"Y"), $"X", $"Y"
+    ) USING header="true", separator=",";
+    
+    LOAD alarmsFile TO EDGE DestGeo VALUES (
+        $"ID", getGridId($"X_DEST", $"Y_DEST"), $"X_DEST", $"Y_DEST"
+    ) USING header="true", separator=",";
+    
+    # Connect responses to a resource
+    LOAD alarmsFile TO EDGE Response_Resource VALUES (
+        $"ID", $"Resource"
+    ) USING header="true", separator=",";
+    
+    ######################
+    # LOAD PRIORITY DATA #
+    ######################
+    
+    # Load priority vertices
+    LOAD priorityFile TO VERTEX Priority VALUES (
+        $"Prio", $"Description"
+    ) USING header="true", separator=",";
+    
+    # Connect vertices to responses
+    LOAD priorityFile TO EDGE Response_Priority VALUES (
+        $"ID", $"Prio"
+    ) USING header="true", separator=",";
+    
+    
+    ######################
+    # LOAD TRANSFER DATA #
+    ######################
+    
+    LOAD transferFile TO VERTEX Transfer VALUES (
+        $"TID", $"TravelTimeHospital"
+    ) USING header="true", separator=",";
+    
+    LOAD transferFile TO EDGE Response_Transfer VALUES (
+        $"ID", $"TID"
+    ) USING header="true", separator=",";
+    
+    ######################
+    # LOAD ON SCENE DATA #
+    ######################
+    
+    LOAD onSceneFile TO VERTEX On_Scene VALUES (
+        $"SID", $"TravelTimeStation"
+    ) USING header="true", separator=",";
+    
+    LOAD onSceneFile TO EDGE Response_Scene VALUES (
+        $"ID", $"SID"
+    ) USING header="true", separator=",";
+        
 }
 
 

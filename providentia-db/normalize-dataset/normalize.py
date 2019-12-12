@@ -31,7 +31,7 @@ if __name__ == "__main__":
     import config
     from norm import normalize_businesses, normalize_reviews, normalize_users
     from subset import sub_businesses, sub_reviews, sub_users
-    from prep_csv import csv_businesses, csv_reviews, csv_users
+    from prep_csv import csv_businesses, csv_reviews, csv_users, csv_sim
 
     if os.path.exists("./out") is False:
         os.mkdir("./out")
@@ -89,3 +89,7 @@ if __name__ == "__main__":
         if config.PREPARE_SETTINGS["PREPARE_USE"] is True:
             print("[INFO] Preparing users as CSV...")
             csv_users.write_csv(sub_users.SUB_FILE)
+        # CSV sim
+        if config.PREPARE_SETTINGS["PREPARE_SIM"] is True:
+            print("[INFO] Preparing PHO simulation as CSV...")
+            csv_sim.write_csv(config.NORMALIZE_SETTINGS["SIM_FILE"])

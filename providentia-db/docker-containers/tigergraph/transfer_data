@@ -4,4 +4,5 @@ do
 	echo "Copying $f"
 	docker cp $f prv-tigergraph:/home/tigergraph/tigergraph/loadingData/
 done
-docker cp loader.gsql prv-tigergraph:/home/tigergraph/
+docker cp yelp-loader.gsql prv-tigergraph:/home/tigergraph/
+docker cp sim-loader.gsql prv-tigergraph:/home/tigergraph/
