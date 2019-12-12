@@ -193,12 +193,14 @@ public class JanusTransactionManager implements TransactionManager {
 
         // Create vertex labels
         final VertexLabel transferLabel = mgmt.makeVertexLabel("Transfer").make();
+        final VertexLabel onSceneLabel = mgmt.makeVertexLabel("OnScene").make();
         final VertexLabel resourceLabel = mgmt.makeVertexLabel("Resource").make();
         final VertexLabel priorityLabel = mgmt.makeVertexLabel("Priority").make();
         final VertexLabel responseLabel = mgmt.makeVertexLabel("Response").make();
         // Create edge labels
         mgmt.makeEdgeLabel("RESPONSE_PRIORITY").make();
         mgmt.makeEdgeLabel("RESPONSE_TRANSFER").make();
+        mgmt.makeEdgeLabel("RESPONSE_SCENE").make();
         mgmt.makeEdgeLabel("RESPONSE_RESOURCE").make();
 
         // === Create properties ===
@@ -270,11 +272,11 @@ public class JanusTransactionManager implements TransactionManager {
                 .buildMixedIndex("search");
         mgmt.buildIndex("byTTH", Vertex.class)
                 .addKey(tthPK)
-                .indexOnly(responseLabel)
+                .indexOnly(transferLabel)
                 .buildMixedIndex("search");
         mgmt.buildIndex("byTTS", Vertex.class)
                 .addKey(ttsPK)
-                .indexOnly(transferLabel)
+                .indexOnly(onSceneLabel)
                 .buildMixedIndex("search");
 
         // === Commit transaction ===
@@ -515,24 +517,16 @@ public class JanusTransactionManager implements TransactionManager {
         responseV.property("on_scene_duration", o.getOnSceneDuration());
         responseV.property("time_at_hospital", o.getTimeAtHospital());
         responseV.property("travel_time_patient", o.getTimeAtHospital());
-        responseV.property("travel_time_hospital", o.getTimeAtHospital());
-        responseV.property("travel_time_station", o.getTimeAtHospital());
         responseV.property("resource_ready_time", o.getTimeAtHospital());
 
-        // Add and connect transfer vertex
-        if (o.isTransfer()) {
-            Vertex transV = tx.addVertex("Transfer");
-            transV.property("travel_time_station", o.getTravelTimeStation());
-        }
-
-        // Add and connect resource
+        // Add resource
         Vertex resourceV;
         if (!g.V().has("Resource", "resource_id", o.getResource()).hasNext()) {
             resourceV = tx.addVertex("Resource");
             resourceV.property("resource_id", o.getResource());
         }
 
-        // Add and connect priority
+        // Add priority
         Vertex priorityV;
         if (!g.V().has("Priority", "priority_id", o.getPrio()).hasNext()) {
             priorityV = tx.addVertex("Priority");
@@ -542,13 +536,11 @@ public class JanusTransactionManager implements TransactionManager {
                     priorityV.property("description", "HIGH");
                     break;
                 case 2:
+                case 5:
                     priorityV.property("description", "MODERATE");
                     break;
                 case 3:
                     priorityV.property("description", "LOW");
-                    break;
-                case 5:
-                    priorityV.property("description", "TEST");
                     break;
             }
         }
@@ -559,18 +551,22 @@ public class JanusTransactionManager implements TransactionManager {
 
         Vertex responseV = g.V().has("Response", "response_id", o.getId()).next();
 
-        // Add and connect transfer vertex
+        // Add and connect transfer/scene vertices
         if (o.isTransfer()) {
             Vertex transV = tx.addVertex("Transfer");
-            transV.property("travel_time_station", o.getTravelTimeStation());
+            transV.property("travel_time_hospital", o.getTravelTimeHospital());
             responseV.addEdge("RESPONSE_TRANSFER", transV);
+        } else {
+            Vertex sceneV = tx.addVertex("OnScene");
+            sceneV.property("travel_time_station", o.getTravelTimeStation());
+            responseV.addEdge("RESPONSE_SCENE", sceneV);
         }
 
-        // Add and connect resource
+        // Connect resource
         Vertex resourceV = g.V().has("Resource", "resource_id", o.getResource()).next();
         resourceV.addEdge("RESPONSE_RESOURCE", responseV);
 
-        // Add and connect priority
+        // Connect priority
         Vertex priorityV = g.V().has("Priority", "priority_id", o.getPrio()).next();
         priorityV.addEdge("RESPONSE_PRIORITY", priorityV);
     }

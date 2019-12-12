@@ -18,12 +18,14 @@ JanusGraphManagement mgmt = janusGraph.openManagement()
 
 // Create vertex labels
 final VertexLabel transferLabel = mgmt.makeVertexLabel("Transfer").make()
+final VertexLabel onSceneLabel = mgmt.makeVertexLabel("OnScene").make()
 final VertexLabel resourceLabel = mgmt.makeVertexLabel("Resource").make()
 final VertexLabel priorityLabel = mgmt.makeVertexLabel("Priority").make()
 final VertexLabel responseLabel = mgmt.makeVertexLabel("Response").make()
 // Create edge labels
 mgmt.makeEdgeLabel("RESPONSE_PRIORITY").make()
 mgmt.makeEdgeLabel("RESPONSE_TRANSFER").make()
+mgmt.makeEdgeLabel("RESPONSE_SCENE").make()
 mgmt.makeEdgeLabel("RESPONSE_RESOURCE").make()
 
 // === Create properties ===
@@ -96,11 +98,11 @@ mgmt.buildIndex("byTTP", Vertex.class)
         .buildMixedIndex("search")
 mgmt.buildIndex("byTTH", Vertex.class)
         .addKey(tthPK)
-        .indexOnly(responseLabel)
+        .indexOnly(transferLabel)
         .buildMixedIndex("search")
 mgmt.buildIndex("byTTS", Vertex.class)
         .addKey(ttsPK)
-        .indexOnly(transferLabel)
+        .indexOnly(onSceneLabel)
         .buildMixedIndex("search")
 
 // === Commit transaction ===

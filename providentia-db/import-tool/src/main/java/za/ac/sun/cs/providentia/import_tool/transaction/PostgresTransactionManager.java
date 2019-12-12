@@ -318,9 +318,9 @@ public class PostgresTransactionManager implements TransactionManager {
         try {
             String sql = "INSERT INTO response (" +
                     "id, origin, destination, t, time_to_ambulance_starts, on_scene_duration, time_at_hospital, " +
-                    "travel_time_patient, travel_time_hospital, resource_ready_time" +
+                    "travel_time_patient, resource_ready_time" +
                     ") VALUES (?,  ST_SetSRID(ST_MakePoint(?, ?), 4326),  ST_SetSRID(ST_MakePoint(?, ?), 4326), " +
-                    "?, ?, ?, ?, ?, ?, ?)" +
+                    "?, ?, ?, ?, ?, ?)" +
                     "ON CONFLICT (id) DO NOTHING";
             PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             p.setInt(1, obj.getId());
@@ -333,8 +333,7 @@ public class PostgresTransactionManager implements TransactionManager {
             p.setFloat(8, obj.getOnSceneDuration());
             p.setFloat(9, obj.getTimeAtHospital());
             p.setFloat(10, obj.getTravelTimePatient());
-            p.setFloat(11, obj.getTravelTimeHospital());
-            p.setDouble(12, obj.getResourceReadyTime());
+            p.setDouble(11, obj.getResourceReadyTime());
 
             if (p.executeUpdate() == 0) {
                 throw new SQLException("Creating '" + obj.getId() + "' failed, no rows affected.");
@@ -346,6 +345,22 @@ public class PostgresTransactionManager implements TransactionManager {
         if (obj.isTransfer()) {
             try {
                 String sql = "INSERT INTO transfer (" +
+                        "response_id, travel_time_hospital" +
+                        ") VALUES (?, ?)" +
+                        "ON CONFLICT (response_id) DO NOTHING";
+                PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                p.setInt(1, obj.getId());
+                p.setDouble(2, obj.getTravelTimeHospital());
+
+                if (p.executeUpdate() == 0) {
+                    throw new SQLException("Creating '" + obj.getId() + "' failed, no rows affected.");
+                }
+            } catch (SQLException e) {
+                LOG.error("Error creating '" + obj.getId() + "' for table 'transfer'.", e);
+            }
+        } else {
+            try {
+                String sql = "INSERT INTO on_scene (" +
                         "response_id, travel_time_station" +
                         ") VALUES (?, ?)" +
                         "ON CONFLICT (response_id) DO NOTHING";
@@ -383,20 +398,21 @@ public class PostgresTransactionManager implements TransactionManager {
                     ") VALUES (?, ?, ?)" +
                     "ON CONFLICT (response_id) DO NOTHING";
             PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            p.setInt(1, obj.getPrio());
+
             p.setDouble(2, obj.getId());
             switch (obj.getPrio()) {
                 case 1:
+                    p.setInt(1, 1);
                     p.setString(3, "HIGH");
                     break;
                 case 2:
+                case 5:
+                    p.setInt(1, 2);
                     p.setString(3, "MODERATE");
                     break;
                 case 3:
+                    p.setInt(1, 3);
                     p.setString(3, "LOW");
-                    break;
-                case 5:
-                    p.setString(3, "TEST");
                     break;
             }
         } catch (SQLException e) {
