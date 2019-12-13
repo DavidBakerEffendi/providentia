@@ -18,7 +18,8 @@ p_avg = np.array([])
 p_dev = np.array([])
 j_avg = np.array([])
 j_dev = np.array([])
-x = []
+x_perc = []
+x_size = []
 
 import matplotlib.pyplot as plt
 import sklearn.preprocessing as preprocessing
@@ -32,12 +33,14 @@ with open('./setup%d_results/setup%d_%s.csv' % (config.SETUP, config.SETUP, ANAL
         avg = float(row[0])
         dev = float(row[1])
         perc = float(row[2])
-        
         g = row[3]
+        size = float(row[4])
+
         if g == "JanusGraph":
             j_avg = np.append(j_avg, avg)
             j_dev = np.append(j_dev, dev)
-            x.append(perc)
+            x_perc.append(perc)
+            x_size.append(size)
         elif g == "TigerGraph":
             t_avg = np.append(t_avg, avg)
             t_dev = np.append(t_dev, dev)
@@ -47,23 +50,24 @@ with open('./setup%d_results/setup%d_%s.csv' % (config.SETUP, config.SETUP, ANAL
 
         all_val = np.concatenate((all_val, [avg]))
 
-scaler.fit(all_val.reshape(-1, 1))
-j_avg = scaler.transform(j_avg.reshape(-1, 1))
-t_avg = scaler.transform(t_avg.reshape(-1, 1))
-p_avg = scaler.transform(p_avg.reshape(-1, 1))
-j_dev = scaler.transform(j_dev.reshape(-1, 1))
-t_dev = scaler.transform(t_dev.reshape(-1, 1))
-p_dev = scaler.transform(p_dev.reshape(-1, 1))
+# scaler.fit(all_val.reshape(-1, 1))
+# j_avg = scaler.transform(j_avg.reshape(-1, 1))
+# t_avg = scaler.transform(t_avg.reshape(-1, 1))
+# p_avg = scaler.transform(p_avg.reshape(-1, 1))
+# j_dev = scaler.transform(j_dev.reshape(-1, 1))
+# t_dev = scaler.transform(t_dev.reshape(-1, 1))
+# p_dev = scaler.transform(p_dev.reshape(-1, 1))
 
 print(j_dev)
 print(j_avg)
-print(x)
-plt.errorbar(x, j_avg, yerr=j_dev, label="JanusGraph", ecolor='purple', color="green")
-plt.errorbar(x, t_avg, yerr=t_dev, label="TigerGraph", ecolor='red', color="orange")
-plt.errorbar(x, p_avg, yerr=p_dev, label="PostgreSQL", ecolor='black', color="blue")
+print(x_perc)
+print(x_size)
+plt.errorbar(x_size, j_avg, yerr=j_dev, label="JanusGraph", ecolor='purple', color="green")
+plt.errorbar(x_size, t_avg, yerr=t_dev, label="TigerGraph", ecolor='red', color="orange")
+plt.errorbar(x_size, p_avg, yerr=p_dev, label="PostgreSQL", ecolor='black', color="blue")
 
 plt.title("Setup %d | Kernel %d: Database Response Times Over Percentage Data" % (config.SETUP, config.KERN))
-plt.xlabel("Percentage of the dataset")
-plt.ylabel("Response time (Scaled)")
+plt.xlabel("Data loaded (MB)")
+plt.ylabel("Response time (ms)")
 plt.legend()
 plt.savefig('%sPlotSetup%s.pdf' % (ANALYSIS, config.SETUP))

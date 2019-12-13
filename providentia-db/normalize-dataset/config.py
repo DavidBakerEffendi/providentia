@@ -17,7 +17,7 @@ SUBSET_SETTINGS = {
     "SUB_BUS": True,
     "SUB_REV": True,
     "SUB_USE": True,
-    "PERC": 0.13
+    "PERC": 0.01
 }
 
 # The CSV format is used for TigerGraph's offline batch loader. The dataset
@@ -25,8 +25,8 @@ SUBSET_SETTINGS = {
 # NORMALIZE_SETTINGS.
 PREPARE_CSV = True
 PREPARE_SETTINGS = {
-    "PREPARE_BUS": False,
-    "PREPARE_REV": False,
-    "PREPARE_USE": False,
-    "PREPARE_SIM": True
+    "PREPARE_BUS": True,
+    "PREPARE_REV": True,
+    "PREPARE_USE": True,
+    "PREPARE_SIM": False
 }
