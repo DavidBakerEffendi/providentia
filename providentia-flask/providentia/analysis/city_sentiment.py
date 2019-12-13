@@ -100,10 +100,16 @@ class VegasReviews(object):
             self.negative_count += 1
 
     def get_sentiment(self):
-        return float((self.positive_count / self.review_count) * 100)
+        if self.review_count != 0:
+            return float((self.positive_count / self.review_count) * 100)
+        else:
+            return 0.0
 
     def get_stars(self):
-        return float(self.stars / self.review_count)
+        if self.review_count != 0:
+            return float(self.stars / self.review_count)
+        else:
+            return 0.0
 
     def __str__(self):
         return "{{'stars': '{}', 'sentiment':{}}}" \
