@@ -29,7 +29,7 @@ def normalize_file(norm_setting_file, norm_module):
 
 if __name__ == "__main__":
     import config
-    from norm import normalize_businesses, normalize_reviews, normalize_users
+    from norm import normalize_businesses, normalize_reviews, normalize_users, normalize_sim
     from subset import sub_businesses, sub_reviews, sub_users
     from prep_csv import csv_businesses, csv_reviews, csv_users, csv_sim
 
@@ -54,6 +54,11 @@ if __name__ == "__main__":
             print("[INFO] Normalizing reviews...")
             normalize_file(norm_setting_file=config.NORMALIZE_SETTINGS["REVIEW_FILE"],
                            norm_module=normalize_reviews)
+        # Normalize sim data
+        if config.NORMALIZE_SETTINGS["NORMALIZE_SIM"] is True:
+            print("[INFO] Normalizing simulation data...")
+            normalize_file(norm_setting_file=config.NORMALIZE_SETTINGS["SIM_FILE"],
+                           norm_module=normalize_sim)
 
     if config.GEN_SUBSET is True:
         print("|--- Generating Subset of Data --|")
