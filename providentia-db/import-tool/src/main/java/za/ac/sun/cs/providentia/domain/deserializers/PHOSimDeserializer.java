@@ -7,8 +7,8 @@ public class PHOSimDeserializer {
     public static SimResponse deserialize(String[] line) {
         SimResponse sim = new SimResponse();
 
-        sim.setX(Float.parseFloat(line[0]));
-        sim.setY(Float.parseFloat(line[1]));
+        sim.setLat(Float.parseFloat(line[0]));
+        sim.setLon(Float.parseFloat(line[1]));
         sim.setT(Integer.parseInt(line[2]));
         sim.setPrio(Integer.parseInt(line[3]));
         sim.setTimeToAmbulanceStarts(Float.parseFloat(line[4]));
@@ -19,8 +19,8 @@ public class PHOSimDeserializer {
         sim.setTravelTimeHospital(Float.parseFloat(line[9]));
         sim.setTravelTimeStation(Float.parseFloat(line[10]));
         sim.setResource(Short.parseShort(line[11]));
-        sim.setxDest(Float.parseFloat(line[12]));
-        sim.setyDest(Float.parseFloat(line[13]));
+        sim.setLatDest(Float.parseFloat(line[12]));
+        sim.setLonDest(Float.parseFloat(line[13]));
         sim.setZone(Integer.parseInt(line[14]));
         sim.setDestZone(Integer.parseInt(line[15]));
         sim.setNode(Integer.parseInt(line[16]));

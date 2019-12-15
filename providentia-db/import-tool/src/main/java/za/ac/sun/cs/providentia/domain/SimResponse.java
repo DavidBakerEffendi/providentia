@@ -2,8 +2,8 @@ package za.ac.sun.cs.providentia.domain;
 
 public class SimResponse {
 
-    private float x;
-    private float y;
+    private float lat;
+    private float lon;
     private int t;
     private int prio;
     private float timeToAmbulanceStarts;
@@ -14,8 +14,8 @@ public class SimResponse {
     private float travelTimeHospital;
     private float travelTimeStation;
     private short resource;
-    private float xDest;
-    private float yDest;
+    private float latDest;
+    private float lonDest;
     private int zone;
     private int destZone;
     private int node;
@@ -23,20 +23,20 @@ public class SimResponse {
     private double resourceReadyTime;
     private int id;
 
-    public float getX() {
-        return x;
+    public float getLat() {
+        return lat;
     }
 
-    public void setX(float x) {
-        this.x = x;
+    public void setLat(float lat) {
+        this.lat = lat;
     }
 
-    public float getY() {
-        return y;
+    public float getLon() {
+        return lon;
     }
 
-    public void setY(float y) {
-        this.y = y;
+    public void setLon(float lon) {
+        this.lon = lon;
     }
 
     public int getT() {
@@ -119,20 +119,20 @@ public class SimResponse {
         this.resource = resource;
     }
 
-    public float getxDest() {
-        return xDest;
+    public float getLatDest() {
+        return latDest;
     }
 
-    public void setxDest(float xDest) {
-        this.xDest = xDest;
+    public void setLatDest(float latDest) {
+        this.latDest = latDest;
     }
 
-    public float getyDest() {
-        return yDest;
+    public float getLonDest() {
+        return lonDest;
     }
 
-    public void setyDest(float yDest) {
-        this.yDest = yDest;
+    public void setLonDest(float lonDest) {
+        this.lonDest = lonDest;
     }
 
     public int getZone() {

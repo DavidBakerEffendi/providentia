@@ -324,10 +324,10 @@ public class PostgresTransactionManager implements TransactionManager {
                     "ON CONFLICT (id) DO NOTHING";
             PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             p.setInt(1, obj.getId());
-            p.setDouble(2, obj.getX());
-            p.setDouble(3, obj.getY());
-            p.setDouble(4, obj.getxDest());
-            p.setDouble(5, obj.getyDest());
+            p.setDouble(2, obj.getLat());
+            p.setDouble(3, obj.getLon());
+            p.setDouble(4, obj.getLatDest());
+            p.setDouble(5, obj.getLonDest());
             p.setInt(6, obj.getT());
             p.setFloat(7, obj.getTimeToAmbulanceStarts());
             p.setFloat(8, obj.getOnSceneDuration());

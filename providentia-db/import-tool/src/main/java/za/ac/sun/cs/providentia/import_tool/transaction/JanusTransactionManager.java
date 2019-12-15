@@ -510,8 +510,8 @@ public class JanusTransactionManager implements TransactionManager {
         }
         Vertex responseV = tx.addVertex("Response");
         responseV.property("response_id", o.getId());
-        responseV.property("origin", Geoshape.point(o.getX(), o.getY()));
-        responseV.property("destination", Geoshape.point(o.getxDest(), o.getyDest()));
+        responseV.property("origin", Geoshape.point(o.getLat(), o.getLon()));
+        responseV.property("destination", Geoshape.point(o.getLatDest(), o.getLonDest()));
         responseV.property("t", o.getT());
         responseV.property("time_to_ambulance_starts", o.getTimeToAmbulanceStarts());
         responseV.property("on_scene_duration", o.getOnSceneDuration());
@@ -699,7 +699,12 @@ public class JanusTransactionManager implements TransactionManager {
             currentTx = tx;
             // Process and add batch to a single transaction for bulk-loading
             for (String record : records) {
-                Object obj = FileReaderWrapper.processJSON(record, type);
+                Object obj;
+                if (type == SimResponse.class) {
+                    obj = FileReaderWrapper.processCSV(record, type);
+                } else {
+                    obj = FileReaderWrapper.processJSON(record, type);
+                }
                 // Send object to correct transaction
                 if (obj instanceof Business) {
                     insertBusiness((Business) obj);
