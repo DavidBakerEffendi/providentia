@@ -1,5 +1,5 @@
-PERC = '7'
-SETUP = 3
+PERC = '13'
+SETUP = 1
 KERN = 3
 
 if SETUP == 1:

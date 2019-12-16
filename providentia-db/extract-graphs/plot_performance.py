@@ -66,7 +66,7 @@ plt.errorbar(x_size, j_avg, yerr=j_dev, label="JanusGraph", ecolor='purple', col
 plt.errorbar(x_size, t_avg, yerr=t_dev, label="TigerGraph", ecolor='red', color="orange")
 plt.errorbar(x_size, p_avg, yerr=p_dev, label="PostgreSQL", ecolor='black', color="blue")
 
-plt.title("Setup %d | Kernel %d: Database Response Times Over Percentage Data" % (config.SETUP, config.KERN))
+plt.title("Setup %d | Kernel %d: Database Response Times Over Data Loaded" % (config.SETUP, config.KERN))
 plt.xlabel("Data loaded (MB)")
 plt.ylabel("Response time (ms)")
 plt.legend()
