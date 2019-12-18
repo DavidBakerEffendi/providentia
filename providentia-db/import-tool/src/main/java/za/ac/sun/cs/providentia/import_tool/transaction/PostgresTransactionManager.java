@@ -213,8 +213,10 @@ public class PostgresTransactionManager implements TransactionManager {
             System.exit(1);
         }
 
-        for (String categoryName : b.getCategories()) {
-            insertBusinessByCategory(b.getBusinessId(), categoryName);
+        if (b.getCategories() != null) {
+            for (String categoryName : b.getCategories()) {
+                insertBusinessByCategory(b.getBusinessId(), categoryName);
+            }
         }
     }
 

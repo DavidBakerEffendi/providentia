@@ -27,7 +27,7 @@ DROP INDEX IF EXISTS business_city_ind;
 CREATE TABLE city
 (
     id    CHARACTER VARYING(50) UNIQUE,
-    state CHARACTER VARYING(2) NOT NULL,
+    state CHARACTER VARYING(4) NOT NULL,
     PRIMARY KEY (id, state)
 );
 
