@@ -1,7 +1,7 @@
 CREATE QUERY getFriendReviewsInArea(
     VERTEX<User> p, DOUBLE lat, DOUBLE lon)
     FOR GRAPH MyGraph { 
-    TYPEDEF tuple<STRING text, INT stars> review;
+    TYPEDEF tuple<STRING text,INT stars> review;
     SetAccum<review> @@reviews;
     SetAccum<VERTEX> @@F1F2;
 	

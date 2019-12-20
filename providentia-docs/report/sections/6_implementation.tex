@@ -11,24 +11,24 @@ All experiments were run on the following two machines listed in Table \ref{tab:
 \begin{table*}[h]
     \centering
     \small
-    \caption{The specifications of the two machines used to benchmark database performance.}
+    \caption{The specifications of the two machines used to benchmark database performance. Setup 1 makes use of AMD Ryzen 5 2600 whereas Setup 2 is an AWS c5.4xlarge instance with Intel Xeon Platinum 8000 series CPUs.}
     \vspace*{5mm}
-    \begin{tabular}{ |p{1.2cm}|p{1.2cm}|p{1.2cm}|p{1.6cm}|p{1.3cm}|p{3.5cm}|p{2cm}|}
+    \begin{tabular}{ |p{1.2cm}|p{1.2cm}|p{2cm}|p{1.6cm}|p{2.7cm}|p{2cm}|}
         \hline
         \rowcolor{Gray}
-        Machine    & CPUs & vCPUs & Base Clock & Memory & Storage Media & OS           \\
+        Machine   & vCPUs & Base Clock & Memory & Storage Media & OS           \\
         \hline
-        Setup 1   & 6    & 12    & 3.4GHz     & 32GB   & SSD                      & Debian 10    \\
-        Setup 2   & 8    & 16    & 2.27GHz    & 32GB   & SSD (across a network) & Ubuntu 18.04 \\
+        Setup 1   & 12    & 3.4GHz     & 32GB   & SSD               & Debian 10    \\
+        Setup 2   & 16    & 2.5GHz     & 32GB   & SSD (Amazon EBS)  & Ubuntu 18.04 \\
         \hline
     \end{tabular}
     \label{tab:hardware}
 \end{table*}
 
 \subsubsection{Dataset}
-The dataset used is from the Yelp Dataset Challenge \cite{yelpdataset}. Due to the enormity of the dataset\footnote{Totaling in size around 8.69 gigabytes in uncompressed format.} only \edt{subsets of the data are used} to observe how well each database scales. These subsets \edt{incremental and based on the percentage of users and businesses e.g. 10\% would mean 10\% of \texttt{business.json} and 10\% of \texttt{user.json}. All of the reviews between the remaining users and businesses from \texttt{review.json} are applied afterwards.} The dataset is stored as non-valid JSON and first had to be preprocessed and converted into valid JSON.
+The dataset used is from the Yelp Dataset Challenge \cite{yelpdataset}. Due to the enormity of the dataset\footnote{Totaling in size around 8.69 gigabytes in uncompressed format.} and hardware limitations, only subsets of the data are used to observe how well each database scales. These subsets were queried incrementally based on the percentage of users and businesses e.g. 10\% would mean 10\% of \texttt{business.json} and 10\% of \texttt{user.json}. All of the reviews between the remaining users and businesses from \texttt{review.json} are applied afterwards. The dataset is stored as non-valid JSON and first had to be preprocessed and converted into valid JSON.
 
-During preprocessing many attributes not used in the analysis or benchmarking were removed to save on import time and storage costs. Only businesses, users, and reviews were used from the dataset. This resulted in a $\pm11.39\%$ reduction in uncompressed storage size\footnote{This results in a close to 1 gigabyte reduction, which is a significant improvement.}, significant reduction in complexity and improvement in consistency among attributes. \edt{Attributes such as \texttt{average\_stars} and \texttt{review\_count} are removed as they won't make sense when working within subsets of the data}. The result of this preprocessing \edt{and feature selection} can be seen in Table \ref{tab:yelp-data}.
+During preprocessing many attributes not used in the analysis or benchmarking were removed to save on import time and storage costs. Only businesses, users, and reviews were used from the dataset. This resulted in a $\pm11.39\%$ reduction in uncompressed storage size\footnote{This results in a close to 1 gigabyte reduction, which is a significant improvement.}, significant reduction in complexity and improvement in consistency among attributes. Attributes such as \texttt{average\_stars} and \texttt{review\_count} are removed as they won't make sense when working with subsets of the data. The result of this preprocessing and feature selection can be seen in Table \ref{tab:yelp-data}.
 
 \begin{table*}[h]
     \centering
@@ -64,7 +64,7 @@ During preprocessing many attributes not used in the analysis or benchmarking we
 The following subsections describe the different indexing techniques used on the spatio-temporal attributes of the data and graphically present the schemas used in each database.
 
 \subsubsection{Indexing}
-When storing a database considered to be large, it will necessitate that the data be stored on secondary storage, since it would most likely not fit in memory. This slows down the data access speeds considerably. When specific records need to be retrieved among large volumes of data, an intelligent method of organizing the data needs to be implemented. We can do this by narrowing our search space to a small subset where our target data lies -- these small subsets are our \emph{indexes}.
+When storing a database considered to be large, it will necessitate that the data be stored on secondary storage, since it would most likely not fit in memory. This slows down the data access speeds considerably. When specific records need to be retrieved among large volumes of data, an intelligent method of organizing the data needs to be implemented. We can do this by narrowing our search space to a small subset where our target data lies -- these small subsets are identified by our \emph{indexes}.
 %much like files in a cabinet where we can identify the subsets by which alphabet range the heading associates with.
 
 There are two broad classes \cite{btree} of retrievals methods used when gathering data, namely:
@@ -79,23 +79,23 @@ Traditionally, databases only stored primitive data types, but now support vario
 \paragraph{B-trees}
 B-trees can be considered as a generalization of binary search trees \cite{btree}. Unlike binary trees, more than two paths may leave a given node depending on the outcome of the query at a node, e.g. at node 0 if $x>0$ traverse to node 1, $x=0$ traverse to node 2, $x>1$ traverse to node 3.
 
-Typical binary trees may become unbalanced after some number of insert and deletion operations, but B-trees always remain balanced. All leaves in a B-tree have the same depth and any search operation among $n$ records will never visit more than $1 + log_dn$ nodes.
+Typical, binary trees may become unbalanced after some number of insert and deletion operations, but B-trees always remain balanced. All leaves in a B-tree have the same depth and any search operation among $n$ records will never visit more than $1 + log_dn$ nodes\footnote{Where $d$ is the order of the tree.}.
 
 B-trees are popular for indexing one-dimensional data and are the default indexing method for many databases, and in our use case, are used for not only primary keys but also temporal indexing. One of the important uses of B-trees is the efficiency gain in sequential and range queries, further optimized by clustering each record in the data by their date fields.
 
 \paragraph{R-Trees}
 
-The nature of spatial data being two-dimensional reveals a shortcoming in using B-trees as the method of efficiently indexing coordinates. Most successful methods of indexing multi-dimensional data have following B-tree-like structures \cite{rtree} and, in a similar fashion, guided the search to a smaller space.
+The nature of spatial data being two-dimensional reveals a shortcoming in using B-trees as the method of efficiently indexing coordinates. Most successful methods of indexing multi-dimensional data follow a B-tree-like structure \cite{rtree} and, in a similar fashion, guide the search to a smaller space.
 
 Traditional R-trees implement indexing by guiding the search toward bounded (hyper) rectangles enclosing the multi-dimensional spatial object. This allows us to query over arbitrary regions such as the nearest restaurants within a 5km radius of a given point without doing a full scan.
 
-Disadvantages of R-trees are that they are slow to update and create a significant redundancy in terms of data storage \cite{graphgurus}.
+Disadvantages of R-trees include that they are slow to update and that they create a significant redundancy in terms of data storage \cite{graphgurus}.
 
 ElasticSearch (the search engine used for our JanusGraph configuration) and PostGIS are two examples of technologies that implement R-trees in the database technologies being benchmarked this paper.
 
 \paragraph{Geograph}
 
-The geograph is a grid-based ``indexing''\footnote{Mentioned in quotations due to TigerGraph not implementing indexes, but rather optimizing data access by the notion of installing queries.} solution used by TigerGraph which naturally fits the graph architecture and saving on data storage costs. The idea is that two-dimensional coordinates are mapped to a given grid ID where a grid is represented as a graph vertex. Any vertex associated at that point is then linked by an edge.
+The geograph is a grid-based ``indexing''\footnote{Mentioned in quotations due to TigerGraph not implementing indexes, but rather optimizing data access by the notion of installing queries.} solution used by TigerGraph which naturally fits the graph architecture and saves on data storage costs. The idea is that two-dimensional coordinates are mapped to a given grid ID where a grid is represented as a graph vertex. Any vertex associated at that point is then linked by an edge.
 
 A grid can be of any size but setting this size may be dependent on the distribution of points in the dataset. This allows queries to leverage the massively parallel processing (MPP) techniques implored by TigerGraph which create fast updates in contrast to R-trees. The mapping from coordinates to grid ID works in a way such that one can still do searches over an arbitrary region without scanning the whole graph.
 
@@ -104,7 +104,7 @@ A disadvantage of this approach is an uneven distribution of vertices linked to 
 \subsubsection{Relational Design}
 \label{subsub:relational-design}
 
-Figure \ref{fig:relational-design} is the design of the Yelp dataset modelled in a relational database, specifically PostgreSQL. The \emph{location} attribute is indexed with an R-tree using the PostGIS\footnote{\url{https://postgis.net/}} extension.
+Figure \ref{fig:relational-design} shows the design of the Yelp dataset modelled in a relational database, specifically PostgreSQL. The \emph{location} attribute is indexed with an R-tree using the PostGIS\footnote{\url{https://postgis.net/}} extension.
 
 The decision not to extend \emph{city} and \emph{state} attributes into separate tables was taken, otherwise more joins would be required for an attribute that is never queried. \emph{Location} is the only purely spatial attribute -- the main attribute in the benchmarking. It may be faster to simply index state as an attribute due to the low cardinality of city and state paired in a single table. City is indexed and clustered such that records in the same city are physically stored together which, alongside location, should help retrieval speeds from a spatial query perspective. PostgreSQL makes use of B-trees and hash indexes for native data types \cite{post-vs-mysql}.
 
@@ -112,7 +112,7 @@ The review table is commonly used in queries and holds the most interesting attr
 
 \begin{figure*}[h]
     \centering
-    \includegraphics[width=16cm]{img/relational-design.pdf}
+    \includegraphics[width=16cm]{img/schema/yelpRelational.pdf}
     \caption{A UML diagram of the relational design of the Yelp dataset. Indexed attributes are in bold whereas clustered attributes are in italics.}
     \label{fig:relational-design}
 \end{figure*}
@@ -121,7 +121,7 @@ A business category and a user's friends are many-to-many relationships. The lin
 
 \subsubsection{Graph Design}
 
-The JanusGraph design can be seen in Figure \ref{fig:janusgraph-design}, whereas the TigerGraph is given in Figure \ref{fig:tigergraph-design}. The motivation for the difference in the two designs is mainly due to the databases handling spatial data differently.
+The JanusGraph design can be seen in Figure \ref{fig:janusgraph-design}, whereas that of TigerGraph is given in Figure \ref{fig:tigergraph-design}. The motivation for the difference in the two designs is mainly due to the databases handling spatial data differently.
 
 JanusGraph indexes attributes on nodes and edges using either composite indexes \cite{janusgraph-comp-index}, which index native data types on equality conditions, or mixed indexes which leverages an indexing backend on more complex data types or for complex search predicates, e.g. fuzzy search on strings \cite{janusgraph-mixed-index}.
 
@@ -129,16 +129,16 @@ Figure \ref{fig:janusgraph-design} show which attributes are indexed using compo
 
 \begin{figure*}[h]
     \centering
-    \includegraphics[width=16cm]{img/janus-design.pdf}
+    \includegraphics[width=16cm]{img/schema/yelpJanus.pdf}
     \caption{A UML diagram of the graph design for JanusGraph.}
     \label{fig:janusgraph-design}
 \end{figure*}
 
-TigerGraph puts less of a focus on indexing and more on writing efficient and fast queries. One notable difference between the structure in the JanusGraph implementation and the TigerGraph implementation in Figure \ref{fig:tigergraph-design} is that there are no indexes and the extension of the \emph{location} attribute as the \texttt{Business\_Geo} edge and \texttt{Geo\_Grid} vertex. The code leveraged for this design idea was inspired from the TigerGraph geospatial webinar \cite{graphgurus} and C++ code on the TigerGraph ```ecosys''\footnote{\url{https://github.com/tigergraph/ecosys/tree/master/guru\_scripts/geospatial\_search}}.
+TigerGraph puts less of a focus on indexing and more on writing efficient and fast queries. One notable difference between the structure in the JanusGraph implementation and the TigerGraph implementation (see Figure \ref{fig:tigergraph-design}) is that there are no indexes and the extension of the \emph{location} attribute as the \texttt{Business\_Geo} edge and \texttt{Geo\_Grid} vertex in TigerGraph. The code leveraged for this design idea was inspired from the TigerGraph geospatial webinar \cite{graphgurus} and C++ code on the TigerGraph ```ecosys''\footnote{\url{https://github.com/tigergraph/ecosys/tree/master/guru\_scripts/geospatial\_search}}.
 
 \begin{figure*}[h]
     \centering
-    \includegraphics[width=16cm]{img/tigergraph-design.pdf}
+    \includegraphics[width=16cm]{img/schema/yelpTiger.pdf}
     \caption{A UML diagram of the graph design for TigerGraph.}
     \label{fig:tigergraph-design}
 \end{figure*}
