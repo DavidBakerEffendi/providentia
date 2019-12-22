@@ -16,7 +16,7 @@ export class KateResultComponent implements OnInit {
     displayedColumns: string[] = ['business', 'sentiment_average', 'star_average', 'total_reviews'];
 
     constructor(
-        private kateService: KateService
+        public kateService: KateService
     ) { }
 
     ngOnInit(): void {

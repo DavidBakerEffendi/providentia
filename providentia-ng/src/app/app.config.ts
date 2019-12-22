@@ -1,15 +1,5 @@
 const CONFIG = {
-    N: 100,
-    SPECTRUM: [
-      "rgb(176,212,243)",
-      "rgb(128,186,236)",
-      "rgb(77,158,228)",
-      "rgb(38,137,223)",
-      "rgb(0,116,217)",
-      "rgb(0,106,197)"
-    ],
-    FLASK_API: 'http://0.0.0.0:5000/'
-  }
-  
-  export default CONFIG;
-  
+  FLASK_API: 'http://192.168.8.103:5000/'
+}
+
+export default CONFIG;

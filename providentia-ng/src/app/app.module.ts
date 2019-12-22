@@ -18,19 +18,11 @@ import { AngularMaterialModule } from './material.module';
 import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { ProvidentiaAppRoutingModule } from './app-routing.module';
 
-import { D3Service, D3_DIRECTIVES } from './d3';
-
-import { GraphComponent } from './visuals/graph/graph.component';
-import { SHARED_VISUALS } from './visuals/shared';
-
 import { NavbarComponent, FooterComponent, ErrorComponent, SidenavbarComponent } from './layouts';
 
 @NgModule({
   declarations: [
     AppComponent,
-    GraphComponent,
-    ...SHARED_VISUALS,
-    ...D3_DIRECTIVES,
     NavbarComponent,
     ErrorComponent,
     FooterComponent,
@@ -55,9 +47,6 @@ import { NavbarComponent, FooterComponent, ErrorComponent, SidenavbarComponent }
     ProvidentiaPerformanceModule,
     ProvidentiaAppRoutingModule,
     MDBBootstrapModule.forRoot()
-  ],
-  providers: [
-    D3Service
   ],
   bootstrap: [AppComponent]
 })

@@ -5,7 +5,7 @@ services:
         container_name: providentia-ng
         build:
             context: ./providentia-ng
-            dockerfile: Dockerfile
+            dockerfile: Dockerfile-prod
         expose:
             - "4200"
         ports:
