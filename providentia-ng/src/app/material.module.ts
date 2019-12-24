@@ -15,6 +15,7 @@ import {
     MatExpansionModule,
     MatTableModule,
     MatProgressSpinnerModule,
+    MatPaginatorModule,
 } from '@angular/material';
 import {
     NavbarModule,
@@ -46,6 +47,7 @@ import { NgModule } from '@angular/core';
         MatExpansionModule,
         MatTableModule,
         MatProgressSpinnerModule,
+        MatPaginatorModule,
     ],
     exports: [
         MatButtonModule,
@@ -68,6 +70,7 @@ import { NgModule } from '@angular/core';
         MatExpansionModule,
         MatTableModule,
         MatProgressSpinnerModule,
+        MatPaginatorModule,
     ],
 })
 export class AngularMaterialModule { }

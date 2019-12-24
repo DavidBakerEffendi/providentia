@@ -51,3 +51,37 @@ def result_find(benchmark_id):
         return Response({"Benchmark not found!"}, status=404)
 
     return Response(json.dumps(benchmark, default=model_encoder), status=200, mimetype='application/json')
+
+
+@bp.route("/total-benchmarks", methods=['GET'])
+@cross_origin()
+def total_benchmarks():
+    """Get a total number of benchmarks."""
+    try:
+        total = tbl_benchmark.total()
+        total = total[0] if total is not None else None
+        if total is None:
+            raise Exception
+    except Exception as e:
+        logging.error(str(e))
+        return Response({"Unexpected error while querying database!"}, status=500)
+
+    return Response(json.dumps({'total': total}, default=model_encoder), status=200, mimetype='application/json')
+
+
+@bp.route("/paginate/page-size-<page_size>/<page_number>", methods=['GET'])
+@cross_origin()
+def paginate(page_size, page_number):
+    """Get benchmarks limited to a page size and offset."""
+    try:
+        benchmarks = tbl_benchmark.paginate(page_size, page_number)
+        if benchmarks is None:
+            raise Exception
+    except Exception as e:
+        logging.error(str(e))
+        return Response({"Unexpected error while querying database!"}, status=500)
+
+    # Serialize objects
+    results = [result.__dict__ for result in benchmarks]
+
+    return Response(json.dumps(results, default=model_encoder), status=200, mimetype='application/json')

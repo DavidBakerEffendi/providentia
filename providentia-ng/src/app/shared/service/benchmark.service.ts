@@ -26,12 +26,20 @@ export class BenchmarkService {
         return this.http.get<IBenchmark>(`${this.resourceUrl}find/${id}`, { observe: 'response' });
     }
 
-    query(noResults=-1): Observable<EntityArrayResponseType> {
+    query(noResults = -1): Observable<EntityArrayResponseType> {
         if (noResults <= 0) noResults = -1;
         return this.http.get<IBenchmark[]>(`${this.resourceUrl}${noResults}`, { observe: 'response' });
     }
 
     delete(id: number): Observable<HttpResponse<any>> {
         return this.http.delete<any>(`${this.resourceUrl}${id}`, { observe: 'response' });
+    }
+
+    total(): Observable<any> {
+        return this.http.get<any>(`${this.resourceUrl}total-benchmarks`, { observe: 'response' });
+    }
+
+    paginate(pageSize: number, pageNumber: number): Observable<EntityArrayResponseType> {
+        return this.http.get<IBenchmark[]>(`${this.resourceUrl}paginate/page-size-${pageSize}/${pageNumber}`, { observe: 'response' });
     }
 }
