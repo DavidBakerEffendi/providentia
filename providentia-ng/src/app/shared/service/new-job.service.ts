@@ -13,8 +13,8 @@ export class NewJobService {
 
     constructor(private http: HttpClient) {}
 
-    create(benchmark: IBenchmark): Observable<EntityResponseType> {
-        return this.http.post<IBenchmark>(this.resourceUrl, benchmark, { observe: 'response' });
+    create(benchmark: IBenchmark, numJobs: number): Observable<EntityResponseType> {
+        return this.http.post<IBenchmark>(`${this.resourceUrl}num-jobs/${numJobs}`, benchmark, { observe: 'response' });
     }
 
 }

@@ -219,12 +219,13 @@ def paginate(page_size, page_number):
     with current_app.app_context():
         conn = get_db()
         cur = conn.cursor()
-        query = "SELECT * FROM {} LIMIT %s OFFSET %s".format(TABLE)
+        query = "SELECT * FROM {} ORDER BY date_executed DESC, status ASC LIMIT %s OFFSET %s".format(TABLE)
         try:
             offset = int(page_number) * int(page_size)
             cur.execute(query, (page_size, str(offset)))
             logging.debug("Executed query: %s", cur.query)
         except Exception as e:
+            logging.error("Error while querying for pagination.", e)
             return None
 
         rows = []

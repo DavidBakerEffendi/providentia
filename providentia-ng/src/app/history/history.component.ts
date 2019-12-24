@@ -27,12 +27,14 @@ export class HistoryComponent extends InfoMessage implements OnInit {
     ) { super(); }
 
     ngOnInit() {
+        this.showSpinner = true;
         this.getPaginationInfo(0);
     }
 
     getPaginationInfo(page: number) {
         this.benchmarkService.total().subscribe((res: HttpResponse<any>) => {
             this.totalResults = res.body.total;
+            this.showSpinner = false;
         })
         this.benchmarkService.paginate(this.pageSize, page)
             .subscribe((res: HttpResponse<IBenchmark[]>) => {
