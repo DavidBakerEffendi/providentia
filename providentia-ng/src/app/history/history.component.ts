@@ -11,15 +11,15 @@ import { PageEvent } from '@angular/material';
 })
 export class HistoryComponent extends InfoMessage implements OnInit {
 
-    protected displayedColumns: string[] = ['database', 'dataset', 'analysis', 'date_executed', 'query_time', 'analysis_time', 'status'];
-    protected dataSource: MatTableDataSource<IBenchmark>;
-    protected showSpinner: boolean;
-    protected showPageSpinner: boolean;
-    protected emptyResultSet: boolean;
+    public displayedColumns: string[] = ['database', 'dataset', 'analysis', 'date_executed', 'query_time', 'analysis_time', 'status'];
+    public dataSource: MatTableDataSource<IBenchmark>;
+    public showSpinner: boolean;
+    public showPageSpinner: boolean;
+    public emptyResultSet: boolean;
 
-    protected pageSize = 10;
-    protected totalResults: number;
-    protected pageSizeOptions: number[] = [10, 15, 25];
+    public pageSize = 10;
+    public totalResults: number;
+    public pageSizeOptions: number[] = [10, 15, 25];
 
     constructor(
         private benchmarkService: BenchmarkService,
