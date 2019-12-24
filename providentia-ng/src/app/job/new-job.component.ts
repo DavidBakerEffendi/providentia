@@ -89,28 +89,27 @@ export class NewJobComponent extends InfoMessage implements OnInit {
             analysis: this.dataOptions.value.anCtrl,
             status: 'WAITING'
         }
-        for (var i = 0; i < this.dataOptions.value.nmCtrl; i++) {
-            this.newJobService.create(newJob)
-                .subscribe((res: HttpResponse<IBenchmark>) => {
-                    this.showSuccessMsg('New job successfully added to the pipeline!');
-                }, (res: HttpErrorResponse) => {
-                    console.error(res.message)
-                    if (res.status === 0) {
-                        this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
-                    } else if (res.status === 500) {
-                        this.showErrorMsg(res.error.error);
-                    } else if (res.status === 400) {
-                        this.showWarnMsg(res.error.error);
-                        // Point user to field to fix
-                        this.descriptionOptions.reset();
-                    } else if (res.status === 404) {
-                        this.showWarnMsg(res.error.error);
-                        // Point user to field to fix
-                        this.dataOptions.reset();
-                    } else {
-                        this.showErrorMsg(res.statusText);
-                    }
-                });
-        }
+        this.newJobService.create(newJob, this.dataOptions.value.nmCtrl)
+            .subscribe(() => {
+                this.showSuccessMsg('New job successfully added to the pipeline!');
+            }, (res: HttpErrorResponse) => {
+                console.error(res.message)
+                if (res.status === 0) {
+                    this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
+                } else if (res.status === 500) {
+                    this.showErrorMsg(res.error.error);
+                } else if (res.status === 400) {
+                    this.showWarnMsg(res.error.error);
+                    // Point user to field to fix
+                    this.descriptionOptions.reset();
+                } else if (res.status === 404) {
+                    this.showWarnMsg(res.error.error);
+                    // Point user to field to fix
+                    this.dataOptions.reset();
+                } else {
+                    this.showErrorMsg(res.statusText);
+                }
+            });
+
     }
 }

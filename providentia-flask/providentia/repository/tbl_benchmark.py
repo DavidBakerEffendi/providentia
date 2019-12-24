@@ -6,14 +6,16 @@ from providentia.db.this import get_db
 from providentia.models import benchmark_decoder, Benchmark
 
 TABLE = 'benchmarks'
-COLUMNS = ("id", "database_id", "dataset_id", "analysis_id", "date_executed", "query_time", "analysis_time", "status")
+COLUMNS = ("id", "database_id", "dataset_id", "analysis_id",
+           "date_executed", "query_time", "analysis_time", "status")
 
 
 def query_results(n=None):
     with current_app.app_context():
         cur = get_db().cursor()
         query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, query_time, " \
-                "analysis_time, status FROM {} ORDER BY date_executed DESC".format(TABLE)
+                "analysis_time, status FROM {} ORDER BY date_executed DESC".format(
+                    TABLE)
 
         if n is None:
             cur.execute(query)
@@ -116,7 +118,8 @@ def get_unstarted_jobs():
     with current_app.app_context():
         cur = get_db().cursor()
         query = "SELECT id, database_id, dataset_id, analysis_id, date_executed, query_time, " \
-                "analysis_time, status FROM {} WHERE status = 'WAITING'".format(TABLE)
+                "analysis_time, status FROM {} WHERE status = 'WAITING'".format(
+                    TABLE)
 
         cur.execute(query)
 
@@ -132,7 +135,8 @@ def get_unstarted_jobs():
 
 def set_as(benchmark_id, status):
     if status != 'WAITING' and status != 'PROCESSING' and status != 'COMPLETE':
-        raise Exception('Status must be either WAITING, PROCESSING, or COMPLETE. Your input was "{}"', status)
+        raise Exception(
+            'Status must be either WAITING, PROCESSING, or COMPLETE. Your input was "{}"', status)
     with current_app.app_context():
         conn = get_db()
         cur = conn.cursor()
@@ -194,8 +198,41 @@ def reset_processing_jobs():
     with current_app.app_context():
         conn = get_db()
         cur = conn.cursor()
-        query = "UPDATE {} SET status = \'WAITING\' WHERE status = \'PROCESSING\'".format(TABLE)
+        query = "UPDATE {} SET status = \'WAITING\' WHERE status = \'PROCESSING\'".format(
+            TABLE)
         cur.execute(query)
         logging.debug("Executed query: %s", cur.query)
 
         conn.commit()
+
+
+def total():
+    with current_app.app_context():
+        conn = get_db()
+        cur = conn.cursor()
+        query = "SELECT count(id) FROM {}".format(TABLE)
+        cur.execute(query)
+        return cur.fetchone()
+
+
+def paginate(page_size, page_number):
+    with current_app.app_context():
+        conn = get_db()
+        cur = conn.cursor()
+        query = "SELECT * FROM {} ORDER BY date_executed DESC, status ASC LIMIT %s OFFSET %s".format(TABLE)
+        try:
+            offset = int(page_number) * int(page_size)
+            cur.execute(query, (page_size, str(offset)))
+            logging.debug("Executed query: %s", cur.query)
+        except Exception as e:
+            logging.error("Error while querying for pagination.", e)
+            return None
+
+        rows = []
+        if cur.rowcount > 0:
+            for row in cur.fetchall():
+                rows.append(dict(zip(COLUMNS, row)))
+        else:
+            return None
+
+        return [benchmark_decoder(row) for row in rows]
