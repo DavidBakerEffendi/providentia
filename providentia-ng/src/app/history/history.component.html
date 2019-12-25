@@ -77,7 +77,7 @@
                     routerLink="/benchmark/{{benchmark.benchmark_id}}"></tr>
             </table>
             <mat-paginator *ngIf="totalResults" [length]="totalResults" [pageSize]="pageSize"
-                [pageSizeOptions]="pageSizeOptions" (page)="handlePageEvent($event)">
+                [pageSizeOptions]="[10, 15, 25]" (page)="handlePageEvent($event)" style="z-index: 2000">
             </mat-paginator>
         </div>
     </mat-content>

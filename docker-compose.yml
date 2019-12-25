@@ -3,9 +3,9 @@ version: "3.3"
 services:
     angular:
         container_name: providentia-ng
-        build:
-            context: ./providentia-ng
-            dockerfile: Dockerfile-prod
+        build: ./providentia-ng
+        environment:
+            TZ: "Africa/Johannesburg"
         expose:
             - "4200"
         ports:
