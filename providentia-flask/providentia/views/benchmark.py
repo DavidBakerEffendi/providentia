@@ -75,11 +75,12 @@ def paginate(page_size, page_number):
     """Get benchmarks limited to a page size and offset."""
     try:
         benchmarks = tbl_benchmark.paginate(page_size, page_number)
-        if benchmarks is None:
-            raise Exception
     except Exception as e:
         logging.error(str(e))
         return Response({"Unexpected error while querying database!"}, status=500)
+
+    if benchmarks is None:
+            return jsonify(error="No results in database, you can add more by navigating to 'New Job' in the sidebar."), 503
 
     # Serialize objects
     results = [result.__dict__ for result in benchmarks]
