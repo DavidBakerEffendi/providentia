@@ -7,3 +7,7 @@ body {
   margin: 0;
   background-color: #fafafa;
 }
+
+.cdk-overlay-container {
+  z-index: 1033 !important;
+}

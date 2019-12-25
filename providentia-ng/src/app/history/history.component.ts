@@ -19,7 +19,6 @@ export class HistoryComponent extends InfoMessage implements OnInit {
 
     public pageSize = 10;
     public totalResults: number;
-    public pageSizeOptions: number[] = [10, 15, 25];
 
     constructor(
         private benchmarkService: BenchmarkService,
