@@ -1,4 +1,4 @@
-The following section describes how the systems were setup, data processed, modelled and describes notable indexes used in each technology.
+The following section describes how the systems were setup, data processed, modelled and describes notable indexes used in each technology. The diagrams illustrating each of the databases' schemas can be found under Appendix \ref{app:schema}.
 
 \subsection{Benchmark Setup}
 
@@ -110,13 +110,6 @@ The decision not to extend \emph{city} and \emph{state} attributes into separate
 
 The review table is commonly used in queries and holds the most interesting attribute in terms of temporal insight. Since temporal information is one-dimensional and ordinal, the \emph{date} attribute is indexed and clustered.
 
-\begin{figure*}[h]
-    \centering
-    \includegraphics[width=16cm]{img/schema/yelpRelational.pdf}
-    \caption{A UML diagram of the relational design of the Yelp dataset. Indexed attributes are in bold whereas clustered attributes are in italics.}
-    \label{fig:relational-design}
-\end{figure*}
-
 A business category and a user's friends are many-to-many relationships. The linking tables \texttt{bus\_2\_cat} and \texttt{friends} tables handle these relationships.
 
 \subsubsection{Graph Design}
@@ -127,19 +120,4 @@ JanusGraph indexes attributes on nodes and edges using either composite indexes 
 
 Figure \ref{fig:janusgraph-design} show which attributes are indexed using composite indexes and which use mixed indexes -- making use of the indexing backend. As in Section \ref{subsub:relational-design}, \emph{location} is indexed using R-trees with ElasticSearch's geo-search predicates. \emph{Date} is indexed using ElasticSearch for equality conditions using the \texttt{java.time.Instant} class -- this uses a Bkd-tree indexing implementation \cite{es-bkdtree-index}.
 
-\begin{figure*}[h]
-    \centering
-    \includegraphics[width=16cm]{img/schema/yelpJanus.pdf}
-    \caption{A UML diagram of the graph design for JanusGraph.}
-    \label{fig:janusgraph-design}
-\end{figure*}
-
 TigerGraph puts less of a focus on indexing and more on writing efficient and fast queries. One notable difference between the structure in the JanusGraph implementation and the TigerGraph implementation (see Figure \ref{fig:tigergraph-design}) is that there are no indexes and the extension of the \emph{location} attribute as the \texttt{Business\_Geo} edge and \texttt{Geo\_Grid} vertex in TigerGraph. The code leveraged for this design idea was inspired from the TigerGraph geospatial webinar \cite{graphgurus} and C++ code on the TigerGraph ```ecosys''\footnote{\url{https://github.com/tigergraph/ecosys/tree/master/guru\_scripts/geospatial\_search}}.
-
-\begin{figure*}[h]
-    \centering
-    \includegraphics[width=16cm]{img/schema/yelpTiger.pdf}
-    \caption{A UML diagram of the graph design for TigerGraph.}
-    \label{fig:tigergraph-design}
-\end{figure*}
-

@@ -9,7 +9,7 @@ PostgreSQL is written in the C programming language, is an object-oriented relat
 
 PostgreSQL is a mature product and has a large amount of support from its open-source community. Postgres is flexible in that it supports a variety of data types and allows the definition of own types. Founder of NewsBlur\footnote{\url{https://newsblur.com/}}, Samuel Clay, mentions using Postgres for multiple years for storing millions of sites and subscriptions. Canonical\footnote{\url{https://canonical.com/}} founder, Mark Shuttleworth, explains that, while using Postgres during the development of Launchpad, finding it ``robust, fast, and professional in every regard'' \cite{postgres-about}.
 
-Many of these features and opinions of using PostgreSQL in production environments on this scale is why PostgreSQL was a reputable relational database to benchmark against.
+Many of these features and opinions of using PostgreSQL in production environments on this scale is why PostgreSQL was a reputable relational database to benchmark against. PostgreSQL 11 and PostGIS 2.5 are used in this investigation.
 
 \subsubsection{JanusGraph}
 
@@ -26,7 +26,7 @@ JanusGraph is largely based on the Apache tech-stack making use of technologies 
 
 JanusGraph can store graph data via three supporting backends; Apache Cassandra, Apache HBase, and Apache Berkeley. The CAP Theorem (Section \ref{cap}) should be taken into account when considering which of the three backends to use -- this is illustrated in Figure \ref{fig:janusgraph-cap}.
 
-Examples of companies who have deployed JanusGraph in production include Netflix, Redhat, Uber, and IBM \cite{janusgraph-readme}. The professional support, documentation, and fact that one is able to leverage all these advanced features for free is why JanusGraph is one of the graph databases used in this investigation. The configuration of JanusGraph used in this paper is with Apache Cassandra as the storage backend and ElasticSearch as the search engine for spatial and temporal query support.
+Examples of companies who have deployed JanusGraph in production include Netflix, Redhat, Uber, and IBM \cite{janusgraph-readme}. The professional support, documentation, and fact that one is able to leverage all these advanced features for free is why JanusGraph is one of the graph databases used in this investigation. The configuration of JanusGraph used in this paper is with Apache Cassandra as the storage backend and ElasticSearch as the search engine for spatial and temporal query support. JanusGraph 0.4 is used in this investigation.
 
 \subsubsection{TigerGraph}
 
@@ -36,7 +36,7 @@ Some of the use cases explicitly mentioned by TigerGraph\footnote{\url{https://w
 
 GraphStudio is a web interface which is packaged along with TigerGraph which provides an interface to write, install and visualize queries, design and export one's graph schema, and monitor database performance. This makes use of an Nginx web server \cite{tigergraph-infoworld}.
 
-For all intents and purposes, the developer edition is more than capable to perform the investigation required for this paper. There is an enterprise version that allows for additional features such as multi-machine clustering.
+For all intents and purposes, the developer edition is more than capable to perform the investigation required for this paper. There is an enterprise version that allows for additional features such as multi-machine clustering. TigerGraph 2.5 is used in this investigation.
 
 \subsection{Web-application Simulation}
 

@@ -1,4 +1,3 @@
-\todo{Will fix the formatting once content is finalized.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Queries}
 \label{app:queries}
@@ -164,11 +163,42 @@
 ]
 {./queries/city.gsql}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\onecolumn
+\section{Database Schemas}
+\label{app:schema}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{figure*}[htp]
+    \centering
+    \includegraphics[width=16cm]{img/schema/yelpRelational.pdf}
+    \caption{A UML diagram of the relational design of the Yelp dataset. Indexed attributes are in bold whereas clustered attributes are in italics.}
+    \label{fig:relational-design}
+\end{figure*}
+
+\begin{figure*}[htp]
+    \centering
+    \includegraphics[width=16cm]{img/schema/yelpJanus.pdf}
+    \caption{A UML diagram of the graph design for JanusGraph.}
+    \label{fig:janusgraph-design}
+\end{figure*}
+
+\begin{figure*}[htp]
+    \centering
+    \includegraphics[width=16cm]{img/schema/yelpTiger.pdf}
+    \caption{A UML diagram of the graph design for TigerGraph.}
+    \label{fig:tigergraph-design}
+\end{figure*}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \FloatBarrier
+\newpage
 \section{Data Analysis}
 \label{app:analysis}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection{Kate's Restaurant Recommendation}
 \begin{table}[h]
@@ -195,28 +225,31 @@
 
 \subsection{Review Trends in Phoenix 2018}
 
-\begin{figure}[h]
+\begin{figure*}[h]
     \centering
     \includegraphics[width=0.49\textwidth]{img/phoenix2018/1Star.pdf}
-    \caption{Relative characteristics of 1 star reviews over reviews of restaurants in Phoenix 2018.}
-    \label{fig:1star}
-\end{figure}
-
-\begin{figure*}[h]
-    \centering
     \includegraphics[width=0.49\textwidth]{img/phoenix2018/2Stars.pdf}
-    \includegraphics[width=0.49\textwidth]{img/phoenix2018/3Stars.pdf}
     \caption{Relative characteristics of 1 and 2 star reviews over reviews of restaurants in Phoenix 2018.}
-    \label{fig:23star}
+    \label{fig:12star}
 \end{figure*}
+
 
 \begin{figure*}[h]
     \centering
+    
+    \includegraphics[width=0.49\textwidth]{img/phoenix2018/3Stars.pdf}
     \includegraphics[width=0.49\textwidth]{img/phoenix2018/4Stars.pdf}
-    \includegraphics[width=0.49\textwidth]{img/phoenix2018/5Stars.pdf}
-    \caption{Relative characteristics of 4 and 5 star reviews over reviews of restaurants in Phoenix 2018.}
-    \label{fig:45star}
+    \caption{Relative characteristics of 3 and 4 star reviews over reviews of restaurants in Phoenix 2018.}
+    \label{fig:34star}
 \end{figure*}
+
+\begin{figure}[h]
+    \centering
+    
+    \includegraphics[width=0.49\textwidth]{img/phoenix2018/5Stars.pdf}
+    \caption{Relative characteristics of 5 star reviews over reviews of restaurants in Phoenix 2018.}
+    \label{fig:5star}
+\end{figure}
 
 \FloatBarrier
 
