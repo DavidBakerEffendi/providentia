@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 def normalize(file_dir, out_dir, process_line):
     fr = open(file_dir, 'r')
-    fw = open(out_dir, 'w')
+    fw = open(out_dir, 'a')
     num_lines = sum(1 for _ in open(file_dir, 'r'))
 
     fr.seek(0)
@@ -57,6 +57,7 @@ if __name__ == "__main__":
         # Normalize sim data
         if config.NORMALIZE_SETTINGS["NORMALIZE_SIM"] is True:
             print("[INFO] Normalizing simulation data...")
+            normalize_sim.write_header()
             normalize_file(norm_setting_file=config.NORMALIZE_SETTINGS["SIM_FILE"],
                            norm_module=normalize_sim)
 
@@ -97,4 +98,4 @@ if __name__ == "__main__":
         # CSV sim
         if config.PREPARE_SETTINGS["PREPARE_SIM"] is True:
             print("[INFO] Preparing PHO simulation as CSV...")
-            csv_sim.write_csv(config.NORMALIZE_SETTINGS["SIM_FILE"])
+            csv_sim.write_csv(normalize_sim.NORM_FILE)

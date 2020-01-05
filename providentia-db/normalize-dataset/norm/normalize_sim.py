@@ -10,6 +10,16 @@ lon_origin = -98.60
 convergence = cos(lat_origin * (pi / 180.0))
 
 
+def write_header():
+    headers = ['X', 'Y', 't', 'Prio', 'TimeToAmbulanceStarts', 'OnSceneDuration', 'Transfer', 'TimeAtHospital',
+               'TravelTimePatient', 'TravelTimeHospital', 'TravelTimeStation', 'Resource', 'X_DEST', 'Y_DEST', 'zone',
+               'dest_zone', 'node', 'dest_node', 'resourceReadyTime', 'ID']
+    with open(NORM_FILE, 'w') as f:
+        writer = csv.DictWriter(f=f, fieldnames=headers)
+        writer.writeheader()
+    input()
+
+
 def process_line(fw, line):
     alarm_line = [None] * 20
 

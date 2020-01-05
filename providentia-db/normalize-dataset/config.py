@@ -1,18 +1,19 @@
 # Does the dataset need to be normalized? If so, the locations need to be 
 # specified too
-NORMALIZE_DATASET = False
+NORMALIZE_DATASET = True
 NORMALIZE_SETTINGS = {
     "NORMALIZE_BUS": True,
     "NORMALIZE_REV": True,
     "NORMALIZE_USE": True,
+    "NORMALIZE_SIM": True,
     "BUSINESS_FILE": "./business.json",
     "REVIEW_FILE": "./review.json",
     "USERS_FILE": "./user.json",
-    "SIM_FILE": "./out/alarms-headers.csv"
+    "SIM_FILE": "./out/alarms.csv"
 }
 
 # Generate subset of data and clean user friends that aren't in table
-GEN_SUBSET = False
+GEN_SUBSET = True
 SUBSET_SETTINGS = {
     "SUB_BUS": True,
     "SUB_REV": True,
@@ -28,5 +29,5 @@ PREPARE_SETTINGS = {
     "PREPARE_BUS": True,
     "PREPARE_REV": True,
     "PREPARE_USE": True,
-    "PREPARE_SIM": False
+    "PREPARE_SIM": True
 }
