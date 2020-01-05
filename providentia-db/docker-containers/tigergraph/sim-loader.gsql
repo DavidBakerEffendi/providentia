@@ -2,7 +2,7 @@ USE GRAPH MyGraph
 
 DROP JOB loadSim
 CREATE LOADING JOB loadSim FOR GRAPH MyGraph {
-    DEFINE FILENAME alarmsFile = "~/tigergraph/loadingData/alarms-headers.csv";
+    DEFINE FILENAME alarmsFile = "~/tigergraph/loadingData/alarm_norm.csv";
     DEFINE FILENAME transferFile = "~/tigergraph/loadingData/alarms_transf.csv";
     DEFINE FILENAME onSceneFile = "~/tigergraph/loadingData/alarms_scene.csv";
     DEFINE FILENAME priorityFile = "~/tigergraph/loadingData/alarms_prio.csv";
@@ -22,7 +22,7 @@ CREATE LOADING JOB loadSim FOR GRAPH MyGraph {
         $"ID", getGridId($"X", $"Y"), $"X", $"Y"
     ) USING header="true", separator=",";
     
-    LOAD alarmsFile TO EDGE DestGeo VALUES (
+    LOAD alarmsFile TO EDGE Dest_Geo VALUES (
         $"ID", getGridId($"X_DEST", $"Y_DEST"), $"X_DEST", $"Y_DEST"
     ) USING header="true", separator=",";
     
