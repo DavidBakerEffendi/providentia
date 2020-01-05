@@ -424,10 +424,6 @@ public class PostgresTransactionManager implements TransactionManager {
 
     @Override
     public String getDataDescriptorShort(Class<?> classType, boolean... optional) {
-        boolean currentMode = USERS_MODE;
-        if (optional.length > 0) {
-            currentMode = optional[0];
-        }
         if (classType == Business.class)
             return "BUS";
         else if (classType == User.class)

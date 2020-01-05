@@ -431,8 +431,6 @@ public class JanusTransactionManager implements TransactionManager {
      * @param u  the {@link User} object holding the data to insert.
      */
     private void addUserVertex(JanusGraphTransaction tx, User u) throws JanusGraphException, IllegalStateException {
-        GraphTraversalSource g = tx.traversal();
-
         JanusGraphVertex uVert = tx.addVertex("User");
         uVert.property("user_id", u.getUserId());
         uVert.property("name", u.getName());
