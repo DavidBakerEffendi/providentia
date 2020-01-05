@@ -1,10 +1,6 @@
 package za.ac.sun.cs.providentia.domain;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 public class User {
 
@@ -24,7 +20,7 @@ public class User {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(final String userId) {
         this.userId = userId;
     }
 
@@ -32,7 +28,7 @@ public class User {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -40,7 +36,7 @@ public class User {
         return cool;
     }
 
-    public void setCool(int cool) {
+    public void setCool(final int cool) {
         this.cool = cool;
     }
 
@@ -48,7 +44,7 @@ public class User {
         return yelpingSince;
     }
 
-    public void setYelpingSince(Instant yelpingSince) {
+    public void setYelpingSince(final Instant yelpingSince) {
         this.yelpingSince = yelpingSince;
     }
 
@@ -56,7 +52,7 @@ public class User {
         return funny;
     }
 
-    public void setFunny(int funny) {
+    public void setFunny(final int funny) {
         this.funny = funny;
     }
 
@@ -64,7 +60,7 @@ public class User {
         return friends;
     }
 
-    public void setFriends(String[] friends) {
+    public void setFriends(final String[] friends) {
         this.friends = friends;
     }
 
@@ -72,7 +68,7 @@ public class User {
         return fans;
     }
 
-    public void setFans(int fans) {
+    public void setFans(final int fans) {
         this.fans = fans;
     }
 
@@ -80,7 +76,7 @@ public class User {
         return useful;
     }
 
-    public void setUseful(int useful) {
+    public void setUseful(final int useful) {
         this.useful = useful;
     }
 

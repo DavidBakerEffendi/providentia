@@ -21,7 +21,7 @@ public class Review {
         return businessId;
     }
 
-    public void setBusinessId(String businessId) {
+    public void setBusinessId(final String businessId) {
         this.businessId = businessId;
     }
 
@@ -29,7 +29,7 @@ public class Review {
         return cool;
     }
 
-    public void setCool(int cool) {
+    public void setCool(final int cool) {
         this.cool = cool;
     }
 
@@ -37,7 +37,7 @@ public class Review {
         return date;
     }
 
-    public void setDate(Instant date) {
+    public void setDate(final Instant date) {
         this.date = date;
     }
 
@@ -45,7 +45,7 @@ public class Review {
         return funny;
     }
 
-    public void setFunny(int funny) {
+    public void setFunny(final int funny) {
         this.funny = funny;
     }
 
@@ -53,7 +53,7 @@ public class Review {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(final String userId) {
         this.userId = userId;
     }
 
@@ -61,7 +61,7 @@ public class Review {
         return useful;
     }
 
-    public void setUseful(int useful) {
+    public void setUseful(final int useful) {
         this.useful = useful;
     }
 
@@ -69,7 +69,7 @@ public class Review {
         return reviewId;
     }
 
-    public void setReviewId(String reviewId) {
+    public void setReviewId(final String reviewId) {
         this.reviewId = reviewId;
     }
 
@@ -77,7 +77,7 @@ public class Review {
         return stars;
     }
 
-    public void setStars(double stars) {
+    public void setStars(final double stars) {
         this.stars = stars;
     }
 
@@ -85,7 +85,7 @@ public class Review {
         return text;
     }
 
-    public void setText(String text) {
+    public void setText(final String text) {
         this.text = text;
     }
 

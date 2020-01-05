@@ -27,7 +27,7 @@ public class SimResponse {
         return lat;
     }
 
-    public void setLat(float lat) {
+    public void setLat(final float lat) {
         this.lat = lat;
     }
 
@@ -35,7 +35,7 @@ public class SimResponse {
         return lon;
     }
 
-    public void setLon(float lon) {
+    public void setLon(final float lon) {
         this.lon = lon;
     }
 
@@ -43,7 +43,7 @@ public class SimResponse {
         return t;
     }
 
-    public void setT(int t) {
+    public void setT(final int t) {
         this.t = t;
     }
 
@@ -51,7 +51,7 @@ public class SimResponse {
         return prio;
     }
 
-    public void setPrio(int prio) {
+    public void setPrio(final int prio) {
         this.prio = prio;
     }
 
@@ -59,7 +59,7 @@ public class SimResponse {
         return timeToAmbulanceStarts;
     }
 
-    public void setTimeToAmbulanceStarts(float timeToAmbulanceStarts) {
+    public void setTimeToAmbulanceStarts(final float timeToAmbulanceStarts) {
         this.timeToAmbulanceStarts = timeToAmbulanceStarts;
     }
 
@@ -67,7 +67,7 @@ public class SimResponse {
         return onSceneDuration;
     }
 
-    public void setOnSceneDuration(float onSceneDuration) {
+    public void setOnSceneDuration(final float onSceneDuration) {
         this.onSceneDuration = onSceneDuration;
     }
 
@@ -75,7 +75,7 @@ public class SimResponse {
         return transfer;
     }
 
-    public void setTransfer(boolean transfer) {
+    public void setTransfer(final boolean transfer) {
         this.transfer = transfer;
     }
 
@@ -83,7 +83,7 @@ public class SimResponse {
         return timeAtHospital;
     }
 
-    public void setTimeAtHospital(float timeAtHospital) {
+    public void setTimeAtHospital(final float timeAtHospital) {
         this.timeAtHospital = timeAtHospital;
     }
 
@@ -91,7 +91,7 @@ public class SimResponse {
         return travelTimePatient;
     }
 
-    public void setTravelTimePatient(float travelTimePatient) {
+    public void setTravelTimePatient(final float travelTimePatient) {
         this.travelTimePatient = travelTimePatient;
     }
 
@@ -99,7 +99,7 @@ public class SimResponse {
         return travelTimeHospital;
     }
 
-    public void setTravelTimeHospital(float travelTimeHospital) {
+    public void setTravelTimeHospital(final float travelTimeHospital) {
         this.travelTimeHospital = travelTimeHospital;
     }
 
@@ -107,7 +107,7 @@ public class SimResponse {
         return travelTimeStation;
     }
 
-    public void setTravelTimeStation(float travelTimeStation) {
+    public void setTravelTimeStation(final float travelTimeStation) {
         this.travelTimeStation = travelTimeStation;
     }
 
@@ -115,7 +115,7 @@ public class SimResponse {
         return resource;
     }
 
-    public void setResource(short resource) {
+    public void setResource(final short resource) {
         this.resource = resource;
     }
 
@@ -123,7 +123,7 @@ public class SimResponse {
         return latDest;
     }
 
-    public void setLatDest(float latDest) {
+    public void setLatDest(final float latDest) {
         this.latDest = latDest;
     }
 
@@ -131,7 +131,7 @@ public class SimResponse {
         return lonDest;
     }
 
-    public void setLonDest(float lonDest) {
+    public void setLonDest(final float lonDest) {
         this.lonDest = lonDest;
     }
 
@@ -139,7 +139,7 @@ public class SimResponse {
         return zone;
     }
 
-    public void setZone(int zone) {
+    public void setZone(final int zone) {
         this.zone = zone;
     }
 
@@ -147,7 +147,7 @@ public class SimResponse {
         return destZone;
     }
 
-    public void setDestZone(int destZone) {
+    public void setDestZone(final int destZone) {
         this.destZone = destZone;
     }
 
@@ -155,7 +155,7 @@ public class SimResponse {
         return node;
     }
 
-    public void setNode(int node) {
+    public void setNode(final int node) {
         this.node = node;
     }
 
@@ -163,7 +163,7 @@ public class SimResponse {
         return destNode;
     }
 
-    public void setDestNode(int destNode) {
+    public void setDestNode(final int destNode) {
         this.destNode = destNode;
     }
 
@@ -171,7 +171,7 @@ public class SimResponse {
         return resourceReadyTime;
     }
 
-    public void setResourceReadyTime(double resourceReadyTime) {
+    public void setResourceReadyTime(final double resourceReadyTime) {
         this.resourceReadyTime = resourceReadyTime;
     }
 
@@ -179,7 +179,7 @@ public class SimResponse {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(final int id) {
         this.id = id;
     }
 }

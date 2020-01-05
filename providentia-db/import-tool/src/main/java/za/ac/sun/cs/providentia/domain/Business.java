@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 public class Business implements Serializable {
 
+    private static final long serialVersionUID = 100210885490796577L;
     private String businessId;
     private String address;
     private String postalCode;
@@ -26,7 +27,7 @@ public class Business implements Serializable {
         return businessId;
     }
 
-    public void setBusinessId(String businessId) {
+    public void setBusinessId(final String businessId) {
         this.businessId = businessId;
     }
 
@@ -34,7 +35,7 @@ public class Business implements Serializable {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(final String address) {
         this.address = address;
     }
 
@@ -42,7 +43,7 @@ public class Business implements Serializable {
         return postalCode;
     }
 
-    public void setPostalCode(String postalCode) {
+    public void setPostalCode(final String postalCode) {
         this.postalCode = postalCode;
     }
 
@@ -50,7 +51,7 @@ public class Business implements Serializable {
         return isOpen;
     }
 
-    public void setIsOpen(boolean isOpen) {
+    public void setIsOpen(final boolean isOpen) {
         this.isOpen = isOpen;
     }
 
@@ -58,7 +59,7 @@ public class Business implements Serializable {
         return categories;
     }
 
-    public void setCategories(String[] categories) {
+    public void setCategories(final String[] categories) {
         this.categories = categories;
     }
 
@@ -66,7 +67,7 @@ public class Business implements Serializable {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(final String city) {
         this.city = city;
     }
 
@@ -74,7 +75,7 @@ public class Business implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -82,7 +83,7 @@ public class Business implements Serializable {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(final double longitude) {
         this.longitude = longitude;
     }
 
@@ -90,7 +91,7 @@ public class Business implements Serializable {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(final double latitude) {
         this.latitude = latitude;
     }
 
@@ -98,7 +99,7 @@ public class Business implements Serializable {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(final String state) {
         this.state = state;
     }
 
@@ -106,7 +107,7 @@ public class Business implements Serializable {
         return stars;
     }
 
-    public void setStars(double stars) {
+    public void setStars(final double stars) {
         this.stars = stars;
     }
 
@@ -119,7 +120,8 @@ public class Business implements Serializable {
         sb.append(", \"categories\": [");
         for (int i = 0; i < categories.length; i++) {
             sb.append('\"').append(categories[i]).append('\"');
-            if (i < categories.length - 1) sb.append(", ");
+            if (i < categories.length - 1)
+                sb.append(", ");
         }
         sb.append("]");
         sb.append(", \"city\":\"").append(city).append('\"');
@@ -133,10 +135,10 @@ public class Business implements Serializable {
 
     @Override
     public String toString() {
-        ObjectMapper mapper = new ObjectMapper();
+        final ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.writeValueAsString(this);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             final StringBuilder sb = new StringBuilder("Business{");
             sb.append("businessId='").append(businessId).append('\'');
             sb.append(", address='").append(address).append('\'');
