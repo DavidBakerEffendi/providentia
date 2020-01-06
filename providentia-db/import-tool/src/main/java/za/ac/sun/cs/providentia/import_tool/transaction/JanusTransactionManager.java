@@ -566,7 +566,7 @@ public class JanusTransactionManager implements TransactionManager {
 
         // Connect priority
         Vertex priorityV = g.V().has("Priority", "priority_id", o.getPrio()).next();
-        priorityV.addEdge("RESPONSE_PRIORITY", priorityV);
+        priorityV.addEdge("RESPONSE_PRIORITY", responseV);
     }
 
     /**
