@@ -326,10 +326,10 @@ public class PostgresTransactionManager implements TransactionManager {
                     "ON CONFLICT (id) DO NOTHING";
             PreparedStatement p = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             p.setInt(1, obj.getId());
-            p.setDouble(2, obj.getLat());
-            p.setDouble(3, obj.getLon());
-            p.setDouble(4, obj.getLatDest());
-            p.setDouble(5, obj.getLonDest());
+            p.setDouble(2, obj.getLon());
+            p.setDouble(3, obj.getLat());
+            p.setDouble(4, obj.getLonDest());
+            p.setDouble(5, obj.getLatDest());
             p.setInt(6, obj.getT());
             p.setFloat(7, obj.getTimeToAmbulanceStarts());
             p.setFloat(8, obj.getOnSceneDuration());
@@ -416,6 +416,10 @@ public class PostgresTransactionManager implements TransactionManager {
                     p.setInt(1, 3);
                     p.setString(3, "LOW");
                     break;
+            }
+
+            if (p.executeUpdate() == 0) {
+                throw new SQLException("Creating '" + obj.getId() + "' failed, no rows affected.");
             }
         } catch (SQLException e) {
             LOG.error("Error creating '" + obj.getId() + "' for table 'resource'.", e);
