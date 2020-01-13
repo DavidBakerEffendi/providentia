@@ -19,13 +19,22 @@ CREATE LOADING JOB loadSim FOR GRAPH MyGraph {
 
     # Connect responses start and destination geos
     LOAD alarmsFile TO EDGE Origin_Geo VALUES (
-        $"ID", getGridId($"X", $"Y"), $"X", $"Y"
+        $"ID", getGridId($"Y", $"X"), $"Y", $"X"
     ) USING header="true", separator=",";
     
     LOAD alarmsFile TO EDGE Dest_Geo VALUES (
-        $"ID", getGridId($"X_DEST", $"Y_DEST"), $"X_DEST", $"Y_DEST"
+        $"ID", getGridId($"Y_DEST", $"X_DEST"), $"Y_DEST", $"X_DEST"
     ) USING header="true", separator=",";
-    
+   
+    ######################
+    # LOAD RESOURCE DATA #
+    ######################
+
+    # Load resource vertices
+    LOAD alarmsFile TO VERTEX Resource VALUES (
+	$"Resource"
+    ) USING header="true", separator=",";
+
     # Connect responses to a resource
     LOAD alarmsFile TO EDGE Response_Resource VALUES (
         $"ID", $"Resource"
@@ -72,5 +81,3 @@ CREATE LOADING JOB loadSim FOR GRAPH MyGraph {
         
 }
 
-
-RUN LOADING JOB loadSim
