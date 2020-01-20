@@ -17,7 +17,6 @@ def write_header():
     with open(NORM_FILE, 'w') as f:
         writer = csv.DictWriter(f=f, fieldnames=headers)
         writer.writeheader()
-    input()
 
 
 def process_line(fw, line):
@@ -31,6 +30,8 @@ def process_line(fw, line):
             alarm_line[i] = convert_local_to_geo_lat(float(col))
         elif i == 1 or i == 13:
             alarm_line[i] = convert_local_to_geo_lon(float(col))
+        elif i == 3:
+            alarm_line[i] = col if col != '5' else 2
         else:
             alarm_line[i] = col
         i += 1
