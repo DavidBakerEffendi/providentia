@@ -503,6 +503,9 @@ public class JanusTransactionManager implements TransactionManager {
         GraphTraversalSource g = tx.traversal();
 
         // Add response vertex
+        if (g.V().has("Response", "response_id", o.getId()).hasNext()) {
+            return;
+        }
         Vertex responseV = tx.addVertex("Response");
         responseV.property("response_id", o.getId());
         responseV.property("origin", Geoshape.point(o.getLat(), o.getLon()));
@@ -516,28 +519,25 @@ public class JanusTransactionManager implements TransactionManager {
 
         // Add resource
         Vertex resourceV;
-        if (!g.V().hasLabel("Resource").has("resource_id", o.getResource()).hasNext()) {
+        if (!g.V().has("Resource", "resource_id", o.getResource()).hasNext()) {
             resourceV = tx.addVertex("Resource");
             resourceV.property("resource_id", o.getResource());
         }
 
         // Add priority
         Vertex priorityV;
-        if (!g.V().hasLabel("Priority").has("priority_id", o.getPrio()).hasNext()) {
+        if (!g.V().has("Priority", "priority_id", o.getPrio()).hasNext()) {
             priorityV = tx.addVertex("Priority");
+            priorityV.property("priority_id", o.getPrio());
             switch (o.getPrio()) {
                 case 1:
                     priorityV.property("description", "HIGH");
-                    priorityV.property("priority_id", 1);
                     break;
                 case 2:
-                case 5:
                     priorityV.property("description", "MODERATE");
-                    priorityV.property("priority_id", 2);
                     break;
                 case 3:
                     priorityV.property("description", "LOW");
-                    priorityV.property("priority_id", 3);
                     break;
             }
         }
@@ -561,25 +561,11 @@ public class JanusTransactionManager implements TransactionManager {
 
         // Connect resource
         Vertex resourceV = g.V().has("Resource", "resource_id", o.getResource()).next();
-        resourceV.addEdge("RESPONSE_RESOURCE", responseV);
+        responseV.addEdge("RESPONSE_RESOURCE", resourceV);
 
         // Connect priority
-        Vertex priorityV;
-        switch (o.getPrio()) {
-            case 1:
-                priorityV = g.V().has("Priority", "priority_id", 1).next();
-                priorityV.addEdge("RESPONSE_PRIORITY", responseV);
-                break;
-            case 2:
-            case 5:
-                priorityV = g.V().has("Priority", "priority_id", 2).next();
-                priorityV.addEdge("RESPONSE_PRIORITY", responseV);
-                break;
-            case 3:
-                priorityV = g.V().has("Priority", "priority_id", 3).next();
-                priorityV.addEdge("RESPONSE_PRIORITY", responseV);
-                break;
-        }
+        Vertex priorityV = g.V().has("Priority", "priority_id", o.getPrio()).next();
+        responseV.addEdge("RESPONSE_PRIORITY", priorityV);
     }
 
     /**

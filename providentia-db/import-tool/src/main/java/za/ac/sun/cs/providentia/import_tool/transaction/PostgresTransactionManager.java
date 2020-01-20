@@ -408,7 +408,6 @@ public class PostgresTransactionManager implements TransactionManager {
                     p.setString(3, "HIGH");
                     break;
                 case 2:
-                case 5:
                     p.setInt(1, 2);
                     p.setString(3, "MODERATE");
                     break;
