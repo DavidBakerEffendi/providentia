@@ -125,6 +125,11 @@ public class ImportTool {
                 int sectorCount = 1;
 
                 do {
+                    if (classType == SimResponse.class && linesRead == 0) {
+                        line = reader.readLine();
+                        linesRead++;
+                        pb.step();
+                    }
                     // Create a batch of records
                     LinkedList<String> records = new LinkedList<>();
                     while (line != null && records.size() < dataConfig.queueSize && linesRead < pb.getMax()) {

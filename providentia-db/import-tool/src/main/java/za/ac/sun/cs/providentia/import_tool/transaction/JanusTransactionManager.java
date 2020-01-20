@@ -503,9 +503,6 @@ public class JanusTransactionManager implements TransactionManager {
         GraphTraversalSource g = tx.traversal();
 
         // Add response vertex
-        if (g.V().has("Response", "response_id", o.getId()).hasNext()) {
-            return;
-        }
         Vertex responseV = tx.addVertex("Response");
         responseV.property("response_id", o.getId());
         responseV.property("origin", Geoshape.point(o.getLat(), o.getLon()));
@@ -514,31 +511,33 @@ public class JanusTransactionManager implements TransactionManager {
         responseV.property("time_to_ambulance_starts", o.getTimeToAmbulanceStarts());
         responseV.property("on_scene_duration", o.getOnSceneDuration());
         responseV.property("time_at_hospital", o.getTimeAtHospital());
-        responseV.property("travel_time_patient", o.getTimeAtHospital());
-        responseV.property("resource_ready_time", o.getTimeAtHospital());
+        responseV.property("travel_time_patient", o.getTravelTimePatient());
+        responseV.property("resource_ready_time", o.getResourceReadyTime());
 
         // Add resource
         Vertex resourceV;
-        if (!g.V().has("Resource", "resource_id", o.getResource()).hasNext()) {
+        if (!g.V().hasLabel("Resource").has("resource_id", o.getResource()).hasNext()) {
             resourceV = tx.addVertex("Resource");
             resourceV.property("resource_id", o.getResource());
         }
 
         // Add priority
         Vertex priorityV;
-        if (!g.V().has("Priority", "priority_id", o.getPrio()).hasNext()) {
+        if (!g.V().hasLabel("Priority").has("priority_id", o.getPrio()).hasNext()) {
             priorityV = tx.addVertex("Priority");
-            priorityV.property("priority_id", o.getPrio());
             switch (o.getPrio()) {
                 case 1:
                     priorityV.property("description", "HIGH");
+                    priorityV.property("priority_id", 1);
                     break;
                 case 2:
                 case 5:
                     priorityV.property("description", "MODERATE");
+                    priorityV.property("priority_id", 2);
                     break;
                 case 3:
                     priorityV.property("description", "LOW");
+                    priorityV.property("priority_id", 3);
                     break;
             }
         }
@@ -565,8 +564,22 @@ public class JanusTransactionManager implements TransactionManager {
         resourceV.addEdge("RESPONSE_RESOURCE", responseV);
 
         // Connect priority
-        Vertex priorityV = g.V().has("Priority", "priority_id", o.getPrio()).next();
-        priorityV.addEdge("RESPONSE_PRIORITY", responseV);
+        Vertex priorityV;
+        switch (o.getPrio()) {
+            case 1:
+                priorityV = g.V().has("Priority", "priority_id", 1).next();
+                priorityV.addEdge("RESPONSE_PRIORITY", responseV);
+                break;
+            case 2:
+            case 5:
+                priorityV = g.V().has("Priority", "priority_id", 2).next();
+                priorityV.addEdge("RESPONSE_PRIORITY", responseV);
+                break;
+            case 3:
+                priorityV = g.V().has("Priority", "priority_id", 3).next();
+                priorityV.addEdge("RESPONSE_PRIORITY", responseV);
+                break;
+        }
     }
 
     /**
