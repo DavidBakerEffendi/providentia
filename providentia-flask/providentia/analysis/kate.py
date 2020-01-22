@@ -65,7 +65,7 @@ def get_business_name(database, business_id):
         return janus_graph.execute_query(
             'g.V().has("Business", "business_id", "{}").next().values("name")'.format(business_id))[0]
     elif database == "PostgreSQL":
-        return postgres.execute_query('SELECT name FROM business WHERE id = \'{}\''.format(business_id))[0][0]
+        return postgres.execute_query('SELECT name FROM business WHERE id = \'{}\''.format(business_id), 'yelp')[0][0]
     elif database == "TigerGraph":
         result = tigergraph.execute_query("getBusinessName?b={}".format(business_id))
         if result is not None:
@@ -131,7 +131,7 @@ def get_recent_reviews_for_user_near_kate(database, user_id):
             'SELECT review.stars, review.text, review.business_id FROM review JOIN business '
             'ON review.business_id = business.id '
             'AND review.user_id = \'{}\' AND ST_DWithin(location, ST_MakePoint(-80.79, 35.15)::geography, 5000) '
-            'AND review.stars > 3 ORDER BY review.date DESC LIMIT 10'.format(user_id)
+            'AND review.stars > 3 ORDER BY review.date DESC LIMIT 10'.format(user_id), 'yelp'
         )
     elif database == "TigerGraph":
         req = tigergraph.execute_query("getRecentGoodReviewsNearUser?p={}".format(user_id))
@@ -163,7 +163,7 @@ def get_users_who_like_same_restaurants_as_kate(database):
             'ON OtherReviews.user_id != KateReviews.user_id AND OtherReviews.business_id = KateReviews.business_id '
             'JOIN bus_2_cat Bus2Cat ON OtherReviews.business_id = Bus2Cat.business_id '
             'JOIN category Categories ON Bus2Cat.category_id = Categories.id '
-            'AND Categories.name = \'Restaurants\''.format(kate_id)
+            'AND Categories.name = \'Restaurants\''.format(kate_id), 'yelp'
         )
         result = [i[0] for i in result]
     elif database == "TigerGraph":

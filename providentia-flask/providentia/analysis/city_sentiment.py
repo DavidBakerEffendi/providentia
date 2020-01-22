@@ -75,7 +75,7 @@ def get_lv_reviews_from_friends(database):
             "AND (R.user_id = F1.user_id OR R.user_id = F1.friend_id) "
             "AND ST_DWithin(B.location, ST_MakePoint({}, {})::geography, 30000) "
             "AND (date_part('month', R.date) >= 11 AND date_part('month', R.date) <= 12)"
-                .format(julie_id, julie_id, lon, lat))
+                .format(julie_id, julie_id, lon, lat), 'yelp')
     elif database == "TigerGraph":
         req = tigergraph.execute_query('getFriendReviewsInArea?p={}&lat={}&lon={}'.format(julie_id, lat, lon))
         if req is not None:

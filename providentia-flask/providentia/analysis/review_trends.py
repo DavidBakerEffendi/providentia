@@ -95,7 +95,7 @@ def get_reviews_from_phoenix_2018(database):
         return postgres.execute_query(
             'SELECT text, review.stars, cool, funny, useful FROM business JOIN review ON business.id = '
             'review.business_id AND ST_DWithin(location, ST_MakePoint(-112.56, 33.45)::geography, 50000) '
-            'AND date_part(\'year\', date) = 2018')
+            'AND date_part(\'year\', date) = 2018', 'yelp')
     elif database == "TigerGraph":
         req = tigergraph.execute_query('getReviewsFromPhoenix2018')
         if req is not None:
