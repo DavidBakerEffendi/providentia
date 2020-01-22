@@ -8,6 +8,9 @@ DROP TABLE IF EXISTS queries;
 DROP TABLE IF EXISTS kate_analysis;
 DROP TABLE IF EXISTS review_trend_analysis;
 DROP TABLE IF EXISTS city_analysis;
+DROP TABLE IF EXISTS sim1;
+DROP TABLE IF EXISTS sim2;
+DROP TABLE IF EXISTS sim3;
 DROP TABLE IF EXISTS benchmarks;
 DROP TABLE IF EXISTS analysis;
 DROP TABLE IF EXISTS datasets;
@@ -104,6 +107,33 @@ CREATE TABLE city_analysis (
     benchmark_id uuid NOT NULL,
     stars FLOAT NOT NULL,
     sentiment FLOAT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (benchmark_id) REFERENCES benchmarks (id)
+);
+
+CREATE TABLE sim1 (
+    id uuid DEFAULT uuid_generate_v4(),
+    benchmark_id uuid NOT NULL,
+    avg_ttas FLOAT NOT NULL,
+    avg_tth FLOAT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (benchmark_id) REFERENCES benchmarks (id)
+);
+
+CREATE TABLE sim2 (
+    id uuid DEFAULT uuid_generate_v4(),
+    benchmark_id uuid NOT NULL,
+    p1 INT NOT NULL,
+    p2 INT NOT NULL,
+    p3 INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (benchmark_id) REFERENCES benchmarks (id)
+);
+
+CREATE TABLE sim3 (
+    id uuid DEFAULT uuid_generate_v4(),
+    benchmark_id uuid NOT NULL,
+    no_responses INT NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (benchmark_id) REFERENCES benchmarks (id)
 );
