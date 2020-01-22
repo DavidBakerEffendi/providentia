@@ -13,13 +13,6 @@ values
         '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',
         'DOWN'
     ),
---    (
---        'd3dd123d-5f55-4d82-abb2-648a06211beb',
---        'Cassandra',
---        'Apache Cassandra is a free and open-source, distributed, wide column store, NoSQL database management system designed to handle large amounts of data across many commodity servers, providing high availability with no single point of failure.',
---        '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',
---        'DOWN'
---    ),
     (
         '291a3c67-7838-40e4-ab4a-677200bc4743',
         'PostgreSQL',
@@ -43,6 +36,13 @@ insert into datasets (
 )
 values
     (
+        'cc1a6bce-e283-4000-97b5-2a7b355783e7',
+        'Ambulance Response Simulation',
+        $$Umea University's pre-hospital resource optimization research has lead to a simulation based resource optimization solution within its early phase. 
+        This dataset is a result of one of the simulations - spanning over 1 year- where resources are allocated, ER calls are made, and ambulances are sent out based on statistic criteria based on historical data.$$,
+        '' -- TODO: Perhaps get Umea's logo.
+    ),
+    (
         'c2a361d5-9451-4222-b5f7-7696f5f2284d',
         'Yelp',
         'Round 13: Our dataset has been updated for this iteration of the challenge - we’re sure there are plenty of interesting insights waiting there for you. This set includes information about local businesses in 10 metropolitan areas across 2 countries.',
@@ -56,6 +56,29 @@ insert into analysis (
     description
 )
 values
+    -- Simulation analysis
+    (
+        '899760bd-417e-431c-bac1-d5e4a8e16462',
+        'cc1a6bce-e283-4000-97b5-2a7b355783e7',
+        'Priority 1 Mean Response Times',
+        $$Priority 1 is the highest level of emergency. In this analysis we look at the mean times for ambulances to start and the travel times to the hospital of 
+        emergencies which take patients to a particular hospital.$$
+    ),
+    (
+        '34a6d0e2-ca77-4615-a873-9a0d0b92559b',
+        'cc1a6bce-e283-4000-97b5-2a7b355783e7',
+        'Second Resource to Transfer Patients',
+        $$Some calls require multiple resources to be sent to a destination and in this analysis we look at the second resource that is sent. We would like to
+        know how many of these second resources end up taking the patient to a specific hospital, grouped by priority.$$
+    ),
+    (
+        '2d8ca3c7-ab16-4567-a821-1d480ce19bfa',
+        'cc1a6bce-e283-4000-97b5-2a7b355783e7',
+        'Long Response Count',
+        $$This analysis is purely temporal, is simple, and looks at how many responses take longer than 15 minutes to complete from the time the call is made
+        to the point the patient is at the hospital.$$
+    ),
+    -- Yelp analysis
     (
         '81c1ab05-bb06-47ab-8a37-b9aeee625d0f',
         'c2a361d5-9451-4222-b5f7-7696f5f2284d',
@@ -83,7 +106,200 @@ insert into queries (
     language
 )
 values
-       -- Analysis 1
+    -- Simulation Analysis 1
+    (
+        '97a662cc-a5fa-494e-8a4e-d12b5f5e7b0b',
+        '899760bd-417e-431c-bac1-d5e4a8e16462',
+        'bfd2ae61-700f-4f52-b928-a6e27f0b4e11',
+        $$g.V().hasLabel("Priority").has("priority_id", "1")
+	        \n\t.in("RESPONSE_PRIORITY").hasLabel("Response")
+		        \n\t\t.has("destination", geoWithin(Geoshape.circle(63.67, 19.11, 0.5)))
+	        \n\t.fold().aggregate("avg_ttas")
+		        \n\t\t.by(unfold().values("time_to_ambulance_starts").mean())
+            \n\t.unfold().out("RESPONSE_TRANSFER")
+	        \n\t.fold().aggregate("avg_tth")
+		        \n\t\t.by(unfold().values("travel_time_hospital").mean())
+	        \n\t.select("avg_ttas", "avg_tth")$$,
+        'Gremlin'
+    ),
+    (
+        'aebc4d95-9494-4d50-b564-e16e9bbf271f',
+        '899760bd-417e-431c-bac1-d5e4a8e16462',
+        '291a3c67-7838-40e4-ab4a-677200bc4743',
+        $$SELECT  avg(RES.time_to_ambulance_starts) as avg_ttas,
+		\n\t\tavg(TNS.travel_time_hospital) as avg_tth
+        \nFROM priority PRI
+        \nJOIN response RES ON RES.id = PRI.response_id
+        \nJOIN transfer TNS ON RES.id = TNS.response_id
+        \nWHERE PRI.id = 1
+	    \n\tAND ST_DWithin(RES.destination, ST_MakePoint(19.11, 63.67)::geography, 500);$$,
+        'SQL'
+    ),
+    (
+        '0fc72cf1-4d0a-4c87-b426-27b89410cfbc',
+        '899760bd-417e-431c-bac1-d5e4a8e16462',
+        'a63ea923-3e5d-42f5-bf28-045fbccb4c7e',
+        $$CREATE QUERY postSim1() FOR GRAPH MyGraph {
+	        \n\tSetAccum<STRING> @@vSet;
+	        \n\tAvgAccum @@avgTth;
+	        \n\tAvgAccum @@avgTtas;
+
+            \n\tINT priority_id = 1;
+	        \n\tFLOAT lat = 63.67;
+	        \n\tFLOAT lon = 19.11;
+	        \n\tFLOAT distKm = 0.5;
+	        \n\tpriorities = { Priority.* };
+
+	        \n\tGrids = to_vertex_set(getNearbyGridId(distKm, lat, lon), "Geo_Grid");
+
+	        \n\tResponsesByGeo =
+	        \n\t\tSELECT r
+	        \n\t\tFROM Grids:s-(Dest_Geo:e)-Response:r
+	        \n\t\tWHERE geoDistance(lat, lon, e.LATITUDE, e.LONGITUDE) <= distKm;
+
+	        \n\tResponsesByPrio =
+	        \n\t\tSELECT r
+	        \n\t\tFROM priorities:p -(Response_Priority)-:r
+	        \n\t\tWHERE p.id == "1";
+
+	        \n\tResponsesByGeoAndPrio = ResponsesByPrio UNION ResponsesByGeo;
+
+	        \n\tTargetResponses =
+	        \n\t\tSELECT h
+	        \n\t\tFROM ResponsesByGeoAndPrio:h -(Response_Transfer)-> Transfer:t
+	        \n\t\tACCUM @@avgTtas += h.TIME_TO_AMBULANCE_STARTS, @@avgTth += t.TRAVEL_TIME_HOSPITAL;
+
+	        \n\tPRINT @@avgTtas;
+	        \n\tPRINT @@avgTth;
+        \n}$$,
+        'GSQL'
+    ),
+    -- Simulation Analysis 2
+    (
+        'b8dc0da3-0283-4dc1-82ef-36fd644ea77a',
+        '34a6d0e2-ca77-4615-a873-9a0d0b92559b',
+        'bfd2ae61-700f-4f52-b928-a6e27f0b4e11',
+        $$g.V().hasLabel('Resource').has('resource_id', '2')
+            \n\t.in('RESPONSE_RESOURCE').hasLabel('Response')
+            \n\t.has('destination', geoWithin(Geoshape.circle(63.67, 19.11, 0.5)))
+			    \n\t\t.as('RES')
+            \n\t.out('RESPONSE_SCENE').as('SCN')
+		        \n\t\t.select('RES')
+            \n\t.groupCount().by(out('RESPONSE_PRIORITY').values('priority_id'))
+        $$,
+        'Gremlin'
+    ),
+    (
+        '16a07e75-5d0d-43ea-86d3-c3a448bd6a76',
+        '34a6d0e2-ca77-4615-a873-9a0d0b92559b',
+        '291a3c67-7838-40e4-ab4a-677200bc4743',
+        $$SELECT count(*) as responses_by_prio
+        \n\tFROM resource RSC
+        \n\tJOIN response RES ON RSC.response_id = RES.id
+        \n\tJOIN on_scene SCN ON SCN.response_id = RES.id
+        \n\tJOIN priority PRI ON PRI.response_id = RES.id
+        \n\tWHERE RSC.id = 2
+	    \n\t\tAND ST_DWithin(RES.destination, ST_MakePoint(19.11, 63.67)::geography, 500)
+        \n\tGROUP BY PRI.id;
+        $$,
+        'SQL'
+    ),
+    (
+        'a97d0209-288a-4717-923d-4295ba383655',
+        '34a6d0e2-ca77-4615-a873-9a0d0b92559b',
+        'a63ea923-3e5d-42f5-bf28-045fbccb4c7e',
+        $$
+        CREATE QUERY postSim2() FOR GRAPH MyGraph {
+        	\n\tSetAccum<STRING> @@vSet;
+	        \n\tGroupByAccum<STRING prio, SumAccum<INT> total> @@group;
+
+            \n\tSTRING resource_id = "2";
+	        \n\tFLOAT lat = 19.11;
+	        \n\tFLOAT lon = 63.67;
+	        \n\tFLOAT distKm = 0.5;
+	        \n\tresources = { Resource.* };
+
+	        \n\tGrids = to_vertex_set(getNearbyGridId(distKm, lat, lon), "Geo_Grid");
+
+	        \n\tResponsesByGeo =
+	        \n\t\tSELECT r
+	        \n\t\tFROM Grids:s-(Dest_Geo:e)-Response:r
+	        \n\t\tWHERE geoDistance(lat, lon, e.LATITUDE, e.LONGITUDE) <= distKm;
+
+	        \n\tResponsesByRsrc =
+	        \n\t\tSELECT r
+	        \n\t\tFROM resources:rsc-(Response_Resource)-Response:r
+	        \n\t\tWHERE rsc.id == resource_id;
+
+	        \n\tResponsesByGeoAndRsrc = ResponsesByRsrc INTERSECT ResponsesByGeo;
+
+	        \n\tResponsesByOnScene =
+	        \n\t\tSELECT r
+	        \n\t\tFROM ResponsesByGeoAndRsrc:r -(Response_Scene)- On_Scene;
+
+	        \n\tTargetResponses =
+	        \n\t\tSELECT h
+	        \n\t\tFROM ResponsesByOnScene:h -(Response_Priority)- Priority:p
+	        \n\t\tACCUM @@group += (p.id -> 1);
+
+	        \n\tPRINT @@group;
+        \n}
+        $$,
+        'GSQL'
+    ),
+    -- Simulation Analysis 3
+    (
+        '879493ed-059f-475a-94dd-ddfce9f1ce85',
+        '2d8ca3c7-ab16-4567-a821-1d480ce19bfa',
+        'bfd2ae61-700f-4f52-b928-a6e27f0b4e11',
+        $$
+        g.V().hasLabel('Transfer').as('tth')
+ 	        \n\t.in('RESPONSE_TRANSFER').as('ttas', 'osd')
+	        \n\t.where(math('ttas + osd + tth')
+		    \n\t\t.by(values('time_to_ambulance_starts'))
+		    \n\t\t.by(values('on_scene_duration'))
+		    \n\t\t.by(values('travel_time_hospital'))
+		    \n\t\t.is(gt(15 * 60)))
+            \n\t\t.count()
+        $$,
+        'Gremlin'
+    ),
+    (
+        '7e5ad2f3-d656-4a0d-9047-37a8b692a308',
+        '2d8ca3c7-ab16-4567-a821-1d480ce19bfa',
+        '291a3c67-7838-40e4-ab4a-677200bc4743',
+        $$SELECT count(*)
+        \n\tFROM transfer TNS
+        \n\tJOIN response RES ON TNS.response_id = RES.id
+        \n\tWHERE RES.time_to_ambulance_starts
+	    \n\t\t+ RES.on_scene_duration
+	    \n\t\t+ TNS.travel_time_hospital > 15 * 60;
+        $$,
+        'SQL'
+    ),
+    (
+        '4a1f3513-9756-4325-bafb-04449efbf168',
+        '2d8ca3c7-ab16-4567-a821-1d480ce19bfa',
+        'a63ea923-3e5d-42f5-bf28-045fbccb4c7e',
+        $$CREATE QUERY postSim3() FOR GRAPH MyGraph {
+	    \n\tSumAccum<INT> @@totalResponses;
+	    \n\tresponses = { Response.* };
+
+	    \n\tLongResponses =
+		\n\t\tSELECT res
+		\n\t\tFROM responses:res -(Response_Transfer)- Transfer:tns
+		\n\t\tWHERE
+	    \n\t\t\tres.TIME_TO_AMBULANCE_STARTS +
+	    \n\t\t\tres.ON_SCENE_DURATION +
+	    \n\t\t\ttns.TRAVEL_TIME_HOSPITAL > 15 * 60
+	    \n\t\tACCUM @@totalResponses += 1;
+	    \n\tPRINT @@totalResponses;
+        
+        \n}
+        $$,
+        'GSQL'
+    ),
+    -- Yelp Analysis 1
     (
         'c4ec05a7-faa9-4bdd-90ae-280a40917406',
         '81c1ab05-bb06-47ab-8a37-b9aeee625d0f',
@@ -126,7 +342,7 @@ values
         $$CREATE QUERY getRecentGoodReviewsNearUser(Vertex<User> p) FOR GRAPH MyGraph {\n\tTYPEDEF tuple<DATETIME reviewDate, STRING businessId, INT stars, STRING text> restAndReview;\n\n\tDOUBLE lat = 35.15;\n\tDOUBLE lon = -80.79;\n\tINT distKm = 5;\n\tSetAccum<STRING> @@vSet;\n\tHeapAccum<restAndReview>(10, reviewDate DESC) @@busAndReviews;\n\n\tbusinesses = { Business.* };\n\tusers = { User.* };\n\tPSet = { p };\n\n\t@@vSet += getNearbyGridId(distKm, lat, lon);\n\tGrids = to_vertex_set(@@vSet, "Geo_Grid");\n\n\tNearbyBusinesses =\n\t\tSELECT b\n\t\tFROM Grids:s-(Business_Geo:e)-Business:b\n\t\tWHERE geoDistance(lat, lon, e.LATITUDE, e.LONGITUDE) <= distKm;\n\n\tRestaurants =\n\t\tSELECT b\n\t\tFROM businesses:b-(In_Category)->Category:c\n\t\tWHERE c.id == "Restaurants";\n\n\tNearbyRestaurants = NearbyBusinesses INTERSECT Restaurants;\n\tNearbyRestReviewsByP =\n\t\tSELECT b\n\t\tFROM NearbyRestaurants:b-(reverse_Reviews:tgt)->User:u\n\t\tWHERE tgt.STARS > 3 AND u == p\n\t\tACCUM @@busAndReviews += restAndReview(tgt.REVIEW_DATE, b.id, tgt.STARS, tgt.TEXT)\n\t\tLIMIT 10;\n\tPRINT NearbyRestReviewsByP;\n\tPRINT @@busAndReviews;\n}$$,
         'GSQL'
     ),
-       -- Analysis 2
+    -- Yelp Analysis 2
     (
         'd5d16f45-d1ba-4181-b95c-dfd4e2f16b6f',
         'b540a4dd-f010-423b-9644-aef4e9b754a9',
@@ -148,7 +364,7 @@ values
         $$CREATE QUERY get2018ReviewsInPhoenix() FOR GRAPH MyGraph {\n\tTYPEDEF tuple<STRING text, INT stars, INT cool, INT funny, INT useful> reviews;\n\n\tDOUBLE lat = 33.45;\n\tDOUBLE lon = -112.56;\n\tINT distKm = 50;\n\tSetAccum<STRING> @@vSet;\n\tSetAccum<reviews> @@reviews;\n\n\tbusinesses = { Business.* };\n\tusers = { User.* };\n\n\t@@vSet += getNearbyGridId(distKm, lat, lon);\n\tGrids = to_vertex_set(@@vSet, "Geo_Grid");\n\tNearbyBusinesses =\n\t\tSELECT b\n\t\tFROM Grids:s-(Business_Geo:e)-Business:b\n\t\tWHERE geoDistance(lat, lon, e.LATITUDE, e.LONGITUDE) <= distKm;\n\tReviews2018 =\n\t\tSELECT b\n\t\tFROM businesses:b-(reverse_Reviews:r)-User:u\n\t\tWHERE year(r.REVIEW_DATE) == 2018\n\t\tACCUM @@reviews += reviews(r.TEXT, r.STARS, r.COOL, r.FUNNY, r.USEFUL);\n\n\tPRINT @@reviews;\n}$$,
         'GSQL'
     ),
-       -- Analysis 3
+    -- Yelp Analysis 3
     (
         '862bc3ee-a956-4ecd-8535-e2314c532c3a',
         '05c2c642-32c0-4e6a-a0e5-c53028035fc8',
