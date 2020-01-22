@@ -9,6 +9,9 @@
 *.iws
 out/
  
+# VS Code
+.vscode/
+
 # Mac
 .DS_Store
  
@@ -16,3 +19,11 @@ out/
 log/
 target/
 bin/
+
+# Misc
+.factorypath
+
+# Configurations
+src/main/resources/data.properties
+src/main/resources/janus-graph.properties
+src/main/resources/postgres.properties
