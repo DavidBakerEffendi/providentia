@@ -1,7 +1,7 @@
 import { IBenchmark } from 'src/app/shared/model//benchmark.model';
 
 export interface IReviewTrend {
-    id?: String;
+    id?: string;
     benchmark?: IBenchmark;
     stars?: number;
     length?: number;
@@ -14,7 +14,7 @@ export interface IReviewTrend {
 export class ReviewTrend implements IReviewTrend {
 
     constructor(
-        public id?: String,
+        public id?: string,
         public benchmark?: IBenchmark,
         public stars?: number,
         public length?: number,

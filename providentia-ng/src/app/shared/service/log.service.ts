@@ -13,12 +13,12 @@ export class LogService {
 
     constructor(private http: HttpClient) {
         Date.prototype.toISOString = function() {
-            var tzo = -this.getTimezoneOffset(),
-                dif = tzo >= 0 ? '+' : '-',
-                pad = function(num) {
-                    var norm = Math.floor(Math.abs(num));
-                    return (norm < 10 ? '0' : '') + norm;
-                };
+            const tzo = -this.getTimezoneOffset();
+            const dif = tzo >= 0 ? '+' : '-';
+            const pad = (num: number) => {
+                const norm = Math.floor(Math.abs(num));
+                return (norm < 10 ? '0' : '') + norm;
+            };
             return this.getFullYear() +
                 '-' + pad(this.getMonth() + 1) +
                 '-' + pad(this.getDate()) +
@@ -27,7 +27,7 @@ export class LogService {
                 ':' + pad(this.getSeconds()) +
                 dif + pad(tzo / 60) +
                 ':' + pad(tzo % 60);
-        }
+        };
     }
 
     getRecent(): Observable<EntityArrayResponseType> {
@@ -35,7 +35,9 @@ export class LogService {
     }
 
     getFromTo(dateFrom: Date, dateTo: Date): Observable<EntityArrayResponseType> {
-        return this.http.post<IServerLog[]>(this.resourceUrl, { 'from': dateFrom.toISOString(), 'to': dateTo.toISOString() }, { observe: 'response' });
+        return this.http.post<IServerLog[]>(this.resourceUrl,
+            { from: dateFrom.toISOString(), to: dateTo.toISOString() },
+            { observe: 'response' });
     }
 
 }

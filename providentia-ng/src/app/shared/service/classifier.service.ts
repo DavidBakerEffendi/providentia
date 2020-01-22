@@ -15,6 +15,6 @@ export class ClassifierService {
     }
 
     submitText(text: string): Observable<HttpResponse<any>> {
-        return this.http.post<any>(`${this.resourceUrl}`, { 'text': text }, { observe: 'response' });
+        return this.http.post<any>(`${this.resourceUrl}`, { text }, { observe: 'response' });
     }
 }

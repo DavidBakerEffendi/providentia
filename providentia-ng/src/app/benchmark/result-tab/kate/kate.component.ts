@@ -11,7 +11,7 @@ import { KateService, IKate, IBenchmark } from '../../../shared';
 export class KateResultComponent implements OnInit {
     @Input()
     benchmark: IBenchmark;
-    
+
     analysisResults: MatTableDataSource<IKate>;
     displayedColumns: string[] = ['business', 'sentiment_average', 'star_average', 'total_reviews'];
 

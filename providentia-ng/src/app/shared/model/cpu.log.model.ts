@@ -1,17 +1,17 @@
 export interface ICPULog {
-    log_id?: Number;
-    core_id?: Number;
-    system_log_id?: Number;
-    cpu_perc?: Number;
+    log_id?: number;
+    core_id?: number;
+    system_log_id?: number;
+    cpu_perc?: number;
 }
 
 export class CPULog implements ICPULog {
 
     constructor(
-        public log_id?: Number,
-        public core_id?: Number,
-        public system_log_id?: Number,
-        public cpu_perc?: Number
+        public log_id?: number,
+        public core_id?: number,
+        public system_log_id?: number,
+        public cpu_perc?: number
     ) {}
 
 }

@@ -43,7 +43,7 @@ export class NewJobComponent extends InfoMessage implements OnInit {
                 console.error(res.statusText);
                 if (res.status === 0) {
                     this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
-                } else if (res.status == 500) {
+                } else if (res.status === 500) {
                     this.showErrorMsg(res.error.error);
                 } else {
                     this.showErrorMsg(res.statusText);
@@ -57,7 +57,7 @@ export class NewJobComponent extends InfoMessage implements OnInit {
                 console.error(res.statusText);
                 if (res.status === 0) {
                     this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
-                } else if (res.status == 500) {
+                } else if (res.status === 500) {
                     this.showErrorMsg(res.error.error);
                 } else {
                     this.showErrorMsg(res.statusText);
@@ -67,17 +67,17 @@ export class NewJobComponent extends InfoMessage implements OnInit {
 
     postNewJob() {
         const analysis = this.analysis.find((a: IAnalysis) => a.name === this.dataOptions.value.anCtrl);
-        let newJob = {
+        const newJob = {
             database: this.dataOptions.value.dbCtrl,
             dataset: analysis.dataset.name,
             analysis: this.dataOptions.value.anCtrl,
             status: 'WAITING'
-        }
+        };
         this.newJobService.create(newJob, this.dataOptions.value.nmCtrl)
             .subscribe(() => {
                 this.showSuccessMsg('New job successfully added to the pipeline!');
             }, (res: HttpErrorResponse) => {
-                console.error(res.message)
+                console.error(res.message);
                 if (res.status === 0) {
                     this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
                 } else if (res.status === 500) {

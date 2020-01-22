@@ -1,14 +1,14 @@
 import { IDataset } from './dataset.model';
 
 export interface IAnalysis {
-    analysis_id?: String;
+    analysis_id?: string;
     dataset?: IDataset;
-    name?: String;
-    description?: String;
+    name?: string;
+    description?: string;
 }
 
 export interface IAnalysisPerf {
-    name?: String;
+    name?: string;
     avg?: number;
     stddev?: number;
 }
@@ -16,10 +16,10 @@ export interface IAnalysisPerf {
 export class Analysis implements IAnalysis {
 
     constructor(
-        public analysis_id?: String,
+        public analysis_id?: string,
         public dataset?: IDataset,
-        public name?: String,
-        public description?: String
+        public name?: string,
+        public description?: string
     ) {}
 
 }
@@ -27,7 +27,7 @@ export class Analysis implements IAnalysis {
 export class AnalysisPerf implements IAnalysisPerf {
 
     constructor(
-        public name?: String,
+        public name?: string,
         public avg?: number,
         public stddev?: number
     ) {}

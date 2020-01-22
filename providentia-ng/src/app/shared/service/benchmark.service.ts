@@ -27,7 +27,7 @@ export class BenchmarkService {
     }
 
     query(noResults = -1): Observable<EntityArrayResponseType> {
-        if (noResults <= 0) noResults = -1;
+        if (noResults <= 0) { noResults = -1; }
         return this.http.get<IBenchmark[]>(`${this.resourceUrl}${noResults}`, { observe: 'response' });
     }
 

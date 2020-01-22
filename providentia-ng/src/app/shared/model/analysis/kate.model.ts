@@ -1,23 +1,23 @@
 import { IBenchmark } from 'src/app/shared/model//benchmark.model';
 
 export interface IKate {
-    id?: String;
+    id?: string;
     benchmark?: IBenchmark;
-    business?: String;
-    sentiment_average?: Number;
-    star_average?: Number;
-    total_reviews?: Number;
+    business?: string;
+    sentiment_average?: number;
+    star_average?: number;
+    total_reviews?: number;
 }
 
 export class Kate implements IKate {
 
     constructor(
-        public id?: String,
+        public id?: string,
         public benchmark?: IBenchmark,
-        public business?: String,
-        public sentiment_average?: Number,
-        public star_average?: Number,
-        public total_reviews?: Number
+        public business?: string,
+        public sentiment_average?: number,
+        public star_average?: number,
+        public total_reviews?: number
     ) {}
 
 }

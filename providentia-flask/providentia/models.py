@@ -39,14 +39,6 @@ class Dataset(object):
         self.icon = None
 
 
-class Graph(object):
-
-    def __init__(self):
-        self.graph_id = None
-        self.benchmark_id = None
-        self.graphson = None
-
-
 class ServerLog(object):
 
     def __init__(self):
@@ -150,8 +142,6 @@ def model_encoder(o):
         return o.__dict__
     elif isinstance(o, Database):
         return o.__dict__
-    elif isinstance(o, Graph):
-        return o.__dict__
     elif isinstance(o, ServerLog):
         return o.__dict__
     elif isinstance(o, CPULog):
@@ -239,16 +229,6 @@ def dataset_decoder(o: dict):
     dataset.description = o['description']
     dataset.icon = o['icon']
     return dataset
-
-
-def graph_decoder(o: dict):
-    """
-    Decodes the given JSON string and returns its respective model. This function
-    should be passed into the 'object_hook' parameter in json.load().
-    :param o: JSON string as a dict.
-    :return: the respective model object.
-    """
-    pass
 
 
 def server_log_decoder(o: dict):
@@ -352,6 +332,7 @@ def city_sentiment_decoder(o: dict):
     city_sentiment.sentiment = o['sentiment']
     return city_sentiment
 
+
 def sim1_decoder(o: dict):
     """
     Decodes the given JSON string and returns its respective model. This function
@@ -366,6 +347,7 @@ def sim1_decoder(o: dict):
     sim.avg_ttas = o['avg_ttas']
     sim.avg_tth = o['avg_tth']
     return sim
+
 
 def sim2_decoder(o: dict):
     """
@@ -383,6 +365,7 @@ def sim2_decoder(o: dict):
     sim.p3 = o['p3']
     return sim
 
+
 def sim3_decoder(o: dict):
     """
     Decodes the given JSON string and returns its respective model. This function
@@ -396,6 +379,7 @@ def sim3_decoder(o: dict):
     sim.benchmark = tbl_benchmark.find(o['benchmark_id'])
     sim.no_responses = o['no_responses']
     return sim
+
 
 def new_benchmark_decoder(o: dict):
     """

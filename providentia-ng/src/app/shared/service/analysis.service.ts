@@ -28,7 +28,7 @@ export class AnalysisService {
     }
 
     performance(id: string): Observable<HttpResponse<IAnalysisPerf[]>> {
-        return this.http.get<IAnalysisPerf[]>(`${this.resourceUrl}performance/${id}`, { observe: 'response' })
+        return this.http.get<IAnalysisPerf[]>(`${this.resourceUrl}performance/${id}`, { observe: 'response' });
     }
 
     query(req?: any): Observable<EntityArrayResponseType> {

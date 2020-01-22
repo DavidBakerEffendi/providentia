@@ -12,8 +12,8 @@ export class PerformanceComponent extends InfoMessage implements OnInit {
 
     analysiss: IAnalysis[];
     showSpinner: Array<boolean>;
-    perfResponses = new Map<String, Array<any>>();
-    errResponses = new Map<String, String>();
+    perfResponses = new Map<string, Array<any>>();
+    errResponses = new Map<string, string>();
     public perfDataColors: Array<any> = [
         {
             backgroundColor: 'rgba(102, 16, 242, .2)',
@@ -62,10 +62,10 @@ export class PerformanceComponent extends InfoMessage implements OnInit {
                 // console.error(res.statusText);
                 if (res.status === 0) {
                     this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
-                } else if (res.status == 500) {
+                } else if (res.status === 500) {
                     this.showErrorMsg(res.error.error);
-                } else if (res.status == 503) {
-                    this.showInfoMsg("No performance results founds. Please run a job under 'New Job'.");
+                } else if (res.status === 503) {
+                    this.showInfoMsg('No performance results founds. Please run a job under \'New Job\'.');
                 } else {
                     this.showErrorMsg(res.statusText);
                 }
@@ -76,40 +76,38 @@ export class PerformanceComponent extends InfoMessage implements OnInit {
     getAnalysisPerf(an: IAnalysis, i: number) {
         this.analysisService.performance(an.analysis_id.toString())
             .subscribe((res: HttpResponse<IAnalysisPerf[]>) => {
-                let mean = [];
-                let dev = [];
-                let labels = [];
+                const mean = [];
+                const dev = [];
+                const labels = [];
                 res.body.forEach((anPerf: IAnalysisPerf) => {
                     mean.push(anPerf.avg - (anPerf.stddev / 2));
                     dev.push(anPerf.stddev);
                     labels.push(anPerf.name);
-                })
-                if (this.perfDataLabels.length == 0) {
+                });
+                if (this.perfDataLabels.length === 0) {
                     this.perfDataLabels = labels;
                 }
-                let data = [{
+                const data = [{
                     data: mean,
-                    label: "Response times"
+                    label: 'Response times'
                 }, {
                     data: dev,
-                    label: "Standard deviation"
+                    label: 'Standard deviation'
                 }];
 
                 this.perfResponses.set(an.analysis_id.toString(), data);
-                
-                console.log(res.body);
             }, (err) => {
                 if (err.status === 0) {
                     this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
-                } else if (err.status == 500) {
+                } else if (err.status === 500) {
                     this.showErrorMsg(err.error.error);
-                } else if (err.status == 503 || err.status == 404) {
-                    this.errResponses.set(an.name, "No analysis results found! Add jobs for this analysis under 'New Job'.");
+                } else if (err.status === 503 || err.status === 404) {
+                    this.errResponses.set(an.name, 'No analysis results found! Add jobs for this analysis under \'New Job\'.');
                 } else {
                     this.showErrorMsg(err.statusText);
                 }
                 this.ref.markForCheck();
-            })
+            });
     }
 
 }

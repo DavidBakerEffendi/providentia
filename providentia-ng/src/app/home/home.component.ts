@@ -50,12 +50,12 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
         this.chartCPUColors.forEach(option => {
             option.fill = false;
             option.borderWidth = 2;
-        })
+        });
     }
 
     ngOnInit() {
         this.getRecentBenchmarks();
-        this.getServerMetrics()
+        this.getServerMetrics();
         this.serverPoll = setInterval(() => this.getServerMetrics(), 2500);
         this.benchmarkPoll = setInterval(() => this.getRecentBenchmarks(), 5000);
     }
@@ -78,9 +78,9 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
                 (res: HttpErrorResponse) => {
                     if (res.status === 0) {
                         this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
-                    } else if (res.status == 500) {
+                    } else if (res.status === 500) {
                         this.showErrorMsg(res.error.error);
-                    } else if (res.status == 503) {
+                    } else if (res.status === 503) {
                         this.showInfoMsg(res.error.error);
                     } else {
                         this.showErrorMsg(res.statusText);
@@ -95,7 +95,7 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
         this.lastServerUpdate = Date.now();
         this.logService.getRecent().subscribe((res: HttpResponse<IServerLog[]>) => {
             if (res.body.map) {
-                const cpuLogs = res.body.map(a => a.cpu_logs)
+                const cpuLogs = res.body.map(a => a.cpu_logs);
                 // Map CPU data
                 this.chartCPUData = new Array<any>();
                 cpuLogs.forEach((cpuLog, j) => {
@@ -116,33 +116,31 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
                             this.chartCPUColors.push({
                                 backgroundColor: ColourGenerator.adjust(newCol, 80),
                                 borderColor: newCol,
-                            })
+                            });
                         }
                         this.chartCPUColors.forEach(option => {
                             option.fill = false;
                             option.borderWidth = 2;
-                        })
+                        });
                     }
                 });
                 const memoryDataFlat = res.body.map(a => a.memory_perc);
-                const perfMemoryD = []
+                const perfMemoryD = [];
                 // Map memory data
                 memoryDataFlat.forEach((d, i) => {
-                    perfMemoryD.push({ x: i, y: d })
+                    perfMemoryD.push({ x : i, y : d });
                 });
                 // Map memory data
                 this.chartMemoryData = [{ data: perfMemoryD, label: 'Memory Percentage' }];
-            } else {
-                this.showWarnMsg(res.body['message']);
             }
         },
             (res: HttpErrorResponse) => {
-                console.error(res.statusText)
+                console.error(res.statusText);
                 if (res.status === 0) {
                     this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
-                } else if (res.status == 500) {
+                } else if (res.status === 500) {
                     this.showErrorMsg(res.error.error);
-                } else if (res.status == 503) {
+                } else if (res.status === 503) {
                     this.showInfoMsg(res.error.error);
                 } else {
                     this.showErrorMsg(res.statusText);
@@ -152,11 +150,11 @@ export class HomeComponent extends InfoMessage implements OnInit, OnDestroy {
 
     setTileClass(status: string) {
         if (status === 'PROCESSING') {
-            return "light-blue  accent-4"
+            return 'light-blue  accent-4';
         } else if (status === 'WAITING') {
-            return "amber accent-4"
+            return 'amber accent-4';
         } else {
-            return "indigo accent-4"
+            return 'indigo accent-4';
         }
     }
 

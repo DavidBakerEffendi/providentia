@@ -34,7 +34,7 @@ export class ClassifierComponent extends InfoMessage implements OnInit {
                 this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
             }
             this.sentimentReady = false;
-        })
+        });
     }
 
     /**
@@ -45,7 +45,7 @@ export class ClassifierComponent extends InfoMessage implements OnInit {
             .subscribe((res: HttpResponse<any>) => {
                 this.showError = false;
                 this.sentimentClassifierResult = res.body.result;
-                if (this.sentimentClassifierResult == 'pos') {
+                if (this.sentimentClassifierResult === 'pos') {
                     this.sentimentClassifierResult = 'Positive';
                 } else {
                     this.sentimentClassifierResult = 'Negative';
@@ -54,7 +54,7 @@ export class ClassifierComponent extends InfoMessage implements OnInit {
                 (res: HttpErrorResponse) => {
                     if (res.status === 0) {
                         this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
-                    } else if (res.status == 500) {
+                    } else if (res.status === 500) {
                         this.showErrorMsg(res.error.error);
                     } else {
                         this.showErrorMsg(res.statusText);

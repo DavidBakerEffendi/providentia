@@ -3,7 +3,6 @@ CREATE DATABASE providentia;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
-DROP TABLE IF EXISTS graphs;
 DROP TABLE IF EXISTS queries;
 DROP TABLE IF EXISTS kate_analysis;
 DROP TABLE IF EXISTS review_trend_analysis;
@@ -57,14 +56,6 @@ CREATE TABLE benchmarks (
     FOREIGN KEY (database_id) REFERENCES databases (id),
     FOREIGN KEY (dataset_id) REFERENCES datasets (id),
     FOREIGN KEY (analysis_id) REFERENCES analysis (id)
-);
-
-CREATE TABLE graphs (
-    id uuid DEFAULT uuid_generate_v4(),
-    result_id uuid NOT NULL,
-    graphson text NOT NULL,
-    PRIMARY KEY (id),
-    FOREIGN KEY (result_id) REFERENCES benchmarks (id)
 );
 
 CREATE TABLE queries (

@@ -61,7 +61,7 @@ export class CitySentimentComponent implements OnInit {
             this.citySentimentService.getResult(benchmark.benchmark_id.valueOf()).subscribe((res: HttpResponse<ICitySentiment>) => {
                 this.analysisResult = res.body;
                 this.chartDatasets.push({
-                    data:[res.body.stars, res.body.sentiment]
+                    data: [res.body.stars, res.body.sentiment]
                 });
                 this.ref.markForCheck();
             }, (res: HttpErrorResponse) => {

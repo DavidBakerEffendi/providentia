@@ -12,14 +12,14 @@ type EntityArrayResponseType = HttpResponse<IDatabase[]>;
 export class DatabaseService {
     private resourceUrl = APP_CONFIG.FLASK_API + 'api/database/';
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     query(req?: any): Observable<EntityArrayResponseType> {
         const options = createRequestOption(req);
         return this.http.get<IDatabase[]>(this.resourceUrl, { params: options, observe: 'response' });
     }
 
-    submitQuery(name: String, query: string):  Observable<HttpResponse<any>> {
-        return this.http.post<any>(`${this.resourceUrl}query/${name}`, {'query': query}, { observe: 'response' });
+    submitQuery(name: string, query: string): Observable<HttpResponse<any>> {
+        return this.http.post<any>(`${this.resourceUrl}query/${name}`, { query }, { observe: 'response' });
     }
 }

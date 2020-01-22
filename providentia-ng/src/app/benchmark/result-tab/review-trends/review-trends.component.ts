@@ -46,10 +46,10 @@ export class ReviewTrendsComponent implements OnInit {
         if (benchmark.analysis.analysis_id === this.reviewTrendService.analysisId) {
             this.reviewTrendService.getResults(benchmark.benchmark_id.valueOf()).subscribe((res: HttpResponse<IReviewTrend[]>) => {
                 // Sort by stars
-                res.body.sort((a, b) => (a.stars > b.stars) ? 1 : -1)
+                res.body.sort((a, b) => (a.stars > b.stars) ? 1 : -1);
                 this.analysisResults = res.body;
                 res.body.map((a: IReviewTrend, i: number) => {
-                    let starData = [];
+                    const starData = [];
                     starData.push(res.body[i].length * 100.0);
                     starData.push(res.body[i].cool * 100.0);
                     starData.push(res.body[i].funny * 100.0);
@@ -58,8 +58,8 @@ export class ReviewTrendsComponent implements OnInit {
                     this.chartDatasets.push({
                         data: starData,
                         label: `${res.body[i].stars} Star Reviews`
-                    })
-                })
+                    });
+                });
             }, (res: HttpErrorResponse) => {
                 console.error(res.message);
             });

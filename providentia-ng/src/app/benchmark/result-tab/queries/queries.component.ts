@@ -20,7 +20,7 @@ export class QueryResultComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        this.getQueries()
+        this.getQueries();
     }
 
     /**
@@ -30,8 +30,8 @@ export class QueryResultComponent implements OnInit {
         this.queryService.getQueries(this.analysisId, this.databaseId).subscribe((res: HttpResponse<IQuery[]>) => {
             res.body.forEach((q: IQuery) => {
                 q.query = q.query
-                    .split("\\n").join("<br/>")
-                    .split("\\t").join("&nbsp;&nbsp;");
+                    .split('\\n').join('<br/>')
+                    .split('\\t').join('&nbsp;&nbsp;');
             });
             this.queries = res.body;
         }, (res: HttpErrorResponse) => {

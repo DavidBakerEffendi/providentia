@@ -34,19 +34,19 @@ export class HistoryComponent extends InfoMessage implements OnInit {
         this.benchmarkService.total().subscribe((res: HttpResponse<any>) => {
             this.totalResults = res.body.total;
             this.showSpinner = false;
-        })
+        });
         this.benchmarkService.paginate(this.pageSize, page)
             .subscribe((res: HttpResponse<IBenchmark[]>) => {
                 this.dataSource = new MatTableDataSource<IBenchmark>(res.body);
                 this.showPageSpinner = false;
                 this.ref.markForCheck();
             }, (res: HttpErrorResponse) => {
-                console.error(res.statusText)
+                console.error(res.statusText);
                 if (res.status === 0) {
                     this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
-                } else if (res.status == 500) {
+                } else if (res.status === 500) {
                     this.showErrorMsg(res.error.error);
-                } else if (res.status == 503) {
+                } else if (res.status === 503) {
                     this.showInfoMsg(res.error.error);
                     this.emptyResultSet = true;
                 } else {
@@ -59,7 +59,7 @@ export class HistoryComponent extends InfoMessage implements OnInit {
 
     handlePageEvent(e: PageEvent) {
         this.showPageSpinner = true;
-        this.pageSize = e.pageSize
+        this.pageSize = e.pageSize;
         this.getPaginationInfo(e.pageIndex);
     }
 

@@ -24,7 +24,7 @@ export class DatabasesComponent extends InfoMessage implements OnInit {
     }
 
     ngOnInit() {
-        this.tigerGraphRest = APP_CONFIG.FLASK_API.substring(0, APP_CONFIG.FLASK_API.lastIndexOf(":") + 1) + "14240";
+        this.tigerGraphRest = APP_CONFIG.FLASK_API.substring(0, APP_CONFIG.FLASK_API.lastIndexOf(':') + 1) + '14240';
         this.showSpinner = [];
         this.databaseService.query().subscribe((res: HttpResponse<IDatabase[]>) => {
             this.databases = res.body;
@@ -35,7 +35,7 @@ export class DatabasesComponent extends InfoMessage implements OnInit {
                 console.error(res.statusText);
                 if (res.status === 0) {
                     this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
-                } else if (res.status == 500) {
+                } else if (res.status === 500) {
                     this.showErrorMsg(res.error.error);
                 } else {
                     this.showErrorMsg(res.statusText);
@@ -60,8 +60,9 @@ export class DatabasesComponent extends InfoMessage implements OnInit {
                     (res: HttpErrorResponse) => {
                         this.showSpinner[i] = false;
                         if (res.status === 0) {
-                            this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
-                        } else if (res.status == 500) {
+                            this.showErrorMsg('Server did not reply to request.' +
+                                ' The server is most likely down or encountered an exception.');
+                        } else if (res.status === 500) {
                             this.showErrorMsg(res.error.error);
                         } else {
                             this.showErrorMsg(res.statusText);
@@ -71,6 +72,6 @@ export class DatabasesComponent extends InfoMessage implements OnInit {
                 this.ref.markForCheck();
                 return;
             }
-        })
+        });
     }
 }
