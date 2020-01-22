@@ -23,7 +23,7 @@
     </div>
 
     <mat-content *ngIf="!showError">
-        <form [formGroup]="dataOptions" *ngIf="databases && datasets && analysis" class="row px-3">
+        <form [formGroup]="dataOptions" *ngIf="databases && analysis" class="row px-3">
             <p class="lead col-12">Choose a backend storage solution, dataset and analysis to perform:</p>
             <!-- Database -->
             <mat-form-field [floatLabel]="dataOptions.value.floatLabel" class="col-sm-12 col-md-3">
@@ -33,17 +33,6 @@
                 </select>
                 <mat-label>
                     <mat-icon class="tab-icon">storage</mat-icon> Database
-                </mat-label>
-            </mat-form-field>
-            <!-- Dataset -->
-            <mat-form-field [hideRequiredMarker]="dataOptions.value.hideRequired"
-                [floatLabel]="dataOptions.value.floatLabel" class="col-sm-12 col-md-3">
-                <select matNativeControl formControlName="dsCtrl" required>
-                    <option *ngFor="let dataset of datasets" [value]="dataset.name">{{ dataset.name }}
-                    </option>
-                </select>
-                <mat-label>
-                    <mat-icon class="tab-icon">bubble_chart</mat-icon> Dataset
                 </mat-label>
             </mat-form-field>
             <!-- Analysis -->
@@ -58,7 +47,6 @@
                 </mat-label>
             </mat-form-field>
             <!-- Number of jobs -->
-            <!-- Database -->
             <mat-form-field [floatLabel]="dataOptions.value.floatLabel" class="col-sm-12 col-md-3">
                 <select matNativeControl formControlName="nmCtrl" required>
                     <option *ngFor="let num of numJobs" [value]="num">

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
-import { IDatabase, DatabaseService, IDataset, DatasetService, IAnalysis, AnalysisService, IBenchmark, NewJobService } from '../shared';
+import { IDatabase, DatabaseService, IDataset, IAnalysis, AnalysisService, NewJobService } from '../shared';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { InfoMessage } from '../shared';
 
@@ -11,27 +11,24 @@ import { InfoMessage } from '../shared';
 })
 export class NewJobComponent extends InfoMessage implements OnInit {
 
-    databases: IDatabase[];
-    datasets: IDataset[];
-    analysis: IAnalysis[];
-    numJobs: Array<number> = [1, 5, 10, 15, 20, 30];
+    public databases: IDatabase[];
+    public analysis: IAnalysis[];
+    public numJobs: Array<number> = [1, 5, 10, 15, 20, 30];
 
-    dataOptions: FormGroup;
-    descriptionOptions: FormGroup;
+    public dataOptions: FormGroup;
+    public descriptionOptions: FormGroup;
 
     constructor(
-        private datasetService: DatasetService,
         private databaseService: DatabaseService,
         private analysisService: AnalysisService,
         private newJobService: NewJobService,
         private fb: FormBuilder
     ) {
         super();
-        this.dataOptions = fb.group({
+        this.dataOptions = this.fb.group({
             hideRequired: false,
             floatLabel: 'auto',
             dbCtrl: new FormControl('', Validators.required),
-            dsCtrl: new FormControl('', Validators.required),
             anCtrl: new FormControl('', Validators.required),
             nmCtrl: new FormControl('', Validators.required)
         });
@@ -39,21 +36,7 @@ export class NewJobComponent extends InfoMessage implements OnInit {
 
     ngOnInit() {
         this.databaseService.query().subscribe((res: HttpResponse<IDatabase[]>) => {
-            this.databases = res.body;
-            this.showError = false;
-        },
-            (res: HttpErrorResponse) => {
-                console.error(res.statusText);
-                if (res.status === 0) {
-                    this.showErrorMsg('Server did not reply to request. The server is most likely down or encountered an exception.');
-                } else if (res.status == 500) {
-                    this.showErrorMsg(res.error.error);
-                } else {
-                    this.showErrorMsg(res.statusText);
-                }
-            });
-        this.datasetService.query().subscribe((res: HttpResponse<IDataset[]>) => {
-            this.datasets = res.body;
+            this.databases = res.body.filter((db: IDatabase) => db.status === 'UP');
             this.showError = false;
         },
             (res: HttpErrorResponse) => {
@@ -83,9 +66,10 @@ export class NewJobComponent extends InfoMessage implements OnInit {
     }
 
     postNewJob() {
-        let newJob: IBenchmark = {
+        const analysis = this.analysis.find((a: IAnalysis) => a.name === this.dataOptions.value.anCtrl);
+        let newJob = {
             database: this.dataOptions.value.dbCtrl,
-            dataset: this.dataOptions.value.dsCtrl,
+            dataset: analysis.dataset.name,
             analysis: this.dataOptions.value.anCtrl,
             status: 'WAITING'
         }
