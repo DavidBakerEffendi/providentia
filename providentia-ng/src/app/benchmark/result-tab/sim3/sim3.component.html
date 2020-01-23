@@ -1,0 +1,7 @@
+<div class="container-fluid"
+    *ngIf="benchmark.analysis.analysis_id === sim3Service.analysisId">
+    <div class="row pt-2">
+        <p class="col-10">Number of responses:</p>
+        <p *ngIf="noResponses" class="col-2">{{noResponses}}</p>
+    </div>
+</div>

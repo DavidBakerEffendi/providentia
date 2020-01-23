@@ -1,0 +1,11 @@
+<div class="container-fluid"
+    *ngIf="benchmark.analysis.analysis_id === sim1Service.analysisId && analysisResults !== null">
+    <div class="row pt-2">
+        <p class="col-8">Mean time till ambulance starts:</p>
+        <p class="col-4" *ngIf="avgTtas">{{avgTtas | number:'.1-4'}} s</p>
+    </div>
+    <div class="row pt-2">
+        <p class="col-8">Mean time to hospital:</p>
+        <p class="col-4" *ngIf="avgTtas">{{avgTth | number:'.1-4'}} s</p>
+    </div>
+</div>

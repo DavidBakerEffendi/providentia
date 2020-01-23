@@ -1,0 +1,14 @@
+<div class="container-fluid" *ngIf="benchmark.analysis.analysis_id === sim2Service.analysisId && simResult">
+    <div class="row pt-2">
+        <p class="col-10">Priority 1 count:</p>
+        <p *ngIf="simResult.p1" class="col-2">{{simResult.p1}}</p>
+    </div>
+    <div class="row pt-2">
+        <p class="col-10">Priority 2 count:</p>
+        <p *ngIf="simResult.p2" class="col-2">{{simResult.p2}}</p>
+    </div>
+    <div class="row pt-2">
+        <p class="col-10">Priority 3 count:</p>
+        <p *ngIf="simResult.p3" class="col-2">{{simResult.p3}}</p>
+    </div>
+</div>

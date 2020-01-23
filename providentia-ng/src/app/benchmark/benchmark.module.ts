@@ -5,7 +5,15 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BenchmarkComponent } from './benchmark.component';
 import { BENCHMARK_ROUTE } from './benchmark.route';
 import { AngularMaterialModule } from '../material.module';
-import { KateResultComponent, QueryResultComponent, ReviewTrendsComponent, CitySentimentComponent } from './result-tab';
+import {
+  KateResultComponent,
+  QueryResultComponent,
+  ReviewTrendsComponent,
+  CitySentimentComponent,
+  Sim1ResultComponent,
+  Sim2ResultComponent,
+  Sim3ResultComponent
+} from './result-tab';
 
 @NgModule({
   imports: [
@@ -17,6 +25,9 @@ import { KateResultComponent, QueryResultComponent, ReviewTrendsComponent, CityS
     BenchmarkComponent,
     KateResultComponent,
     CitySentimentComponent,
+    Sim1ResultComponent,
+    Sim2ResultComponent,
+    Sim3ResultComponent,
     QueryResultComponent,
     ReviewTrendsComponent,
   ],

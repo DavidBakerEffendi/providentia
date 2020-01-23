@@ -14,7 +14,7 @@ bp = Blueprint('result/sim2', __name__, )
 @cross_origin()
 def result_get(sim_id):
     try:
-        results = tbl_sim2.get_result(sim_id)
+        results = tbl_sim2.get_results(sim_id)
     except Exception as e:
         logging.error("Error on GET /api/result/sim2: {}".format(str(e)))
         return jsonify(error="Unexpected error while querying database! The database is most likely down."), 500
