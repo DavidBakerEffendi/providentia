@@ -1,6 +1,11 @@
 PERC = '1.1'
-SETUP = 2
+SETUP = 1
 KERN = 3
+# Datasets = { 'yelp', 'sim' }
+DS = 'sim'
+
+# Types = { 'bar', 'line' }
+TYPE = 'bar'
 
 if SETUP == 1:
     CONN = 'postgres://postgres:docker@0.0.0.0:5432/providentia'

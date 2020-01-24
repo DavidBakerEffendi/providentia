@@ -22,12 +22,10 @@ x_perc = []
 x_size = []
 
 import matplotlib.pyplot as plt
-import sklearn.preprocessing as preprocessing
-scaler = preprocessing.MinMaxScaler()
 
 all_val = np.array([])
 
-with open('./setup%d_results/setup%d_%s.csv' % (config.SETUP, config.SETUP, ANALYSIS)) as csvfile:
+with open('./%s_results/setup%d_results/setup%d_%s.csv' % (config.DS, config.SETUP, config.SETUP, ANALYSIS)) as csvfile:
     reader =  csv.reader(csvfile, delimiter=",")
     for row in reader:
         avg = float(row[0])
@@ -50,14 +48,6 @@ with open('./setup%d_results/setup%d_%s.csv' % (config.SETUP, config.SETUP, ANAL
 
         all_val = np.concatenate((all_val, [avg]))
 
-# scaler.fit(all_val.reshape(-1, 1))
-# j_avg = scaler.transform(j_avg.reshape(-1, 1))
-# t_avg = scaler.transform(t_avg.reshape(-1, 1))
-# p_avg = scaler.transform(p_avg.reshape(-1, 1))
-# j_dev = scaler.transform(j_dev.reshape(-1, 1))
-# t_dev = scaler.transform(t_dev.reshape(-1, 1))
-# p_dev = scaler.transform(p_dev.reshape(-1, 1))
-
 print(j_dev)
 print(j_avg)
 print(x_perc)
@@ -70,4 +60,4 @@ plt.title("Setup %d | Kernel %d: Database Response Times Over Data Loaded" % (co
 plt.xlabel("Data loaded (MB)")
 plt.ylabel("Response time (ms)")
 plt.legend()
-plt.savefig('%sPlotSetup%s.pdf' % (ANALYSIS, config.SETUP))
+plt.savefig('./%s_graphs/%sPlotSetup%s.pdf' % (config.DB, ANALYSIS, config.SETUP))
