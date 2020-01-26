@@ -81,3 +81,5 @@ CREATE LOADING JOB loadSim FOR GRAPH MyGraph {
         
 }
 
+RUN LOADING JOB loadSim
+
