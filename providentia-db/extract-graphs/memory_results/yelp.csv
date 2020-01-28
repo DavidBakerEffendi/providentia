@@ -1,0 +1,6 @@
+db,perc,mem_high,mem_low
+prv-janusgraph,13,1.534,0.452
+prv-cassandra,13,7.994,7.995
+prv-elastic,13,0.956,0.956
+prv-postgis,13,0.009,0.009
+prv-tigergraph,13,2.831,2.741
