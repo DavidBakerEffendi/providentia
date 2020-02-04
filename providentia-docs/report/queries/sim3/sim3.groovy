@@ -1,0 +1,8 @@
+g.V().hasLabel("Transfer").as("tth")
+ 	.in("RESPONSE_TRANSFER").as("ttas", "osd")
+	.where(math("ttas + osd + tth")
+		.by(values("time_to_ambulance_starts"))
+		.by(values("on_scene_duration"))
+		.by(values("travel_time_hospital"))
+		.is(gt(15 * 60)))
+    .count()

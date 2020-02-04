@@ -15,7 +15,7 @@ CREATE QUERY getRecentGoodReviewsNearUser(
     PSet = { p };
     Grids = to_vertex_set(
         getNearbyGridId(distKm, lat, lon),
-                        "Geo_Grid");
+        "Geo_Grid");
 	
 	NearbyBusinesses =
 	  SELECT b

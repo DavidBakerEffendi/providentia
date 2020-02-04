@@ -1,0 +1,41 @@
+CREATE QUERY postSim1() FOR GRAPH MyGraph {
+    SetAccum<STRING> @@vSet;
+    AvgAccum @@avgTth;
+    AvgAccum @@avgTtas;
+
+    INT priority_id = 1;
+    FLOAT lat = 63.67;
+    FLOAT lon = 19.11;
+    FLOAT distKm = 0.5;
+    priorities = { Priority.* };
+
+    Grids = to_vertex_set(
+        getNearbyGridId(distKm, lat, lon),
+        "Geo_Grid");
+
+    ResponsesByGeo =
+        SELECT r
+        FROM Grids:s-(Dest_Geo:e)-Response:r
+        WHERE geoDistance(lat, lon, 
+            e.LATITUDE, e.LONGITUDE) <= distKm;
+
+	ResponsesByPrio =
+        SELECT r
+        FROM priorities:p-(Response_Priority)-:r
+        WHERE p.id == "1";
+
+	ResponsesByGeoAndPrio =
+        ResponsesByPrio UNION ResponsesByGeo;
+
+	TargetResponses =
+        SELECT h
+        FROM ResponsesByGeoAndPrio:h
+            -(Response_Transfer)->
+            Transfer:t
+        ACCUM
+        @@avgTtas += h.TIME_TO_AMBULANCE_STARTS, 
+        @@avgTth += t.TRAVEL_TIME_HOSPITAL;
+
+	PRINT @@avgTtas;
+	PRINT @@avgTth;
+}

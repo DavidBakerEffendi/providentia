@@ -2,24 +2,60 @@ This section discusses how each database performed on implementing the kernels m
 
 The results of the data analysis can be viewed in Appendix \ref{app:analysis}.
 
+\subsection{Priority 1 Mean Response Times}
+
+\edt{JanusGraph can be seen to be far outperformed by the other two database technologies in terms of response times in Figure \ref{fig:sim1PerfResults}. This is a trend that features in all three queries regarding the medical response dataset. Another trend is that TigerGraph and PostgreSQL perform closely where TigerGraph responds the fastest.}
+
+\edt{One observation is that it takes around 5 minutes for an ambulance to start from the time a call is made for a priority 1 emergency. This might be considered long for a life threatening situation but the personnel handling the call needs to carefully diagnose the situation before considering it priority 1 - so this is not unusual. There is more room to optimize the transfer times to hospitals by potentially adding another hospital to the area.}
+
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=0.49\textwidth]{img/7_simPerfResults/sim1PlotSetup1.pdf}
+    \includegraphics[width=0.49\textwidth]{img/7_simPerfResults/sim1PlotSetup2.pdf}
+    \caption{Database response times using the medical response dataset for setup 1 and 2 for the kernel: ``Priority 1 Mean Response Times''. The error bars display standard deviation.}
+    \label{fig:sim1PerfResults}
+\end{figure*}
+
+
+\subsection{Second Resource to Transfer Patients}
+
+\edt{Each database appears to perform much more consistently (see Figure \ref{fig:sim2PerfResults}) with lower deviation as apposed to its performance in Figure \ref{fig:sim1PerfResults}. JanusGraph appears to have some kind of consistent overhead between the three containers (JanusGraph, Cassandra, and ElasticSearch) which appears to effect the response time.}
+
+\edt{Regarding the result of this query (see Table \ref{tab:sim2Result}), it appears that more resources are sent to priority 2 emergencies. This simulation does not take into account emergencies that are recategorised on site which is something that happens outside of simulations. This could suggest that priority 2 responses are initially miscategorised and many should be priority 1 or that priority 2 responses simply require more resources in general.}
+
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=0.49\textwidth]{img/7_simPerfResults/sim2PlotSetup1.pdf}
+    \includegraphics[width=0.49\textwidth]{img/7_simPerfResults/sim2PlotSetup2.pdf}
+    \caption{Database response times using the medical response dataset for setup 1 and 2 for the kernel: ``Second Resource to Transfer Patients''. The error bars display standard deviation.}
+    \label{fig:sim2PerfResults}
+\end{figure*}
+
+\subsection{Long Response Count}
+
+\edt{This is only a temporal query and one can see that TigerGraph and PostgreSQL perform much more similarly than in the previous two queries. This suggests that added complexity from constraints in a query perform better in TigerGraph than in PostgreSQL.}
+
+\edt{Although 15 minutes is considered quite fast for the whole response cycle to complete - which is why there are 5284 responses returned. This kind of query could be used to inform the medical infrastructure of a country or state how resource location affects response cycles.}
+
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=0.49\textwidth]{img/7_simPerfResults/sim3PlotSetup1.pdf}
+    \includegraphics[width=0.49\textwidth]{img/7_simPerfResults/sim3PlotSetup2.pdf}
+    \caption{Database response times using the medical response dataset for setup 1 and 2 for the kernel: ``Long Response Count''. The error bars display standard deviation.}
+    \label{fig:sim3PerfResults}
+\end{figure*}
+
 \subsection{Kate's Restaurant Recommendation}
 
 Figures \ref{fig:katePerfResults} shows linear growth in the response time of PostgreSQL whereas JanusGraph and TigerGraph remain fairly horizontal over increasing volumes of data. Due to the complexity of this query it comes as no surprise that the graph databases far outperform their relational counterpart. TigerGraph outperforms both PostgreSQL and JanusGraph in terms of query response time and shows a very high consistency as there is almost no standard deviation around the mean.
 
 \begin{figure*}[h]
     \centering
-    \includegraphics[width=0.49\textwidth]{img/perfResults/katePlotSetup1.pdf}
-    \includegraphics[width=0.49\textwidth]{img/perfResults/katePlotSetup2.pdf}
-    \caption{Database response times over varying percentages of the dataset for setup 1 and 2 for the kernel: ``Kate's Restaurant Recommendation''. The error bars display standard deviation.}
+    \includegraphics[width=0.49\textwidth]{img/7_yelpPerfResults/katePlotSetup1.pdf}
+    \includegraphics[width=0.49\textwidth]{img/7_yelpPerfResults/katePlotSetup2.pdf}
+    \caption{Database response times over varying percentages of the Yelp dataset for setup 1 and 2 for the kernel: ``Kate's Restaurant Recommendation''. The error bars display standard deviation.}
     \label{fig:katePerfResults}
 \end{figure*}
-
-% \begin{figure}[h]
-%     \centering
-%     \includegraphics[width=0.49\textwidth]{img/perfResults/katePlotSetup2.pdf}
-%     \caption{Database response times over varying percentages of the dataset for setup 2. The error bars display standard deviation.}
-%     \label{fig:katePerfResults2}
-% \end{figure}
 
 Table \ref{tab:kateResult} shows which restaurants would be recommended to Kate. One can see that both positive sentiment and star average over reviews for highly regarded restaurants compare well and remain consistent.
 
@@ -32,25 +68,18 @@ Figure \ref{fig:reviewPerfResults} shows a phenomena of interest where JanusGrap
 
 \begin{figure*}[h]
     \centering
-    \includegraphics[width=0.49\textwidth]{img/perfResults/reviewsPlotSetup1.pdf}
-    \includegraphics[width=0.49\textwidth]{img/perfResults/reviewsPlotSetup2.pdf}
-    \caption{Database response times over varying percentages of the dataset for setup 1 and 2 for the kernel: ``Review Trends in Phoenix 2018''. The error bars display standard deviation.}
+    \includegraphics[width=0.49\textwidth]{img/7_yelpPerfResults/reviewsPlotSetup1.pdf}
+    \includegraphics[width=0.49\textwidth]{img/7_yelpPerfResults/reviewsPlotSetup2.pdf}
+    \caption{Database response times over varying percentages of the Yelp dataset for setup 1 and 2 for the kernel: ``Review Trends in Phoenix 2018''. The error bars display standard deviation.}
     \label{fig:reviewPerfResults}
 \end{figure*}
-
-% \begin{figure}[h]
-%     \centering
-%     \includegraphics[width=0.49\textwidth]{img/perfResults/reviewsPlotSetup2.pdf}
-%     \caption{Database response times over varying percentages of the dataset for setup 2. The error bars display standard deviation.}
-%     \label{fig:reviewPerfResults2}
-% \end{figure}
 
 The result of a subgraph produced by this query can be seen in Figure \ref{fig:reviewGraph}.
 
 \begin{figure}[h]
     \centering
     \begin{mdframed}[backgroundcolor=gray!70!white, style=GraphFrame]
-    {\includegraphics[width=\textwidth]{img/reviewsGraph.png}}
+    {\includegraphics[width=\textwidth]{img/7_graphs/reviewsGraph.png}}
     \end{mdframed}
     \caption{A subset of the graph produced by TigerGraph on the result of the query for all reviews in the Phoenix area in 2018. Maroon edges represent reviews. Blue vertices are the users and brown vertices represent the businesses.}
     \label{fig:reviewGraph}
@@ -74,18 +103,11 @@ Figure \ref{fig:cityPerfResults} shows both graph database technologies outperfo
 
 \begin{figure*}[h]
     \centering
-    \includegraphics[width=0.49\textwidth]{img/perfResults/cityPlotSetup1.pdf}
-    \includegraphics[width=0.49\textwidth]{img/perfResults/cityPlotSetup2.pdf}
+    \includegraphics[width=0.49\textwidth]{img/7_yelpPerfResults/cityPlotSetup1.pdf}
+    \includegraphics[width=0.49\textwidth]{img/7_yelpPerfResults/cityPlotSetup2.pdf}
     \caption{Database response times over varying percentages of the dataset for setup 1 and 2 for the kernel: ``Ranking Las Vegas by Friends' Sentiment''. The error bars display standard deviation.}
     \label{fig:cityPerfResults}
 \end{figure*}
-
-% \begin{figure}[h]
-%     \centering
-%     \includegraphics[width=0.49\textwidth]{img/perfResults/cityPlotSetup2.pdf}
-%     \caption{Database response times over varying percentages of the dataset for setup 2. The error bars display standard deviation.}
-%     \label{fig:cityPerfResults2}
-% \end{figure}
 
 The result of this analysis was focused more on the performance rather than the data extracted. The results of the data analysis on this kernel does not show anything more interesting about the review data than what was already discussed in Section \ref{sec:resultReviews2018}. One notable difference in this kernel however, is that it produces a much more complex query and the databases perform accordingly.
 
@@ -94,7 +116,7 @@ This kernel shows that results may vary and can be correlated depending on the r
 \begin{figure*}[h]
     \centering
     \begin{mdframed}[backgroundcolor=gray!70!white, style=GraphFrame]
-    {\includegraphics[width=\textwidth]{img/cityAnalysisGraphs/julie-businesses.png}}
+    {\includegraphics[width=\textwidth]{img/7_graphs/julieBusinesses.png}}
     \end{mdframed}
     \caption{A subset of the graph produced by TigerGraph on the result of the query for the third kernel, \emph{Ranking Las Vegas by Friends’ Sentiment}. Orange edges represent friend relations and maroon edges represent reviews. Blue vertices represent users and brown vertices represent businesses. The white center of the cluster on the top right is Julie and once can see the center of the giant cluster on the left is a mutual friend of Julie's. The topology of this graph suggests that Julie has direct and mutual friend circles whose influence extends well beyond her own.}
     \label{fig:cityGraph}
@@ -103,12 +125,27 @@ This kernel shows that results may vary and can be correlated depending on the r
 \begin{figure*}[h]
     \centering
     \begin{mdframed}[backgroundcolor=gray!70!white, style=GraphFrame]
-    {\includegraphics[width=\textwidth]{img/cityAnalysisGraphs/kate-businesses.png}}
+    {\includegraphics[width=\textwidth]{img/7_graphs/kateBusinesses.png}}
     \end{mdframed}
     \caption{A subset of the graph produced by TigerGraph on the result of the query for the third kernel, \emph{Ranking Las Vegas by Friends’ Sentiment} but on the user Kate from the first kernel. The topology of Kate's friend groups suggest a very cliquey circle of friends with influence not far from her own.}
     \label{fig:cityGraphKate}
 \end{figure*}
 
+\subsection{Memory Consumption}
+
+\edt{The memory consumption of each database (while idle) is illustrated in Figure \ref{fig:memoryResults} and clearly shows the high cost of graph database technology with TigerGraph and JanusGraph using about 2GiB and 10GiB respectively. PostgreSQL only makes use of around 9MiB which makes is extremely lighter than the graph databases.}
+
+\edt{The technologies used for JanusGraph all run on the JVM and, given the 32GB memory available, allowed the JVM's garbage collector to run infrequently. Most of the memory used by JanusGraph is in the cache for ElasticSearch, Cassandra, and JanusGraph, each storing an independent cache. Most of the fluctuations in memory came from the JanusGraph container and this happens from the moment the container is run. This cache can be limited by configurations but these results are from an unlimited cache setup as this is how the benchmarks were run.}
+
+\edt{TigerGraph and PostgreSQL held constant (as their lower and upper memory bounds were within MiB differences) as the majority of those two databases are written in C or C++ which requires manual memory management. It is important to note that while JanusGraph uses a lot of memory, there are other graph database variants adhering to the Apache TinkerPop standard which claim to be more efficient in terms of memory such as Neo4j and OrientDB. Neo4j and OrientDB memory consumption is also configurable but may still use multiple GiB of memory because of the JVM \cite{neo4jMemory}\cite{orientDbMemory}.}
+
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=0.49\textwidth]{img/7_memoryResults/simMemory.pdf}
+    \includegraphics[width=0.49\textwidth]{img/7_memoryResults/yelpMemory.pdf}
+    \caption{Database memory usage for each dataset. The medical response dataset is 1.5Mb large.}
+    \label{fig:memoryResults}
+\end{figure*}
 
 \subsection{Queries}
 
@@ -120,7 +157,7 @@ SQL handles temporal data well and, in the PostgreSQL dialect, comes well suppor
 
 \paragraph{Gremlin} 
 
-Gremlin was found to produce the most concise queries of the three languages. The limitation of Gremlin is that, if one makes use of the mixed indexing search predicates, one may be limited to programming languages with support from these drivers to have the embedded Gremlin functionality. In the context of the technologies implemented in this investigation, a JVM language would be better suited as the backend for a JanusGraph data storage solution. The Gremlin queries produced for these kernels were found to be readable in terms of describing the data flow of the traversal within a graph topology context. One may not enjoy Gremlin's referencing steps going back and forth within a query using the \texttt{as} and \texttt{select} steps but, after some experience with Gremlin, this will no longer be an issue.
+Gremlin was found to produce the most concise queries of the three languages. The limitation of Gremlin is that, if one makes use of the mixed indexing search predicates, one may be limited to programming languages with support from these drivers to have the embedded Gremlin functionality. In the context of the technologies implemented in this investigation, a JVM language would be better suited as the back-end for a JanusGraph data storage solution. The Gremlin queries produced for these kernels were found to be readable in terms of describing the data flow of the traversal within a graph topology context. One may not enjoy Gremlin's referencing steps going back and forth within a query using the \texttt{as} and \texttt{select} steps but, after some experience with Gremlin, this will no longer be an issue.
 
 The ability of certain steps allowing one to skip across edges to refer to vertices directly is part of why Gremlin is able to produce such concise queries. The performance of these queries heavily relies on the data flow produced by the ordering of such steps. This makes it important to use \texttt{filter} steps and be conscious of the ordering of each step.
 
@@ -132,4 +169,4 @@ The GSQL queries produced by each kernel resulted in the queries with the most v
 
 GSQL is well suited for spatial queries using the geo-grid approach -- which integrates well within a graph topology -- and temporal queries with a selection of built-in function for manipulating temporal data types -- as with SQL. By segmenting the query, the compiler is able to determine what can automatically be executed in parallel which adds to the fast response times of TigerGraph when compared to the other two databases.
 
-The Rest++ API allows one to write a parameterized query once and access it anywhere without having to worry about driver issues other than being able to communicate with a REST API. This was a particular pleasure in the post-query development of connecting a web application backend to communicate with TigerGraph.
+The Rest++ API allows one to write a parameterized query once and access it anywhere without having to worry about driver issues other than being able to communicate with a REST API. This was a particular pleasure in the post-query development of connecting a web application back-end to communicate with TigerGraph.

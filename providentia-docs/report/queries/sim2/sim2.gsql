@@ -1,0 +1,50 @@
+CREATE QUERY postSim2() FOR GRAPH MyGraph {
+    SetAccum<STRING> @@vSet;
+    GroupByAccum<
+        STRING prio,
+        SumAccum<INT> total
+    > @@group;
+
+    STRING resource_id = "2";
+    FLOAT lat = 19.11;
+    FLOAT lon = 63.67;
+    FLOAT distKm = 0.5;
+    resources = { Resource.* };
+
+    Grids = to_vertex_set(
+            getNearbyGridId(distKm, lat, lon),
+            "Geo_Grid");
+
+    ResponsesByGeo =
+        SELECT r
+        FROM Grids:s-(Dest_Geo:e)-Response:r
+        WHERE geoDistance(lat, lon,
+            e.LATITUDE, e.LONGITUDE) <= distKm;
+
+    ResponsesByRsrc =
+	    SELECT r
+        FROM resources:rsc
+            -(Response_Resource)-
+            Response:r
+        WHERE rsc.id == resource_id;
+
+    ResponsesByGeoAndRsrc =
+        ResponsesByRsrc
+            INTERSECT
+        ResponsesByGeo;
+
+    ResponsesByOnScene =
+        SELECT r
+        FROM ResponsesByGeoAndRsrc:r
+            -(Response_Scene)-
+            On_Scene;
+
+    TargetResponses =
+        SELECT h
+        FROM ResponsesByOnScene:h
+            -(Response_Priority)-
+            Priority:p
+        ACCUM @@group += (p.id -> 1);
+
+    PRINT @@group;
+}

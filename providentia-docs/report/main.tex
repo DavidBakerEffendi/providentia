@@ -1,6 +1,6 @@
 \documentclass{article}
 
-% Indicate comments
+% Indicate comments by Brink
 \long\def\comB#1{
 \begin{center}
 \fbox{\parbox{.8\linewidth}{
@@ -9,9 +9,14 @@
 \end{center}
 }
 
-% Indicate edits
+% Indicate edits by David
 \long\def\edt#1{
 \textcolor{red}{#1}
+}
+
+% Indicate edits by Tilo
+\long\def\tilo#1{
+\textcolor{purple}{#1}
 }
 
 % Keep track of things to do
@@ -38,6 +43,7 @@
 \usepackage{listings}
 \usepackage{mdframed}
 \usepackage{appendix}
+\usepackage{import}
 
 % Configure and add custom commands
 \input{configuration.tex}
@@ -45,69 +51,66 @@
 \title{An investigation into the suitability of graph database technology in the analysis of spatio-temporal data}
 
 \author{
-  S.D.~Baker Effendi \qquad  A.B.~van der Merwe \\
-  Department of Computer Science\\
-  Stellenbosch University\\
-  Stellenbosch, South Africa \\
-  \texttt{\{dbe@, abvdm@cs\}.sun.ac.za} \\
+\begin{tabular}{cc}
+  S.D.~Baker Effendi \qquad A.B.~van der Merwe & W.-T. Balke\\
+  Department of Computer Science & Institute for Information Systems\\
+  Stellenbosch University & TU Braunschweig\\
+  Stellenbosch, South Africa & Braunschweig, Germany\\
+  \texttt{\{dbe@, abvdm@cs\}.sun.ac.za} & \texttt{balke@ifis.cs.tu-bs.de}\\
+\end{tabular}
 }
 
 \begin{document}
 \maketitle
 
 % abstract
-\input{abstract.tex}
+\import{./}{abstract.tex}
 % keywords
 \keywords{Graph database \and spatio-temporal data \and NoSQL \and Yelp dataset}
 
 \twocolumn
 
 \section{Introduction}
-\input{sections/1_introduction.tex}
+\import{sections/}{1_introduction.tex}
 \FloatBarrier
 
-\section{Problem Definition}
-\label{sec:prob-def}
-\input{sections/2_problem_definition.tex}
+\section{Problem \tilo{Setting \& Research Questions}}
+\label{sec:probDef}
+\import{sections/}{2_problem_definition.tex}
 \FloatBarrier
 
 \section{Literature Review}
-\label{sec:lit-rev}
-\input{sections/3_literature_review.tex}
+\label{sec:litRev}
+\import{sections/}{3_literature_review.tex}
 \FloatBarrier
 
 \section{Graph Querying Techniques and Languages}
-\label{sec:graph-lang}
-\input{sections/4_graph_query_languages.tex}
-\FloatBarrier
+\label{sec:graphLang}
+\import{sections/}{4_graph_query_languages.tex}
 
 \section{Design and Architecture}
-\label{sec:des-arch}
-\input{sections/5_design_and_architecture.tex}
-\FloatBarrier
+\label{sec:desArch}
+\import{sections/}{5_design_and_architecture.tex}
 
 \section{Implementation}
 \label{sec:impl}
-\input{sections/6_implementation.tex}
-% \FloatBarrier
+\import{sections/}{6_implementation.tex}
 
 \section{Results and Discussion}
 \label{sec:experiments}
-\input{sections/7_experiments.tex}
-% \FloatBarrier
+\import{sections/}{7_experiments.tex}
 
 \section{Conclusion and Future Work}
 \label{sec:conclusion}
-\input{sections/8_conclusion.tex}
-% \FloatBarrier
+\import{sections/}{8_conclusion.tex}
 
-% \newpage
+\newpage
 
 \bibliographystyle{unsrt}
 \bibliography{references}
 
 \appendix
 \appendixpage
-\input{sections/9_appendix.tex}
+\import{sections/}{9_appendix.tex}
 
 \end{document}

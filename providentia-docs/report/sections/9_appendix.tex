@@ -3,6 +3,102 @@
 \label{app:queries}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\subsection{\edt{Priority 1 Mean Response Times}}
+
+\subsubsection{SQL}
+
+\lstinputlisting[
+    language=sql,
+    caption={
+        A SQL query that returns the mean of the time it takes for ambulances to start and travel time to the hospital of priority 1 calls for a given hospital.
+    },
+    label={lst:sql1Sim}
+]{./queries/sim1/sim1.sql}
+
+\subsubsection{Groovy}
+
+\lstinputlisting[
+    language=gremlin,
+    caption={
+        A SQL query that returns the mean of the time it takes for ambulances to start and travel time to the hospital of priority 1 calls for a given hospital.
+    },
+    label={lst:groovy1Sim}
+]{./queries/sim1/sim1.groovy}
+
+\subsubsection{GSQL}
+
+\lstinputlisting[
+    language=gsql,
+    caption={
+        A SQL query that returns the mean of the time it takes for ambulances to start and travel time to the hospital of priority 1 calls for a given hospital.
+    },
+    label={lst:gsql1Sim}
+]{./queries/sim1/sim1.gsql}
+
+\subsection{\edt{Second  Resource  to  Transfer  Patients}}
+
+\subsubsection{SQL}
+
+\lstinputlisting[
+    language=sql,
+    caption={
+        A SQL query that returns the total number of responses, grouped by priority of the call, that were the second resource and ended up transferring patients to a given hospital.
+    },
+    label={lst:sql2Sim}
+]{./queries/sim2/sim2.sql}
+
+\subsubsection{Groovy}
+
+\lstinputlisting[
+    language=gremlin,
+    caption={
+        A SQL query that returns the total number of responses, grouped by priority of the call, that were the second resource and ended up transferring patients to a given hospital.
+    },
+    label={lst:groovy2Sim}
+]{./queries/sim2/sim2.groovy}
+
+\subsubsection{GSQL}
+
+\lstinputlisting[
+    language=gsql,
+    caption={
+        A SQL query that returns the total number of responses, grouped by priority of the call, that were the second resource and ended up transferring patients to a given hospital.
+    },
+    label={lst:gsql2Sim}
+]{./queries/sim2/sim2.gsql}
+
+\subsection{\edt{Long Response Count}}
+
+\subsubsection{SQL}
+
+\lstinputlisting[
+    language=sql,
+    caption={
+        A SQL query that returns how many responses took longer than 15 minutes from the time the call was logged until the patient was at the hospital.
+    },
+    label={lst:sql3Sim}
+]{./queries/sim3/sim3.sql}
+
+\subsubsection{Groovy}
+
+\lstinputlisting[
+    language=gremlin,
+    caption={
+        A SQL query that returns how many responses took longer than 15 minutes from the time the call was logged until the patient was at the hospital.
+    },
+    label={lst:groovy3Sim}
+]{./queries/sim3/sim3.groovy}
+
+\subsubsection{GSQL}
+
+\lstinputlisting[
+    language=gsql,
+    caption={
+        A SQL query that returns how many responses took longer than 15 minutes from the time the call was logged until the patient was at the hospital.
+    },
+    label={lst:gsql3Sim}
+]{./queries/sim3/sim3.gsql}
+
 \subsection{Kate's Restaurant Recommendation}
 
 \subsubsection{SQL}
@@ -15,7 +111,7 @@
         A SQL query that returns ``recommending users'' of Kate (a user in the dataset). These are users who have reviewed restaurants that Kate has also been to with a rating above 3 stars.
     },
     label={lst:sql1KateRestAppen}
-]{./queries/kate1.sql}
+]{./queries/yelp1/kate1.sql}
 
 % Listing \ref{lst:sql2KateRest} begins by joining the review and business tables to match all businesses reviewed by the given user. These businesses are filtered by those within the Las Vegas area (with a radius of 50km). The reviews are ordered by date and limited to return only 10, as to keep only the latest reviews from the user.
 
@@ -26,7 +122,7 @@
     },
     label={lst:sql2KateRestAppen}
 ]
-{./queries/kate2.sql}
+{./queries/yelp1/kate2.sql}
 
 
 \subsubsection{Gremlin}
@@ -40,7 +136,7 @@
     },
     label={lst:gremlin1KateRestAppen}
 ]
-{./queries/kate1.groovy}
+{./queries/yelp1/kate1.groovy}
 
 % Listing \ref{lst:gremlin2KateRest} starts again at the user vertex. The reviews are once again filtered by rating and then ordered by date. The reviews are then referenced for later twice as this can be used to create a dictionary-style output later. The vertices with these incoming review edges are implicitly business vertices again and are selected by their location using the mixed spatial index from ElasticSearch. These businesses are referenced for later. The reviews are selected and limited to 10 and all the prior references are selected. The dictionary-style output is produced using a combination of the \texttt{select} and \texttt{by} step\footnote{\texttt{select} will select the prior references and the \texttt{by} step will select the attribute to display from the references in \texttt{select} respectively.}. The output will now look like a list of dictionary objects with the keys; \texttt{stars}, \texttt{text}, and \texttt{business\_id} which are easily serialized and deserialized over sockets or a REST API.
 
@@ -51,7 +147,7 @@
     },
     label={lst:gremlin2KateResAppent}
 ]
-{./queries/kate2.groovy}
+{./queries/yelp1/kate2.groovy}
 
 \subsubsection{GSQL}
 
@@ -64,7 +160,7 @@
     },
     label={lst:gsql1KateRestAppen}
 ]
-{./queries/kate1.gsql}
+{./queries/yelp1/kate1.gsql}
 
 % Listing \ref{lst:gsql2KateRest} begins by declaring a custom type which has a tuple format. This allows one to record only the properties one wants to, similar to the \texttt{select} and \texttt{by} steps in Listing \ref{lst:gremlin1KateRest}. A \texttt{HeapAccum} is constructed with a max size of 1000, and is used as it can order the accumulator by the properties in the custom type -- in this case the date property. Using the geo-grid, all grid IDs are obtained using the \texttt{getNearbyGridId} method, which is then converted into a vertex set by matching the grid IDs to their respective vertices in the graph. The businesses connected to these grid vertices is obtained and businesses categorized as restaurants are then intersected as before Listing \ref{lst:gsql1KateRest}. The top 10 tuples from the heap are popped and accumulated in a list which is then printed.
 
@@ -75,7 +171,7 @@
     },
     label={lst:gsql2KateRestAppen}
 ]
-{./queries/kate2.gsql}
+{./queries/yelp1/kate2.gsql}
 
 \subsection{Review Trends in Phoenix 2018}
 
@@ -90,7 +186,7 @@
     },
     label={lst:sqlReviews2018Appen}
 ]
-{./queries/reviews.sql}
+{./queries/yelp2/reviews.sql}
 
 \subsubsection{Gremlin}
 
@@ -105,7 +201,7 @@
     },
     label={lst:gremlinReviews2018Appen}
 ]
-{./queries/reviews.groovy}
+{./queries/yelp2/reviews.groovy}
 
 \subsubsection{GSQL}
 
@@ -118,7 +214,7 @@
     },
     label={lst:gsqlReviews2018Appen}
 ]
-{./queries/reviews.gsql}
+{./queries/yelp2/reviews.gsql}
 
 \subsection{Ranking Las Vegas by Friends' Sentiment}
 
@@ -133,7 +229,7 @@
     },
     label={lst:sqlCityAppen}
 ]
-{./queries/city.sql}
+{./queries/yelp3/city.sql}
 
 \subsubsection{Gremlin}
 
@@ -148,7 +244,7 @@
     },
     label={lst:gremlinCityAppen}
 ]
-{./queries/city.groovy}
+{./queries/yelp3/city.groovy}
 
 \subsubsection{GSQL}
 
@@ -161,7 +257,7 @@
     },
     label={lst:gsqlCityAppen}
 ]
-{./queries/city.gsql}
+{./queries/yelp3/city.gsql}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -171,25 +267,49 @@
 \label{app:schema}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\subsection{Medical Response Dataset}
+\begin{figure*}[htp]
+    \centering
+    \includegraphics[width=16cm]{img/schema/simRelational.pdf}
+    \caption{A UML diagram of the relational design of the simulation dataset. Indexed attributes are in bold whereas clustered attributes are in italics.}
+    \label{fig:simRelationalDesign}
+\end{figure*}
+
+\begin{figure*}[htp]
+    \centering
+    \includegraphics[width=16cm]{img/schema/simJanus.pdf}
+    \caption{A UML diagram of the graph design of the simulation dataset in JanusGraph.}
+    \label{fig:simJanusgraphDesign}
+\end{figure*}
+
+\begin{figure*}[htp]
+    \centering
+    \includegraphics[width=16cm]{img/schema/simTiger.pdf}
+    \caption{A UML diagram of the graph design of the simulation dataset in TigerGraph.}
+    \label{fig:simTigergraphDesign}
+\end{figure*}
+
+\newpage
+\subsection{Yelp Dataset}
 \begin{figure*}[htp]
     \centering
     \includegraphics[width=16cm]{img/schema/yelpRelational.pdf}
     \caption{A UML diagram of the relational design of the Yelp dataset. Indexed attributes are in bold whereas clustered attributes are in italics.}
-    \label{fig:relational-design}
+    \label{fig:yelpRelationalDesign}
 \end{figure*}
 
 \begin{figure*}[htp]
     \centering
     \includegraphics[width=16cm]{img/schema/yelpJanus.pdf}
-    \caption{A UML diagram of the graph design for JanusGraph.}
-    \label{fig:janusgraph-design}
+    \caption{A UML diagram of the graph design of the Yelp dataset in JanusGraph.}
+    \label{fig:yelpJanusgraphDesign}
 \end{figure*}
 
 \begin{figure*}[htp]
     \centering
     \includegraphics[width=16cm]{img/schema/yelpTiger.pdf}
-    \caption{A UML diagram of the graph design for TigerGraph.}
-    \label{fig:tigergraph-design}
+    \caption{A UML diagram of the graph design of the Yelp dataset in TigerGraph.}
+    \label{fig:yelpTigergraphDesign}
 \end{figure*}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -199,12 +319,63 @@
 \label{app:analysis}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\subsection{\edt{Medical Response Simulation Results}}
 
-\subsection{Kate's Restaurant Recommendation}
+\begin{table}[ht]
+    \small
+    \centering
+    \caption{The result of the query ``Priority 1 Mean Response Times''. Values are in seconds.}
+    \begin{tabular}{ |p{4.5cm}|p{3.5cm}|}
+        \hline
+        \rowcolor{Gray}
+        Mean Time Till Ambulance Starts & Mean Time to Hospital \\
+        \hline
+        301.6636 & 880.6665 \\
+        \hline
+    \end{tabular}
+    \label{tab:sim1Result}
+\end{table}
+
+\begin{table}[ht]
+    \small
+    \centering
+    \caption{The result of the query ``Second Resource to Transfer Patients''.}
+    \begin{tabular}{ |p{2.5cm}|p{2.5cm}|p{2.5cm}| }
+        \hline
+        \rowcolor{Gray}
+        \multicolumn{3}{|c|}{Number of Responses Grouped by Priority} \\
+        \hline
+        \rowcolor{LightGray}
+        Priority 1 & Priority 2 & Priority 3 \\
+        \hline
+        219 & 289 & 93 \\
+        \hline
+    \end{tabular}
+    \label{tab:sim2Result}
+\end{table}
+
+\begin{table}[ht]
+    \small
+    \centering
+    \caption{The result of the query ``Long Response Count''.}
+    \begin{tabular}{ |c| }
+        \hline
+        \rowcolor{Gray}
+        Number of Responses Grouped by Priority \\
+        \hline
+        5284  \\
+        \hline
+    \end{tabular}
+    \label{tab:sim3Result}
+\end{table}
+
+\newpage
+
+\subsection{Yelp Dataset Analysis}
 \begin{table}[h]
     \small
     \centering
-    \caption{The result of analysis on the review data of recommended restaurants. Only results with 5 reviews or more are displayed.}
+    \caption{The result of the analysis ``Kate's Restaurant Recommendation''. Only results with 5 reviews or more are displayed.}
     \begin{tabular}{ |p{3.25cm}||p{1.78cm}|p{1.59cm}|}
         \hline
         \rowcolor{Gray}
@@ -223,13 +394,11 @@
     \label{tab:kateResult}
 \end{table}
 
-\subsection{Review Trends in Phoenix 2018}
-
 \begin{figure*}[h]
     \centering
     \includegraphics[width=0.49\textwidth]{img/phoenix2018/1Star.pdf}
     \includegraphics[width=0.49\textwidth]{img/phoenix2018/2Stars.pdf}
-    \caption{Relative characteristics of 1 and 2 star reviews over reviews of restaurants in Phoenix 2018.}
+    \caption{Results from analysis ``Review Trends in Phoenix 2018''. Displayed are relative characteristics of 1 and 2 star reviews over reviews of restaurants in Phoenix 2018.}
     \label{fig:12star}
 \end{figure*}
 
@@ -239,7 +408,7 @@
     
     \includegraphics[width=0.49\textwidth]{img/phoenix2018/3Stars.pdf}
     \includegraphics[width=0.49\textwidth]{img/phoenix2018/4Stars.pdf}
-    \caption{Relative characteristics of 3 and 4 star reviews over reviews of restaurants in Phoenix 2018.}
+    \caption{Results from analysis ``Review Trends in Phoenix 2018''. Displayed are relative characteristics of 3 and 4 star reviews over reviews of restaurants in Phoenix 2018.}
     \label{fig:34star}
 \end{figure*}
 
@@ -247,18 +416,16 @@
     \centering
     
     \includegraphics[width=0.49\textwidth]{img/phoenix2018/5Stars.pdf}
-    \caption{Relative characteristics of 5 star reviews over reviews of restaurants in Phoenix 2018.}
+    \caption{Results from analysis ``Review Trends in Phoenix 2018''. Displayed are relative characteristics of 5 star reviews over reviews of restaurants in Phoenix 2018.}
     \label{fig:5star}
 \end{figure}
 
 \FloatBarrier
 
-\subsection{Ranking Las Vegas by Friends' Sentiment}
-
 \begin{table}[ht]
     \small
     \centering
-    \caption{The result of analysis on the review data of Julie's friends.}
+    \caption{The result of the analysis ``Ranking Las Vegas by Friends' Sentiment''.}
     \begin{tabular}{ |p{3.5cm}|p{3.5cm}|}
         \hline
         \rowcolor{Gray}

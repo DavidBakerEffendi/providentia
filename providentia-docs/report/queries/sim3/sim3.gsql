@@ -1,0 +1,16 @@
+CREATE QUERY postSim3() FOR GRAPH MyGraph {
+    SumAccum<INT> @@totalResponses;
+    responses = { Response.* };
+
+    LongResponses =
+        SELECT res
+        FROM responses:res
+            -(Response_Transfer)-
+            Transfer:tns
+        WHERE
+            res.TIME_TO_AMBULANCE_STARTS +
+            res.ON_SCENE_DURATION +
+            tns.TRAVEL_TIME_HOSPITAL > 15 * 60
+        ACCUM @@totalResponses += 1;
+    PRINT @@totalResponses;
+}

@@ -4,11 +4,13 @@ The results show that graph database technology has been shown to outperform Pos
 
 \paragraph{Benchmark Results}
 
-The results in Section \ref{sec:experiments} strongly suggest that graph database technology and, specifically TigerGraph, provide the faster response times when querying this dataset applied with spatio-temporal constraints. One notable observation is how inconsistent JanusGraph performed and this may be due to JanusGraph's caching implementation. JanusGraph maintains multiple levels of caching both on the transaction level and database level. This excludes the storage backend's caching -- in this case Cassandra. The cache has an expiration time and, since these experiments were run serially but chosen randomly, the JanusGraph specific jobs were run out of order and the cache could have expired at this time.
+The results in Section \ref{sec:experiments} strongly suggest that graph database technology and, specifically TigerGraph, provide the faster response times relative to PostgreSQL when querying \edt{with complex queries on larger percentages of the dataset.} 
+
+\edt{The spatio-temporal constraints seem to play a minor role in influencing the mean response times when compared to the influence the size of the dataset and complexity of queries have}. One notable observation is how inconsistent JanusGraph performed and this may be due to JanusGraph's caching implementation. JanusGraph maintains multiple levels of caching both on the transaction level and database level. This excludes the storage back-end's caching -- in this case Cassandra. The cache has an expiration time and, since these experiments were run serially but chosen randomly, the JanusGraph specific jobs were run out of order and the cache could have expired at this time.
 
 Another potential reason for the inconsistent gradient between the means in each result may be due to the fact that the dataset adds unpredictable levels of complexity -- in terms of how connected the data is -- at the end of an import for a given percentage. The horizontal scaling for the graph databases suggests that the impact of this is minimal.
 
-Nevertheless, as the queries became more and more complicated, the graph databases maintained a horizontal scale whereas PostgreSQL grew linearly in these cases. When the queries were not complicated, as was the case in Section \ref{sec:resultReviews2018}, PostgreSQL responded nearly as fast as TigerGraph and outperforming JanusGraph. 
+Nevertheless, as the queries became more and more complicated, the graph databases maintained a horizontal scale whereas PostgreSQL grew linearly in these cases. When the queries were not complicated, as was the case in Section \ref{sec:resultReviews2018}, \edt{or the dataset was small, as was the case with the medical response dataset,} PostgreSQL responded nearly as fast as TigerGraph and outperforming JanusGraph. 
 
 \paragraph{Visualization}
 

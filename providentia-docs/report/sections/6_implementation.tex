@@ -5,7 +5,6 @@ The following section describes how the systems were setup, data processed, mode
 This subsection describes the hardware used for benchmarking as well as the technical details of the dataset and preprocessing performed.
 
 \subsubsection{Hardware Platform}
-% \comB{Refer to Table 1 in the following sentence - also rather use some unoriginal names for the machines such as Setup 1 and Setup 2, instead of Personal and University.}
 All experiments were run on the following two machines listed in Table \ref{tab:hardware}, that made it possible to consider how the technologies utilize multiple cores and perform with different storage limitations.
 
 \begin{table*}[h]
@@ -13,50 +12,34 @@ All experiments were run on the following two machines listed in Table \ref{tab:
     \small
     \caption{The specifications of the two machines used to benchmark database performance. Setup 1 makes use of AMD Ryzen 5 2600 whereas Setup 2 is an AWS c5.4xlarge instance with Intel Xeon Platinum 8000 series CPUs.}
     \vspace*{5mm}
-    \begin{tabular}{ |p{1.2cm}|p{1.2cm}|p{2cm}|p{1.6cm}|p{2.7cm}|p{2cm}|}
-        \hline
-        \rowcolor{Gray}
-        Machine   & vCPUs & Base Clock & Memory & Storage Media & OS           \\
-        \hline
-        Setup 1   & 12    & 3.4GHz     & 32GB   & SSD               & Debian 10    \\
-        Setup 2   & 16    & 2.5GHz     & 32GB   & SSD (Amazon EBS)  & Ubuntu 18.04 \\
-        \hline
-    \end{tabular}
+    \import{img/6_implFigures/}{machineSpecs.tex}
     \label{tab:hardware}
 \end{table*}
 
-\subsubsection{Dataset}
-The dataset used is from the Yelp Dataset Challenge \cite{yelpdataset}. Due to the enormity of the dataset\footnote{Totaling in size around 8.69 gigabytes in uncompressed format.} and hardware limitations, only subsets of the data are used to observe how well each database scales. These subsets were queried incrementally based on the percentage of users and businesses e.g. 10\% would mean 10\% of \texttt{business.json} and 10\% of \texttt{user.json}. All of the reviews between the remaining users and businesses from \texttt{review.json} are applied afterwards. The dataset is stored as non-valid JSON and first had to be preprocessed and converted into valid JSON.
+\subsubsection{Datasets}
 
-During preprocessing many attributes not used in the analysis or benchmarking were removed to save on import time and storage costs. Only businesses, users, and reviews were used from the dataset. This resulted in a $\pm11.39\%$ reduction in uncompressed storage size\footnote{This results in a close to 1 gigabyte reduction, which is a significant improvement.}, significant reduction in complexity and improvement in consistency among attributes. Attributes such as \texttt{average\_stars} and \texttt{review\_count} are removed as they won't make sense when working with subsets of the data. The result of this preprocessing and feature selection can be seen in Table \ref{tab:yelp-data}.
+\edt{The medical response dataset contains 7 568 records, which represent one year's worth of simulated ambulance responses. The spatial properties are originally based on a Cartesian coordinate system. Unfortunately, JanusGraph's geo-predicates only support a geographic coordinate system. To support this limitation, a ``Flat Earth'' projection is used to convert the Cartesian points into latitude and longitude during the data normalization process.}
+
+Due to the enormity of the Yelp Challenge dataset \cite{yelpDataset}\footnote{Totaling in size around 8.69 gigabytes in uncompressed format.} and hardware limitations, only subsets of the data are used to observe how well each database scales. These subsets were queried incrementally based on the percentage of users and businesses e.g. 10\% would mean 10\% of \texttt{business.json} and 10\% of \texttt{user.json}. All of the reviews between the remaining users and businesses from \texttt{review.json} are applied afterwards. The dataset is stored as non-valid JSON and first had to be preprocessed and converted into valid JSON.
+
+During preprocessing many attributes not used in the analysis or benchmarking were removed to save on import time and storage costs. Only businesses, users, and reviews were used from the dataset. This resulted in a $\pm11.39\%$ reduction in uncompressed storage size\footnote{This results in a close to 1 gigabyte reduction, which is a significant improvement.}, significant reduction in complexity and improvement in consistency among attributes. Attributes such as \texttt{average\_stars} and \texttt{review\_count} are removed as they won't make sense when working with subsets of the data. The result of this preprocessing and feature selection can be seen in Table \ref{tab:yelpData}.
+
+\begin{table*}[h]
+    \centering
+    \small
+    \caption{Data used from the medical response dataset after preprocessing.}
+    \vspace*{5mm}
+    \import{img/6_implFigures/}{medicDataset.tex}
+    \label{tab:simData}
+\end{table*}
 
 \begin{table*}[h]
     \centering
     \small
     \caption{Data used from the Yelp dataset after preprocessing.}
     \vspace*{5mm}
-    \begin{tabular}{ |p{2cm}|p{2cm}||p{2cm}|p{2cm}||p{2cm}|p{2cm}|}
-        \hline
-        \rowcolor{Gray}
-        \multicolumn{2}{|c||}{Business} & \multicolumn{2}{|c||}{User} & \multicolumn{2}{|c|}{Review}                                           \\
-        \hline
-        \rowcolor{LightGray}
-        Attribute                       & Data Type                   & Attribute       & Data Type    & Attribute    & Data Type \\
-        \hline
-        business\_id                    & string                      & user\_id        & string       & review\_id   & string    \\
-        name                            & string                      & name            & string       & user\_id     & string    \\
-        address                         & string                      & friends         & string array & business\_id & string    \\
-        city                            & string                      & yelping\_since  & timestamp    & stars        & integer   \\
-        state                           & string                      &  useful         & integer      & date         & timestamp \\
-        postal code                     & string                      &  funny          & integer      & text         & string    \\
-        latitude                        & float                       &  cool           & integer      & useful       & integer   \\
-        longitude                       & float                       &  fans           & integer      & funny        & integer   \\
-        stars                           & float                       &                 &              & cool         & integer   \\
-        is\_open                        & integer                     &                 &              &              &           \\
-        categories                      & string array                &                 &              &              &           \\
-        \hline
-    \end{tabular}
-    \label{tab:yelp-data}
+    \import{img/6_implFigures/}{yelpDataset.tex}
+    \label{tab:yelpData}
 \end{table*}
 
 \subsection{Schema Design}
@@ -65,7 +48,6 @@ The following subsections describe the different indexing techniques used on the
 
 \subsubsection{Indexing}
 When storing a database considered to be large, it will necessitate that the data be stored on secondary storage, since it would most likely not fit in memory. This slows down the data access speeds considerably. When specific records need to be retrieved among large volumes of data, an intelligent method of organizing the data needs to be implemented. We can do this by narrowing our search space to a small subset where our target data lies -- these small subsets are identified by our \emph{indexes}.
-%much like files in a cabinet where we can identify the subsets by which alphabet range the heading associates with.
 
 There are two broad classes \cite{btree} of retrievals methods used when gathering data, namely:
 \begin{itemize}
@@ -89,7 +71,7 @@ The nature of spatial data being two-dimensional reveals a shortcoming in using 
 
 Traditional R-trees implement indexing by guiding the search toward bounded (hyper) rectangles enclosing the multi-dimensional spatial object. This allows us to query over arbitrary regions such as the nearest restaurants within a 5km radius of a given point without doing a full scan.
 
-Disadvantages of R-trees include that they are slow to update and that they create a significant redundancy in terms of data storage \cite{graphgurus}.
+Disadvantages of R-trees include that they are slow to update and that they create a significant redundancy in terms of data storage \cite{graphGurus}.
 
 ElasticSearch (the search engine used for our JanusGraph configuration) and PostGIS are two examples of technologies that implement R-trees in the database technologies being benchmarked this paper.
 
@@ -101,12 +83,22 @@ A grid can be of any size but setting this size may be dependent on the distribu
 
 A disadvantage of this approach is an uneven distribution of vertices linked to each grid, but this can be managed by manually configuring grid sizes.
 
+\subsubsection{Transcribing from Relational to Graph}
+
+\edt{One advantage with graph databases is that the schema can be simpler than its relational counterpart. This holds true for relational schemas which have one or more many-to-many relations or joining tables, but not when there are only one-to-many type of relations.}
+
+\edt{On the simplest level, a table can be transcribed to a vertex and the relations can become the edges with labels discerning between two vertices or two edges. To extend this, if a table joins exactly two other tables by foreign key relations, this joining table can become an edge as is the case with the ``reviews'' table in the Yelp dataset. The attributes are then stored as key-value pairs on their respective graph component.}
+
+\edt{This is important to note as the medical response dataset holds no joining tables, but the Yelp dataset does have one.}
+
 \subsubsection{Relational Design}
-\label{subsub:relational-design}
+\label{subsub:relationalDesign}
 
-Figure \ref{fig:relational-design} shows the design of the Yelp dataset modelled in a relational database, specifically PostgreSQL. The \emph{location} attribute is indexed with an R-tree using the PostGIS\footnote{\url{https://postgis.net/}} extension.
+Figure \ref{fig:simRelationalDesign} \edt{and \ref{fig:yelpRelationalDesign}} show the designs of the medical response and Yelp dataset modelled in a relational database, specifically PostgreSQL. The \emph{location}, \edt{\emph{origin}, and \emph{destination}} attributes are indexed with R-trees using the PostGIS\footnote{\url{https://postgis.net/}} extension.
 
-The decision not to extend \emph{city} and \emph{state} attributes into separate tables was taken, otherwise more joins would be required for an attribute that is never queried. \emph{Location} is the only purely spatial attribute -- the main attribute in the benchmarking. It may be faster to simply index state as an attribute due to the low cardinality of city and state paired in a single table. City is indexed and clustered such that records in the same city are physically stored together which, alongside location, should help retrieval speeds from a spatial query perspective. PostgreSQL makes use of B-trees and hash indexes for native data types \cite{post-vs-mysql}.
+\edt{Regarding the medical response dataset, one major feature is that responses may result in either the patient being transported or treated on site. Due to this, two one-to-zero-or-one relations are created with the \texttt{transfer} and \texttt{on\_scene} tables and the presence of a relation to either will deduce whether the response resulted in a transport or not. The priority of a response and the resource number of a response are low cardinality attributes which are then separated into tables with a one-to-many relation.}
+
+\edt{For the Yelp dataset,} the decision not to extend \emph{city} and \emph{state} attributes into separate tables was taken, otherwise more joins would be required for an attribute that is never queried. \emph{Location} is the only purely spatial attribute -- the main attribute in the benchmarking. It may be faster to simply index state as an attribute due to the low cardinality of city and state paired in a single table. City is indexed and clustered such that records in the same city are physically stored together which, alongside location, should help retrieval speeds from a spatial query perspective. PostgreSQL makes use of B-trees and hash indexes for native data types \cite{postVsMysql}.
 
 The review table is commonly used in queries and holds the most interesting attribute in terms of temporal insight. Since temporal information is one-dimensional and ordinal, the \emph{date} attribute is indexed and clustered.
 
@@ -114,10 +106,10 @@ A business category and a user's friends are many-to-many relationships. The lin
 
 \subsubsection{Graph Design}
 
-The JanusGraph design can be seen in Figure \ref{fig:janusgraph-design}, whereas that of TigerGraph is given in Figure \ref{fig:tigergraph-design}. The motivation for the difference in the two designs is mainly due to the databases handling spatial data differently.
+The JanusGraph designs \edt{for the two datasets} can be seen in Figure \ref{fig:simJanusgraphDesign} \edt{and \ref{fig:yelpJanusgraphDesign}}, whereas that of TigerGraph is given in Figure \ref{fig:simTigergraphDesign} \edt{and \ref{fig:yelpTigergraphDesign}}. The motivation for the difference in the two designs is mainly due to the databases handling spatial data differently.
 
-JanusGraph indexes attributes on nodes and edges using either composite indexes \cite{janusgraph-comp-index}, which index native data types on equality conditions, or mixed indexes which leverages an indexing backend on more complex data types or for complex search predicates, e.g. fuzzy search on strings \cite{janusgraph-mixed-index}.
+JanusGraph indexes attributes on nodes and edges using either composite indexes \cite{janusgraphCompIndex}, which index native data types on equality conditions, or mixed indexes which leverages an indexing back-end on more complex data types or for complex search predicates, e.g. fuzzy search on strings \cite{janusgraphMixedIndex}.
 
-Figure \ref{fig:janusgraph-design} show which attributes are indexed using composite indexes and which use mixed indexes -- making use of the indexing backend. As in Section \ref{subsub:relational-design}, \emph{location} is indexed using R-trees with ElasticSearch's geo-search predicates. \emph{Date} is indexed using ElasticSearch for equality conditions using the \texttt{java.time.Instant} class -- this uses a Bkd-tree indexing implementation \cite{es-bkdtree-index}.
+Figure \ref{fig:simJanusgraphDesign} \edt{and \ref{fig:yelpJanusgraphDesign}} show which attributes are indexed using composite indexes and which use mixed indexes -- making use of the indexing back-end. As in Section \ref{subsub:relationalDesign}, \emph{location}, \edt{\emph{origin}, and \emph{destination}} are indexed using R-trees with ElasticSearch's geo-search predicates. \emph{Date} is indexed using ElasticSearch for equality conditions using the \texttt{java.time.Instant} class -- this uses a Bkd-tree indexing implementation \cite{esBkdtreeIndex}. \edt{Select temporal attributes in the medical response dataset use composite indexes as they are represented as floating point values and not as dates}.
 
-TigerGraph puts less of a focus on indexing and more on writing efficient and fast queries. One notable difference between the structure in the JanusGraph implementation and the TigerGraph implementation (see Figure \ref{fig:tigergraph-design}) is that there are no indexes and the extension of the \emph{location} attribute as the \texttt{Business\_Geo} edge and \texttt{Geo\_Grid} vertex in TigerGraph. The code leveraged for this design idea was inspired from the TigerGraph geospatial webinar \cite{graphgurus} and C++ code on the TigerGraph ```ecosys''\footnote{\url{https://github.com/tigergraph/ecosys/tree/master/guru\_scripts/geospatial\_search}}.
+TigerGraph puts less of a focus on indexing and more on writing efficient and fast queries. One notable difference between the structure in the JanusGraph implementation and the TigerGraph implementation (see Figure \ref{fig:yelpTigergraphDesign}) is that there are no indexes and the extension of the \edt{spatial attributes as the \texttt{\_Geo}-suffixed edges and \texttt{Geo\_Grid} vertices are present in TigerGraph}. The code leveraged for this design idea was inspired from the TigerGraph geospatial webinar \cite{graphGurus} and C++ code on the TigerGraph ``ecosys''\footnote{\url{https://github.com/tigergraph/ecosys/tree/master/guru\_scripts/geospatial\_search}}.
