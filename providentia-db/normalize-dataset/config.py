@@ -6,9 +6,11 @@ NORMALIZE_SETTINGS = {
     "NORMALIZE_REV": True,
     "NORMALIZE_USE": True,
     "NORMALIZE_SIM": True,
-    "BUSINESS_FILE": "./business.json",
-    "REVIEW_FILE": "./review.json",
-    "USERS_FILE": "./user.json",
+    "NORMALIZE_PHOTOS": True,
+    "BUSINESS_FILE": "../yelp/yelp_dataset/business.json",
+    "REVIEW_FILE": "../yelp/yelp_dataset/review.json",
+    "USERS_FILE": "../yelp/yelp_dataset/user.json",
+    "PHOTOS_FILE": "../yelp/yelp_photos/photo.json",
     "SIM_FILE": "./out/alarms.csv"
 }
 
@@ -18,6 +20,7 @@ SUBSET_SETTINGS = {
     "SUB_BUS": True,
     "SUB_REV": True,
     "SUB_USE": True,
+    "SUB_PHOTOS": True,
     "PERC": 0.01
 }
 
@@ -29,5 +32,6 @@ PREPARE_SETTINGS = {
     "PREPARE_BUS": True,
     "PREPARE_REV": True,
     "PREPARE_USE": True,
-    "PREPARE_SIM": True
+    "PREPARE_SIM": True,
+    "PREPARE_PHOTOS": True
 }

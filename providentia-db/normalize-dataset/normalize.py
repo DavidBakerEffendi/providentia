@@ -29,9 +29,9 @@ def normalize_file(norm_setting_file, norm_module):
 
 if __name__ == "__main__":
     import config
-    from norm import normalize_businesses, normalize_reviews, normalize_users, normalize_sim
-    from subset import sub_businesses, sub_reviews, sub_users
-    from prep_csv import csv_businesses, csv_reviews, csv_users, csv_sim
+    from norm import normalize_businesses, normalize_reviews, normalize_users, normalize_sim, normalize_photos
+    from subset import sub_businesses, sub_reviews, sub_users, sub_photos
+    from prep_csv import csv_businesses, csv_reviews, csv_users, csv_sim, csv_photos
 
     if os.path.exists("./out") is False:
         os.mkdir("./out")
@@ -61,6 +61,12 @@ if __name__ == "__main__":
             normalize_file(norm_setting_file=config.NORMALIZE_SETTINGS["SIM_FILE"],
                            norm_module=normalize_sim)
 
+        # Normalize photos
+        if config.NORMALIZE_SETTINGS["NORMALIZE_PHOTOS"] is True:
+            print("[INFO] Normalizing photos...")
+            normalize_file(norm_setting_file=config.NORMALIZE_SETTINGS["PHOTOS_FILE"],
+                           norm_module=normalize_photos)
+
     if config.GEN_SUBSET is True:
         print("|--- Generating Subset of Data --|")
         # Subset businesses
@@ -81,21 +87,36 @@ if __name__ == "__main__":
             sub_reviews.generate_subset(f_dir=normalize_reviews.NORM_FILE,
                                         perc=config.SUBSET_SETTINGS["PERC"])
 
+        # Subset Photos
+        if config.SUBSET_SETTINGS["SUB_PHOTOS"] is True:
+            print("[INFO] Generating subset of photos...")
+            sub_photos.generate_subset(f_dir=normalize_photos.NORM_FILE,
+                                       perc=config.SUBSET_SETTINGS["PERC"])
+            
+
     if config.PREPARE_CSV is True:
         print("|--- Generating CSV from Data Subsets --|")
         # CSV businesses
         if config.PREPARE_SETTINGS["PREPARE_BUS"] is True:
             print("[INFO] Preparing businesses as CSV...")
             csv_businesses.write_csv(sub_businesses.SUB_FILE)
+
         # CSV reviews
         if config.PREPARE_SETTINGS["PREPARE_REV"] is True:
             print("[INFO] Preparing reviews as CSV...")
             csv_reviews.write_csv(sub_reviews.SUB_FILE)
+
         # CSV users
         if config.PREPARE_SETTINGS["PREPARE_USE"] is True:
             print("[INFO] Preparing users as CSV...")
             csv_users.write_csv(sub_users.SUB_FILE)
+
         # CSV sim
         if config.PREPARE_SETTINGS["PREPARE_SIM"] is True:
             print("[INFO] Preparing PHO simulation as CSV...")
             csv_sim.write_csv(normalize_sim.NORM_FILE)
+
+        # CSV Photos
+        if config.PREPARE_SETTINGS["PREPARE_PHOTOS"] is True:
+            print("[INFO] Preparing photos as CSV")
+            csv_photos.write_csv(normalize_photos.NORM_FILE)
